@@ -13,7 +13,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-<<<<<<< HEAD
+
 .mantine-1r8slib{
   background-color:white;
 }
@@ -70,7 +70,7 @@ border-color: "none";
   .mantine-1hher0m[data-active]:hover {
       border-color: none;
   }
-=======
+}
 /* body{
   width: 100vw;
   height: 100vh;
@@ -862,5 +862,5 @@ background: none;
   width: 41.5rem;
   display: flex;
   justify-content: space-between;
->>>>>>> main
+
 }

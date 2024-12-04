@@ -9,11 +9,10 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <MantineProvider>
-<<<<<<< HEAD
+
       <App />
-=======
-    <App />
->>>>>>> main
+
+    
     </MantineProvider>
   </React.StrictMode>
 );
