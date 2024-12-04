@@ -11,3 +11,60 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.mantine-1r8slib{
+  background-color:white;
+}
+.mantine-1hher0m[data-active]{
+  border-color: none;
+}
+@media (hover: hover) {
+.mantine-1hher0m[data-active]:hover {
+border-color:none;
+}
+}
+.mantine-1hher0m {
+  background-color: none;
+}
+#mantine-hw285fqif-tab-previous-record{
+  border-color: none;
+}
+.tab1 .mantine-1hher0m[data-active]{
+  border-color: "none";
+}
+.mantine-1hher0m[data-active]{
+  border-color: none;
+}
+.tab:hover{
+border-color: "none";
+}
+.tab1:hover{
+  border-color: "none";
+  }
+  @media (hover: hover) {
+    .mantine-1hher0m[data-active]:hover {
+      border-color: none;
+    }
+  }
+  .mantine-1gp3704{
+    bottom: "66px";
+    padding-left: 14vw;
+    padding-top: 0dvh;
+  }
+  @media (hover: hover) {
+    .mantine-1hher0m[data-active]:hover {
+        border-color: none;
+    }
+}
+.mantine-1hher0m[data-active] {
+  /* border-color: #228be6; */
+  color: #000;
+}
+.mantine-1hher0m[data-active] {
+  /* border-color: #228be6; */
+  color: #000;
+}
+@media (hover: hover) {
+  .mantine-1hher0m[data-active]:hover {
+      border-color: none;
+  }
+}
