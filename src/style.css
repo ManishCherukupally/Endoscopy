@@ -1,0 +1,80 @@
+body{
+    background-color: #EBEDF4;
+}
+
+.recording-indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #dc3545; /* Red background for recording */
+  animation: pulse 1.5s infinite; /* Pulsing animation */
+  box-shadow: 0 0 8px rgba(220, 53, 69, 0.8);
+}
+
+/* Inner dot for recording */
+.recording-indicator::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background-color: #fff;
+  border-radius: 50%;
+  animation: blink 1s infinite alternate; /* Blinking animation */
+}
+
+/* Pulsing animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.8);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.8);
+  }
+}
+
+/* Blinking animation for the inner dot */
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+/* Notification component */
+.notification {
+  position: fixed; /* Keeps the notification fixed on the screen */
+  bottom: 4rem;    /* Adjusts distance from the bottom of the viewport */
+  right: 4rem;     /* Adjusts distance from the right side of the viewport */
+  z-index: 1000;   /* Ensures it stays above other elements */
+ 
+  background-color: #40c057;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+
+  animation: fadeIn 0.3s ease-in-out; /* Optional animation */
+}
+
+/* Optional fade-in animation */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
