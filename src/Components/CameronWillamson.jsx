@@ -774,7 +774,9 @@ const navigate=useNavigate()
             gap: '8px', // Space between icon or elements inside the button
             color:"black"
           }}
+          onClick={()=>{navigate(item.report_file)}}
         >
+          
           Preview
         </Button>
   

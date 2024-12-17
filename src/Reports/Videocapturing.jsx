@@ -6,6 +6,9 @@ import Webcam from 'react-webcam';
 
 import { MdCheck, MdDelete, MdOutlineEdit, MdFullscreen } from 'react-icons/md';
 import { RxCross2 } from 'react-icons/rx';
+import { useNavigate } from 'react-router-dom';
+import { BsCameraFill } from 'react-icons/bs';
+import { format } from 'date-fns';
 const Videocapturing = () => {
 
     // const [isRecording, setIsRecording] = useState(false);
@@ -14,8 +17,16 @@ const Videocapturing = () => {
     //     setIsRecording(!isRecording);
     // };
     const [notify, setNotify] = useState(false)
-
+    const navigate = useNavigate()
     const [externalDeviceId, setExternalDeviceId] = useState("");
+    const [capturedImages, setCapturedImages] = useState([]);
+
+    const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
+    // console.log(selectedPatient);
+
+    if (capturedImages.length > 0) {
+        window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages));
+    }
     const webcamRef = useRef(null);
     useEffect(() => {
         const getExternalCamera = async () => {
@@ -51,6 +62,16 @@ const Videocapturing = () => {
         facingMode: "user",
         deviceId: externalDeviceId,
     };
+    const handleCapture = () => {
+        if (webcamRef.current) {
+            const imageSrc = webcamRef.current.getScreenshot();
+            setCapturedImages([...capturedImages, imageSrc]);
+        }
+    };
+
+    const handleDeleteImage = (index) => {
+        setCapturedImages(capturedImages.filter((_, i) => i !== index));
+    };
 
     const handleFullscreen = () => {
         if (webcamRef.current) {
@@ -65,6 +86,12 @@ const Videocapturing = () => {
                 element.msRequestFullscreen(); // IE/Edge
             }
         }
+    };
+
+
+    const formatDateTime = (date) => {
+        let dateString = new Date(date)
+        return format(dateString, "dd MMMM yyyy | h:mm a");
     };
     const images = [
         { src: Pic, alt: 'Image 1' },
@@ -107,7 +134,7 @@ const Videocapturing = () => {
 
                     <Group>
                         <Button variant='light' color='red' radius={8}>Cancel capture</Button>
-                        <Button bg='#8158F5' radius={8}>Save & Continue</Button>
+                        <Button bg='#8158F5' radius={8} onClick={() => navigate("/selectpicture")}>Save & Continue</Button>
                     </Group>
                 </Flex>
                 <Space h={20} />
@@ -115,44 +142,45 @@ const Videocapturing = () => {
                     <SimpleGrid cols={6}>
                         <Flex direction={"column"}>
                             <Text fw={600}>Name</Text>
-                            <Text>Cameron Williamson</Text>
+                            <Text>{selectedPatient.patient_name}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Patient ID</Text>
-                            <Text>1234</Text>
+                            <Text>{selectedPatient.id}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Age</Text>
-                            <Text>24</Text>
+                            <Text>{selectedPatient.age}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Sex</Text>
-                            <Text>Female</Text>
+                            <Text>{selectedPatient.gender}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Reffered by</Text>
-                            <Text>Self</Text>
+                            <Text>{selectedPatient.referred}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Date & Time</Text>
-                            <Text>15 May 2020 | 7:00 PM</Text>
+                            <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
+
                         </Flex>
                     </SimpleGrid>
                     <Space h={12} />
                     <SimpleGrid cols={2}>
                         <Flex direction={"column"}>
                             <Text fw={600}>Phone Number</Text>
-                            <Text>+91 9999999999</Text>
+                            <Text>{selectedPatient.mobile}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Email</Text>
-                            <Text>georgia.young@example.com</Text>
+                            <Text>{selectedPatient.patient_email}</Text>
                         </Flex>
                     </SimpleGrid>
                 </Card>
@@ -187,7 +215,22 @@ const Videocapturing = () => {
                                         }}
                                         size={40}
                                     />
-                                </>
+                                    <ActionIcon
+                                        onClick={handleCapture}
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '20px',
+                                            left: '50%',
+                                            transform: 'translateX(-50%)',
+                                            zIndex: 2,
+                                            backgroundColor: '#8158F5',
+                                            color: '#fff',
+                                        }}
+                                        radius={"50%"}
+                                        size={"5rem"}
+                                    >
+                                        <BsCameraFill size={"3rem"} />
+                                    </ActionIcon>                                </>
                             ) : (
                                 <p>Loading external camera...</p>
                             )}
@@ -211,9 +254,9 @@ const Videocapturing = () => {
                                     />
                                 </div> */}
 
-                                {images.map((image, index) => (
+                                {capturedImages.map((image, index) => (
                                     <div key={index} style={{ position: 'relative' }}>
-                                        <Image src={image.src} alt={image.alt} width={150} height={150} radius={12} />
+                                        <Image src={image} alt={`Captured ${index + 1}`} width={150} height={150} radius={12} />
                                         <Overlay
 
                                             position="absolute"
@@ -226,7 +269,7 @@ const Videocapturing = () => {
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
                                                 {/* <Button size={20} >Edit</Button> */}
                                                 <ActionIcon size={30} variant='tranperant' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' /></ActionIcon>
-                                                <ActionIcon size={30} variant='tranperant' bg={"white"} radius={"50%"}><RxCross2 color='red' /></ActionIcon>
+                                                <ActionIcon size={30} variant='tranperant' bg={"white"} radius={"50%"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' /></ActionIcon>
                                             </div>
                                         </Overlay>
                                     </div>
@@ -241,13 +284,13 @@ const Videocapturing = () => {
                         </Card>
                     </Grid.Col>
                 </Grid>
-                {notify &&
+                {/* {notify &&
                     <Flex justify={"flex-end"} align={"flex-end"}  >
                         <Notification className='notification' icon={<MdCheck />} color='green' withCloseButton={false} >
                             <Text c={"white"}>Notified!</Text>
                         </Notification>
                     </Flex>
-                }
+                } */}
             </Container >
 
 

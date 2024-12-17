@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react'
-import { ActionIcon, Button, Card, Center, Container, Flex, Group, Image, Modal, Overlay, Select, SimpleGrid, Space, Text, Textarea, TextInput } from '@mantine/core'
+import React, { useEffect, useRef, useState } from 'react'
+import { ActionIcon, Button, Card, Center, Checkbox, Container, FileInput, Flex, Group, Image, Modal, Overlay, Radio, Select, SimpleGrid, Space, Stack, Text, Textarea, TextInput } from '@mantine/core'
 import Vector from "../assets/Vector.png"
 import Pic from "../assets/intestine.png"
 import { MdOutlineEdit, MdOutlineChevronLeft, MdArrowDownward, MdAdd } from 'react-icons/md'
@@ -9,37 +9,144 @@ import { TbCircleDashedPlus, TbPrinter } from 'react-icons/tb'
 import { FiChevronDown } from 'react-icons/fi'
 import { IoPlayCircleOutline } from 'react-icons/io5'
 import { hover } from '@testing-library/user-event/dist/hover'
+import HospitalCard from '../Components/LoginForm/HospitalCard'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
+import { format } from 'date-fns'
+import axios from 'axios'
 
 const ExportReport = () => {
     const navigate = useNavigate()
-    const [hoverCard, setHoverCard] = useState(null)
-    const [commentModal, setcommentModal] = useState(false)
+    // const [hoverCard, setHoverCard] = useState(null)
+    // const [commentModal, setcommentModal] = useState(false)
+    const [selectImage, setselectImage] = useState(false)
     const imageRefs = useRef([]);
+    const targetRef = useRef()
+    const [selectedImages, setSelectedImages] = useState([]);
+    const [capturedImages, setCapturedImages] = useState([]);
 
-    const handleFullscreen = (index) => {
-        const element = imageRefs.current[index];
-        if (element.requestFullscreen) {
-            element.requestFullscreen();
-        } else if (element.mozRequestFullScreen) {
-            element.mozRequestFullScreen(); // Firefox
-        } else if (element.webkitRequestFullscreen) {
-            element.webkitRequestFullscreen(); // Chrome, Safari, Opera
-        } else if (element.msRequestFullscreen) {
-            element.msRequestFullscreen(); // IE/Edge
+
+    const [medicationText, setMedicationText] = useState('')
+    const [remarksText, setRemarksText] = useState('')
+    const [reportModal, setReportModal] = useState(false)
+    // const [fileModal, setfileModal] = useState(false)
+    // const [file, setFile] = useState(null);
+    const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
+
+
+    // const handleFullscreen = (index) => {
+    //     const element = imageRefs.current[index];
+    //     if (element.requestFullscreen) {
+    //         element.requestFullscreen();
+    //     } else if (element.mozRequestFullScreen) {
+    //         element.mozRequestFullScreen(); // Firefox
+    //     } else if (element.webkitRequestFullscreen) {
+    //         element.webkitRequestFullscreen(); // Chrome, Safari, Opera
+    //     } else if (element.msRequestFullscreen) {
+    //         element.msRequestFullscreen(); // IE/Edge
+    //     }
+    // };
+
+    if (selectedImages.length > 0) {
+        window.localStorage.setItem('selectedImages', JSON.stringify(selectedImages))
+    }
+
+    useEffect(() => {
+        setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || [])
+
+    }, [])
+
+    const handleCheckboxChange = (image, checked) => {
+        setSelectedImages((prev) =>
+            checked ? [...prev, image] : prev.filter((item) => item !== image)
+        );
+
+    };
+
+    const toggleSelectMode = () => setselectImage(!selectImage);
+
+    const handleDeleteImage = (index) => {
+        window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages.filter((_, i) => i !== index)))
+        setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || [])
+
+        // console.log(window.localStorage.getItem('capturedImagess').length);
+
+    };
+
+    const handleDownloadPDF = async () => {
+        if (targetRef.current) {
+            // Generate the canvas from the targetRef div
+            const canvas = await html2canvas(targetRef.current);
+
+            // Initialize jsPDF
+            const pdf = new jsPDF();
+            // Scale canvas content to fit the PDF page
+            const imgData = canvas.toDataURL("image/png");
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            // Add the image to the PDF
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+            // Automatically save the PDF to the default downloads directory
+            pdf.save("Endoscopy-report.pdf");
+
+            // setfileModal(true)
+            // // Create a FormData object to send the file
+            // const formData = new FormData();
+            // formData.append('pdf_file_path', file); // Append the PDF file
+            // formData.append('date', dateTime[0]); // Append the date
+            // formData.append('time', dateTime[1]); // Append the time
+
+
+            // try {
+            //     // Send the file to the server using axios
+            //     const response = await axios.post('http://192.168.29.251:8005/patient_save_report/', formData, {
+            //         headers: {
+            //             'Content-Type': 'multipart/form-data'
+            //         }
+            //     });
+
+            //     console.log('File uploaded successfully:', response.data);
+            // } catch (error) {
+            //     console.error('Error uploading file:', error);
+            // }
+
         }
     };
 
-    const images = [
-        { src: Pic, alt: 'Image 1' },
-        { src: Pic, alt: 'Image 2' },
-        { src: Pic, alt: 'Image 3' },
-        { src: Pic, alt: 'Image 4' },
-        { src: Pic, alt: 'Image 5' },
-        { src: Pic, alt: 'Image 6' },
 
-    ];
+    const handleExportReport = () => {
+        setReportModal(true);
+        setTimeout(() => {
+            var date = new Date()
+            var dateArray = date.toISOString().split(".")
+            var dateandTime = dateArray[0].split("T")
+            handleDownloadPDF(dateandTime); // Call after the modal content is rendered
+
+        }, 600);
+        if (selectedImages.length > 0) {
+            window.localStorage.setItem('selectedImages', JSON.stringify(selectedImages));
+        }
+
+
+
+
+    }
+    const formatDateTime = (date) => {
+        let dateString = new Date(date)
+        return format(dateString, "dd MMMM yyyy | h:mm a");
+    };
     return (
         <div>
+            <Modal fullScreen opened={reportModal} onClose={() => setReportModal(false)}>
+                <div ref={targetRef}>
+                    <HospitalCard remarks={remarksText} medication={medicationText} selectedImages={JSON.parse(localStorage.getItem('selectedImages')) || []} />
+                </div>
+            </Modal>
+            {/* <Modal centered opened={fileModal} onClose={() => setfileModal(false)}>
+                <FileInput value={file} onChange={(e) => setFile(e.target.files[0])} label="Upload File" />
+            </Modal> */}
             <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} mt={"lg"} style={{ borderRadius: "1rem" }} >
 
                 <Group>
@@ -58,7 +165,9 @@ const ExportReport = () => {
                         {/* <div style={{ border: "1px solid black", borderRadius: 8, padding: "1rem" }}>
 
                         </div> */}
-                        <Button leftIcon={<IoPlayCircleOutline size={"1.2rem"} />} variant='light' color="violet" radius={8} h={44}>Preview</Button>
+                        <Button leftIcon={<IoPlayCircleOutline size={"1.2rem"} />} variant='light' color="violet" radius={8} h={44}
+                            onClick={() => setReportModal(true)}
+                        >Preview</Button>
                         <Card withBorder p={'0.3rem'} radius={8} pr={"1rem"} pl={"1rem"} style={{ overflow: "visible", position: "relative" }}>
                             <Flex gap={15} align={"center"}>
                                 <Text fz={14}>Export Report as</Text>
@@ -80,7 +189,7 @@ const ExportReport = () => {
                             </Flex>
                         </Card>
                         <ActionIcon radius={8} h={44} w={50} size={"lg"} style={{ border: "1px solid black" }} c={"black"}><TbPrinter /></ActionIcon>
-                        <Button bg='#8158F5' radius={8} h={44}>Export</Button>
+                        <Button bg='#8158F5' radius={8} h={44} onClick={() => { handleExportReport() }}>Export</Button>
                     </Group>
                 </Flex>
 
@@ -89,44 +198,45 @@ const ExportReport = () => {
                     <SimpleGrid cols={6}>
                         <Flex direction={"column"}>
                             <Text fw={600}>Name</Text>
-                            <Text>Cameron Williamson</Text>
+                            <Text>{selectedPatient.patient_name}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Patient ID</Text>
-                            <Text>1234</Text>
+                            <Text>{selectedPatient.id}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Age</Text>
-                            <Text>24</Text>
+                            <Text>{selectedPatient.age}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Sex</Text>
-                            <Text>Female</Text>
+                            <Text>{selectedPatient.gender}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Reffered by</Text>
-                            <Text>Self</Text>
+                            <Text>{selectedPatient.referred}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Date & Time</Text>
-                            <Text>15 May 2020 | 7:00 PM</Text>
+                            <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
+
                         </Flex>
                     </SimpleGrid>
                     <Space h={12} />
                     <SimpleGrid cols={2}>
                         <Flex direction={"column"}>
                             <Text fw={600}>Phone Number</Text>
-                            <Text>+91 9999999999</Text>
+                            <Text>{selectedPatient.mobile}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Email</Text>
-                            <Text>georgia.young@example.com</Text>
+                            <Text>{selectedPatient.patient_email}</Text>
                         </Flex>
                     </SimpleGrid>
                 </Card>
@@ -136,67 +246,69 @@ const ExportReport = () => {
                 <Textarea placeholder='Write your remarks'
                     label="Diagnostic Details (Optional)"
                     minRows={3}
-                    radius={8} />
+                    radius={8}
+                    value={remarksText}
+                    onChange={(event) => setRemarksText(event.currentTarget.value)}
+                />
                 <Space h={"1rem"} />
 
                 <Textarea placeholder='Write medication'
                     label="Medication (Optional)"
                     minRows={3}
-                    radius={8} />
+                    radius={8}
+                    value={medicationText}
+                    onChange={(event) => setMedicationText(event.currentTarget.value)}
+                />
 
 
                 <Space h={"1rem"} />
 
-                <Flex align={"center"} justify={"space-between"}>
-                    <Text fz={20} fw={600}>Selected images : 6 </Text>
+                <Flex align={"center"} justify={selectImage ? "space-between" : "flex-end"}>
+                    {selectImage && <Text fz={20} fw={600}>Selected images : {selectedImages.length} </Text>}
                     <Group>
-                        <Button color='gray' variant='light' radius={"lg"}>Select images to export</Button>
+                        <Button color='gray' variant='light' radius={"lg"} onClick={toggleSelectMode}>{selectImage ? 'Cancel' : 'Select images to export'}</Button>
                         <ActionIcon variant='light' size={"lg"} radius={12}><MdAdd size={25} /></ActionIcon>
                     </Group>
                 </Flex>
                 <Space h={"1rem"} />
                 <SimpleGrid cols={3}>
-                    {images.map((image, index) => (
-                        <div key={index} style={{ position: 'relative' }}
-                            onMouseEnter={() => setHoverCard(index)}
-                            onMouseLeave={() => setHoverCard(null)} >
-                            <Image
-                                ref={(el) => imageRefs.current[index] = el}
-                                src={image.src} alt={image.alt} width={'100%'} height={"auto"} radius={12}
-                            />
+                    {capturedImages.map((image, index) => (
+                        <div
+                            key={index}
+                            style={{ position: 'relative' }}
 
-                            {hoverCard === index && (
-                                <Overlay pos={"absolute"}
-                                    radius={12}
-                                    top={0}
-                                    left={0}
-                                    opacity={0.5}>
-                                    {/* <Flex justify={"center"} align={"center"} >
-                                        <ActionIcon variant='transperant' c='blue' size={"xl"}><MdAdd size={50} /></ActionIcon>
-                                    </Flex> */}
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
+                        >
+                            <Image
+                                ref={(el) => (imageRefs.current[index] = el)}
+                                src={image}
+
+                                width={'100%'} height={"400px"}
+                                radius={12}
+                            />
+                            {selectImage && (
+                                <Overlay radius={12} top={0} left={0} opacity={0}>
+                                    <Flex justify="flex-end" p={10}>
+                                        <Checkbox
+                                            size="lg"
+                                            color="violet"
+                                            onChange={(e) =>
+                                                handleCheckboxChange(image, e.target.checked)
+                                            }
+                                        />
+                                    </Flex>
+                                </Overlay>
+                            )}
+                            {!selectImage && (
+                                <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0}>
+                                    <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
                                         {/* <Button size={20} >Edit</Button> */}
                                         <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                        <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"}><RxCross2 color='red' size={23} /></ActionIcon>
+                                        <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
                                     </div>
-                                    <Center h={115} mx="auto">
-                                        {commentModal ? (<Card w={"auto"}>
 
-                                            <Textarea label="Comment" />
-                                        </Card>) : (
-                                            <Flex direction={"column"} align={"center"} gap={"sm"}>
-                                                <ActionIcon variant='transperant' size={80} c='white' onClick={() => setcommentModal(true)}><TbCircleDashedPlus size={80} /></ActionIcon>
-                                                <Button variant='transperant' bg={"white"} c={"black"}
-                                                    onClick={() => handleFullscreen(index)}
-                                                >See Image</Button>
-                                            </Flex>
-                                        )}
-
-                                    </Center>
 
                                 </Overlay>
                             )}
-
                         </div>
                     ))}
                 </SimpleGrid>
