@@ -17,7 +17,7 @@ const SelectPictureReport = () => {
     const [capturedImages, setCapturedImages] = useState([]);
     const [fullscreen, setFullScreen] = useState(false)
 
-    const selectedPatient = JSON.parse(localStorage.getItem('selectedPatient'))
+    const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
     const handleFullscreen = (index) => {
         setFullScreen(true)
         const element = imageRefs.current[index];

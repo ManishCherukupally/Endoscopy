@@ -31,7 +31,7 @@ const ExportReport = () => {
     const [reportModal, setReportModal] = useState(false)
     // const [fileModal, setfileModal] = useState(false)
     // const [file, setFile] = useState(null);
-    const selectedPatient = JSON.parse(localStorage.getItem('selectedPatient'))
+    const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
 
 
     // const handleFullscreen = (index) => {
