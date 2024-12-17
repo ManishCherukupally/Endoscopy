@@ -7,6 +7,10 @@ import { MdLockOutline } from "react-icons/md";
 import { Group, Text, useMantineTheme, rem } from '@mantine/core';
 import { IconUpload, IconPhoto, IconX } from '@tabler/icons-react';
 import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import client from '../Api';
+
 
 
 
@@ -15,11 +19,70 @@ const Registeration = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
 
     const form = useForm({
-        initialValues: { name:'', loginName:'',email: '', password: '',cnfpassword:'',phone:'' },
-    
+        initialValues: { first_name:'', username:'',email: '', password: '',cnfpassword:'',mobile_no:'',speciality:'' ,template:""},
+    validate:{
+      first_name:(value)=>(value.trim().length === 0 ? 'your fullname is required':null),
+      username:(value)=>(value.trim().length === 0 ?"username is required ":null),
+      email:(value)=>(/^\S+@\S+$/.test(value)?null:"Invalid email format"),
+      password:(value)=>(value.length < 8 ? "password must be in 8 characters":null),
+      // cnfpassword:(value, values)=>(value !== values.length ? null:"do not matched"),
+      cnfpassword: (value, values) =>
+        value !== values.password ? 'Passwords do not match' : null,
+      
+      // mobile_no:(value)=>( /^\d{10}$/.test(value)? null:'Invalid phone number'),
+      mobile_no: (value) => (value && value.length == 10 ? null : 'Phone number must be a valid 10-digit number'),
+
+      speciality:(value) =>(value.trim().length===0?"select the speciality":null),
+
+    }
         
       });
       const theme = useMantineTheme();
+      const navigate=useNavigate()
+
+      const Formhandling = async (e) => {
+        e.preventDefault();
+        const isValid = !form.validate().hasErrors;
+        if(!isValid)return;
+        try{
+        const result= await client.post('/register/',{
+          first_name:form.values.first_name,
+          speciality:form.values.speciality,
+          username:form.values.username,
+          password:form.values.password,
+          mobile_no:form.values.mobile_no,
+          email:form.values.email
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+      console.log(form.values)
+        console.log(result)
+        if(result.data&&result.data.status === "User_created_successfully!"){
+          // alert("account successfully created")
+          navigate('/')
+        }
+      } catch (error) {
+        if (error.response?.data) {
+          const backendErrors = error.response.data;
+          Object.keys(backendErrors).forEach((field) => {
+            form.setFieldError(field, backendErrors[field]);
+          });
+        } else {
+          console.error("Unexpected error:", error.message);
+        }
+      }
+    };
+
+    const handleMobileChange = (e) => {
+      const value = e.target.value.replace(/\D/g, ''); 
+      if (value.length <= 10) {
+        if (value === '' || /^[6-9]/.test(value)) { 
+          form.setFieldValue('mobile_no', value);
+        }
+      }
+    };
   return (
     <div className='parent'>
     <div className='child1'>
@@ -40,7 +103,7 @@ const Registeration = () => {
       accept={IMAGE_MIME_TYPE}
       // {...props}
     >
-      <Group position="center" spacing="xl" style={{ minHeight: rem(150), pointerEvents: 'none' }}>
+      <Group position="center" spacing="xl" m={0} style={{ minHeight: rem(150), pointerEvents: 'none' }}>
         <Dropzone.Accept>
           <IconUpload
             size="3.2rem"
@@ -60,28 +123,24 @@ const Registeration = () => {
           <IconPhoto size="3.2rem" stroke={1.5} />
         </Dropzone.Idle>
 
-        <div>
-          {/* <Text size="xl" inline>
-            Drag images here or click to select files
-          </Text>
-          <Text size="sm" color="dimmed" inline mt={7}>
-            Attach as many files as you like, each file should not exceed 5mb
-          </Text> */}
-        </div>
+       
       </Group>
     </Dropzone>
 
               </div>
             </div>
       </div>
-      <form onSubmit={form.onSubmit(console.log)}>
+      <form 
+      // onSubmit={form.onSubmit(console.log)}
+      onSubmit={Formhandling}
+      >
         {/* <div className='fullname'>Your Full Name</div> */}
       <TextInput
         placeholder="Your name"
         label=" Your Full Name "
         size='md'
          radius='md'
-         {...form.getInputProps('name')}
+         {...form.getInputProps('first_name')}
     />
     {/* <div className='special'>Speciality</div> */}
     <Select
@@ -96,6 +155,7 @@ const Registeration = () => {
        size='md'
     radius='md'
     mt='md'
+    {...form.getInputProps('speciality')}
     />
          {/* <div className='loginname'>Login UserName</div> */}
         <TextInput
@@ -104,14 +164,14 @@ const Registeration = () => {
                 size='md'
                 mt='md'
                 radius='md'
-                {...form.getInputProps('loginName')}
+                {...form.getInputProps('username')}
             />
         {/* <div className='login_password'>Login Password</div> */}
         
         <PasswordInput
             placeholder="Password"
             label="Password"
-            icon={<MdLockOutline/>}
+            icon={<MdLockOutline style={{color:'gray'}}/>}
             size='md'
             radius='md'
             mt='md'
@@ -124,7 +184,7 @@ const Registeration = () => {
         <PasswordInput
             placeholder="Confirm Password"
             label="Confirm Password"
-            icon={<MdLockOutline/>} 
+            icon={<MdLockOutline style={{color:'gray'}}/>} 
             size='md'
             radius='md'
             mt='md'
@@ -140,7 +200,8 @@ const Registeration = () => {
                 size='md'
                 radius='md'
                 mt='md'
-                {...form.getInputProps('phone')}
+                {...form.getInputProps('mobile_no')}
+                onChange={handleMobileChange}
             />
         <div>
                 {/* <div className='email'>Email ID</div>  */}
@@ -152,7 +213,7 @@ const Registeration = () => {
                 size='md'
                 radius='md'
                 mt="md"
-                icon={<MdOutlineEmail/>}
+                icon={<MdOutlineEmail style={{color:'gray'}}/>}
                 style={{padding:'md'}}
                 />    
           </div>
@@ -182,7 +243,7 @@ const Registeration = () => {
             </Radio.Group>
 
         
-        <Button variant="filled" color="violet"  mt ='md' radius='md' fullWidth>
+        <Button type="submit" variant="filled" color="violet"  mt ='md' radius='md' fullWidth>
             Create Account
         </Button>
       </form>

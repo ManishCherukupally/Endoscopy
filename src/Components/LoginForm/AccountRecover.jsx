@@ -4,8 +4,15 @@ import { FaChevronRight } from "react-icons/fa6";
 import { FaChevronLeft } from "react-icons/fa6";
 import{Button,Card,Image,} from '@mantine/core';
 import success from '../../assets/OTP verification (1).jpg'
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const AccountRecover = () => {
+const navigate=useNavigate()
+  const Home = ()=>{
+    navigate('/')
+  }
+  
   return (
     <div className='parent'>
     <div className='last'>
@@ -15,7 +22,7 @@ const AccountRecover = () => {
             <h2 id='endo'>Endoscopy</h2>
         </div>
       <div  className='success'>
-            <FaChevronLeft id='fpwd' />
+            <Link to='/settingpwd' style={{color:'black'}}><FaChevronLeft id='fpwd' /></Link>
             <div ><h3>Account successfully recovered!</h3></div>
       </div>
       <div className='SETTINGS'>
@@ -25,7 +32,8 @@ const AccountRecover = () => {
 
       </div>
       
-        <Button type="submit" fullWidth color='violet' radius='md' mb='xs' size='md'mt='xl'>
+        <Button type="submit" fullWidth color='violet' radius='md' mb='xs' size='md'mt={'3rem'}
+        onClick={Home}>
           Go To Home <FaChevronRight className='righticon'/>
         </Button>
     

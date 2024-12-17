@@ -13,18 +13,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
+ 
 .mantine-1r8slib{
   background-color:white;
 }
 .mantine-1hher0m[data-active]{
   border-color: none;
+  background-color:whitesmoke;
 }
-@media (hover: hover) {
+.mantine-dpq0a1[data-active]{
+  background-color:whitesmoke;
+}
+/* @media (hover: hover) {
 .mantine-1hher0m[data-active]:hover {
 border-color:none;
 }
-}
+} */
 .mantine-1hher0m {
   background-color: none;
 }
@@ -33,21 +37,26 @@ border-color:none;
 }
 .tab1 .mantine-1hher0m[data-active]{
   border-color: "none";
+  background-color: whitesmoke;
 }
 .mantine-1hher0m[data-active]{
   border-color: none;
+  background-color:whitesmoke;
 }
 .tab:hover{
 border-color: "none";
+background-color:transparent;
 }
-.tab1:hover{
+ .tab1:hover{
   border-color: "none";
-  }
+  background-color:transparent;
+  } 
   @media (hover: hover) {
     .mantine-1hher0m[data-active]:hover {
       border-color: none;
+      background-color:transparent;
     }
-  }
+  } 
   .mantine-1gp3704{
     bottom: "66px";
     padding-left: 14vw;
@@ -56,6 +65,7 @@ border-color: "none";
   @media (hover: hover) {
     .mantine-1hher0m[data-active]:hover {
         border-color: none;
+        background-color:transparent;
     }
 }
 .mantine-1hher0m[data-active] {
@@ -64,12 +74,21 @@ border-color: "none";
 }
 .mantine-1hher0m[data-active] {
   /* border-color: #228be6; */
+  background-color: whitesmoke;
   color: #000;
 }
 @media (hover: hover) {
   .mantine-1hher0m[data-active]:hover {
       border-color: none;
+      background-color: #000;
   }
+}
+
+.accent input{
+  accent-color: black;
+}
+ input{
+  accent-color: black;
 }
 /* body{
   width: 100vw;
@@ -199,7 +218,7 @@ form{
   padding-left: 2rem;
  }
  .mantine-rb5cy8[data-with-icon]{
-  padding-left: 1.8rem;
+  padding-left: 2rem;
  }
  .h{
   position:relative;
@@ -214,11 +233,15 @@ form{
  }
  .logo{
   display: flex;
+  gap:'5px'
  }
  h2{
-  position: absolute;
-  top:1rem;
-  left:4rem;
+  margin-left: 5px;
+ }
+ .hh h2{
+  position: relative;
+  /* top:1rem; */
+  /* left:2rem; */
   font-family: 'inter';
  }
  /* remember */
@@ -448,7 +471,7 @@ cursor: pointer;
 .arrow_for{
   display: flex;
   justify-content: space-between;
-  width: 13rem;
+  width: 13.5rem;
   padding: 0.6rem;
   position: absolute;
   left: 0.4rem;
@@ -598,7 +621,7 @@ border-radius: 0;
 /* 7screen */
 
 .last{
-  width: 25rem;
+  width: 28rem;
   height: 25.688rem;
   border: 1px solid gray;
   border-radius: 0.8rem;
@@ -608,7 +631,7 @@ border-radius: 0;
 .success{
   display: flex;
   justify-content: space-between;
-  width: 21rem;
+  width: 23rem;
   padding: 0.6rem;
   position: absolute;
   left: 0.4rem;
@@ -747,7 +770,7 @@ top:1.5rem
 
  .dropzone{
   width: 100%;
-  border: 2px solid gary;
+  border: 2px solid gray;
   display: flex;
   justify-content: center;
   margin: 4rem 0 0 2rem;
@@ -771,7 +794,7 @@ top:1.5rem
  }
  .hospitalform input{
   display: block;
-  width: 19.35rem;
+  /* width: 19.35rem; */
  }
  .hospitaladdress input{
   height: 2rem;
@@ -847,7 +870,12 @@ top:1.5rem
 }
 .image{
 background: none;
+width: 100px;
+padding-bottom: 0.1rem;
 }
+.image .mantine-fp9t1o{
+  padding-bottom: 0.3rem;
+  }
 .imageflex{
   display: flex;
   gap:2rem;

@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import { useForm } from '@mantine/form';
-import {TextInput, Button,Card,Radio,Textarea} from '@mantine/core';
+import {TextInput, Button,Card,Radio,Textarea, SimpleGrid, Flex, Space} from '@mantine/core';
 // import logo from '../../assets/Vector.jpg';
 import { MdOutlineEmail } from "react-icons/md";
 // import { MdLockOutline } from "react-icons/md";
@@ -56,8 +56,10 @@ const HeaderSetting = () => {
               className='no'
             />
           </div>
-    <div className='dropzone'>
-        <div className='dropzone1'>
+    {/* <div className='dropzone'> */}
+    
+    <Flex justify={"center"} >
+    <div className='dropzone1'>
     <Dropzone
       onDrop={(files) => console.log('accepted files', files)}
       onReject={(files) => console.log('rejected files', files)}
@@ -65,7 +67,7 @@ const HeaderSetting = () => {
       accept={IMAGE_MIME_TYPE}
       // {...props}
     >
-      <Group position="center" spacing="xl" style={{ minHeight: rem(150), pointerEvents: 'none' }}>
+      <Group position="center" spacing="xl"m={0} style={{ minHeight: rem(150), pointerEvents: 'none' }}>
         <Dropzone.Accept>
           <IconUpload
             size="3.2rem"
@@ -87,11 +89,12 @@ const HeaderSetting = () => {
       </Group>
     </Dropzone>
     </div>
-    </div>
-
+    {/* </div>/ */}
+    </Flex>
 
       
-        <div className='hospitalform'>
+        {/* <div className='hospitalform'> */}
+        <SimpleGrid cols={3} mt={'lg'}>
       <TextInput
         placeholder="Hospital Name"
         label=" Hospital Name "
@@ -113,12 +116,12 @@ const HeaderSetting = () => {
                 {...form.getInputProps('hospitalemail')}
                 size='md'
                 radius='md'
-                icon={<MdOutlineEmail/>}
+                icon={<MdOutlineEmail style={{color:'gray'}}/>}
                 style={{padding:'md'}}
 
                 />    
-       
-            </div>
+               </SimpleGrid>
+            {/* </div> */}
             <div className='hospitaladdress'>
             <Textarea
             placeholder="Hospital Address"

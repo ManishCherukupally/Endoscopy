@@ -1,15 +1,12 @@
 import React,{useState} from 'react';
 import { useForm } from '@mantine/form';
 import {TextInput, Button,Card,Select,NumberInput,FileInput} from '@mantine/core';
-// import logo from '../../assets/Vector.jpg';
 import { MdOutlineEmail } from "react-icons/md";
 import { FaChevronLeft } from "react-icons/fa6";
 import { FiVideo } from "react-icons/fi";
-
-
-// import { Group, Text, useMantineTheme, rem } from '@mantine/core';
-// import { IconUpload, IconPhoto, IconX } from '@tabler/icons-react';
-// import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { useNavigate } from 'react-router-dom';
+// import axios from 'axios';
+import client from '../Api';
 
 const PatientInfo = () => {
     // const [videoFile, setVideoFile] = useState(null);
@@ -29,13 +26,77 @@ const PatientInfo = () => {
   
     const form = useForm({
       initialValues: {
-        patientname: "",
+        patient_name: "",
         age: "",
-        patientemail: "",
-        patientphone: "",
-        refferedby: "",
+        patient_email: "",
+        mobile: "",
+        referred: "",
+        gender: '',
+        procedure:''
       },
+      validate:{
+        patient_name:(value)=>(value.length<3?'first name atleast 3 characters':null),
+        // age:(value)=>(value.length < 0 ?'Enter your age':null),
+        age: (value) => (value && value > 0 ? null : 'Enter a valid age'),
+
+        patient_email:(value)=>(/^\S+@\S+$/.test(value)?null:'Invalid Email'),
+        // mobile:(value)=>(/^\d{10}$/.test(value)?null:'Invalid mobile number'),
+        mobile: (value) => (value && value.length == 10 ? null : 'Phone number must be a valid 10-digit number'),
+        referred:(value)=>(value.trim().length === 0?'Enter Referred name':null),
+        gender:(value)=>(value.trim().length===0?'select the gender':null),
+        procedure:(value)=>(value.trim().length===0?'select the procedure':null)
+      }
     });
+    const handleMobileChange = (e) => {
+      const value = e.target.value.replace(/\D/g, ''); 
+      if (value.length <= 10) {
+        if (value === '' || /^[6-9]/.test(value)) { 
+          form.setFieldValue('mobile', value);
+        }
+      }
+    };
+    const navigate = useNavigate()
+
+    const NewPatient = async (e)=>{
+      e.preventDefault();
+      const validationErrors = form.validate();
+    if (validationErrors.hasErrors) return;
+
+      try{
+        const response = await client.post('/add-patient/',
+          {
+            patient_name:form.values.patient_name,
+            patient_email:form.values.patient_email,
+            age:form.values.age,
+            mobile:form.values.mobile,
+            gender:form.values.gender,
+            procedure:form.values.procedure,
+            referred:form.values.referred,
+            withCredentials:true
+          },
+          {
+            headers:{'Content-Type':'application/json'}
+          }
+        )
+        console.log('form data',form.values)
+        console.log(response)
+        console.log(response.data)
+        if (response.data.status === 'patient_already_exists') {
+        alert('Patient already exists');
+      } else if (response.data.status === 'patient_added_successfully') {
+        // alert('Patient added successfully');
+        navigate('/allpatients');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      if (error.response && error.response.status === 401) {
+        alert('Unauthorized! Please log in again.');
+        navigate('/login');
+      } else {
+        alert('An unexpected error occurred.');
+      }
+      }
+    }
   
     // const handleSubmit = (values) => {
     //   console.log("Form values:", values);
@@ -54,14 +115,15 @@ const PatientInfo = () => {
             <div className='ADDNEW'>Add New Patient</div>
         </div>
         <h4>Patient Information</h4>
-      <form onSubmit={form.onSubmit(console.log)}>
+      <form onSubmit={NewPatient}>
         {/* <div className='fullname'>Your Full Name</div> */}
       <TextInput
         placeholder="Patient Name"
-        label=" Enter Patientname"
+        label=" Enter Patient Name"
         size='md'
          radius='md'
-         {...form.getInputProps('patientname')}
+         {...form.getInputProps('patient_name')}
+         withAsterisk
     />
         <NumberInput
       defaultValue={0}
@@ -82,6 +144,7 @@ const PatientInfo = () => {
        size='md'
     radius='md'
     mt='md'
+    {...form.getInputProps('gender')}
     />
      <Select
       label="Procedure"
@@ -94,36 +157,39 @@ const PatientInfo = () => {
        size='md'
     radius='md'
     mt='md'
+    {...form.getInputProps('procedure')}
     />
      <TextInput
-                placeholder="Mobile Number"
-                label=" Patient Mobile Number "
-                type='number'
-                size='md'
-                radius='md'
-                mt='md'
-                {...form.getInputProps('patientphone')}
+              placeholder="Patient Mobile Number"
+              label="Patient Mobile Number"
+              type='number'
+              size="md"
+              radius="md"
+              mt="md"
+              onChange={handleMobileChange}
+              // {...form.getInputProps('mobile')}
+              value={form.values.mobile}
             />
        
         <div>            
                 <TextInput
                 label="Patient Email "
                 placeholder=" @123abc.com" 
-                {...form.getInputProps('patientemail')}
+                {...form.getInputProps('patient_email')}
                 size='md'
                 radius='md'
                 mt="md"
-                icon={<MdOutlineEmail/>}
+                icon={<MdOutlineEmail style={{color:'gray'}}/>}
                 style={{padding:'md'}}
                 />    
           </div>
           <TextInput
-        placeholder="Reffered By"
-        label=" Reffered By"
+        placeholder="Referred By"
+        label=" Referred By"
         size='md'
          radius='md'
          mt='md'
-         {...form.getInputProps('refferedby')}
+         {...form.getInputProps('referred')}
     />
         {/* <FileInput
         label="  "
@@ -140,8 +206,9 @@ const PatientInfo = () => {
     
         }}
 /> */}
-   <Button variant="filled" color="violet"  mt ='md' radius='md' fullWidth>
-        <FiVideo className='capture'/>Start Live Capture
+   <Button variant="filled" color="violet"  mt ='md' radius='md' fullWidth type='submit'>
+        {/* <FiVideo className='capture'/>Start Live Capture */}
+        Add Patient
         </Button>
       </form>
       </Card>
