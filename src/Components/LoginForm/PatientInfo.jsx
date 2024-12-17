@@ -1,6 +1,6 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@mantine/form';
-import {TextInput, Button,Card,Select,NumberInput,FileInput} from '@mantine/core';
+import { TextInput, Button, Card, Select, NumberInput, FileInput } from '@mantine/core';
 // import logo from '../../assets/Vector.jpg';
 import { MdOutlineEmail } from "react-icons/md";
 import { FaChevronLeft } from "react-icons/fa6";
@@ -12,120 +12,120 @@ import { FiVideo } from "react-icons/fi";
 // import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 
 const PatientInfo = () => {
-    // const [videoFile, setVideoFile] = useState(null);
-  
-    // const handleUpload = (file) => {
-    //   if (!file) return;
-  
-    //   const isValidVideo = file.type.startsWith("video/");
-    //   const isValidSize = file.size <= 50 * 1024 * 1024; // 50 MB limit
-  
-    //   if (isValidVideo && isValidSize) {
-    //     setVideoFile(URL.createObjectURL(file));
-    //   } else {
-    //     alert("Please upload a valid video file under 50 MB.");
-    //   }
-    // };
-  
-    const form = useForm({
-      initialValues: {
-        patientname: "",
-        age: "",
-        patientemail: "",
-        patientphone: "",
-        refferedby: "",
-      },
-    });
-  
-    // const handleSubmit = (values) => {
-    //   console.log("Form values:", values);
-    //   console.log("Uploaded video file:", videoFile);
-    // };
-  
+  // const [videoFile, setVideoFile] = useState(null);
+
+  // const handleUpload = (file) => {
+  //   if (!file) return;
+
+  //   const isValidVideo = file.type.startsWith("video/");
+  //   const isValidSize = file.size <= 50 * 1024 * 1024; // 50 MB limit
+
+  //   if (isValidVideo && isValidSize) {
+  //     setVideoFile(URL.createObjectURL(file));
+  //   } else {
+  //     alert("Please upload a valid video file under 50 MB.");
+  //   }
+  // };
+
+  const form = useForm({
+    initialValues: {
+      patientname: "",
+      age: "",
+      patientemail: "",
+      patientphone: "",
+      refferedby: "",
+    },
+  });
+
+  // const handleSubmit = (values) => {
+  //   console.log("Form values:", values);
+  //   console.log("Uploaded video file:", videoFile);
+  // };
+
   return (
     <div className='patient'>
-    <div className='patientinfo'>
-      
-      <Card shadow="sm" padding="lg" radius="md" withBorder className='patientcard'>
-        <div className='addnewpatient'>
-            <Button variant="light" color="#EBEDF4"  mt ='md'mr='md' radius='md'>
-            <FaChevronLeft className='left' />
+      <div className='patientinfo'>
+
+        <Card shadow="sm" padding="lg" radius="md" withBorder className='patientcard'>
+          <div className='addnewpatient'>
+            <Button variant="light" color="gray" mt='md' mr='md' radius='md'>
+              <FaChevronLeft className='left' />
             </Button>
             <div className='ADDNEW'>Add New Patient</div>
-        </div>
-        <h4>Patient Information</h4>
-      <form onSubmit={form.onSubmit(console.log)}>
-        {/* <div className='fullname'>Your Full Name</div> */}
-      <TextInput
-        placeholder="Patient Name"
-        label=" Enter Patientname"
-        size='md'
-         radius='md'
-         {...form.getInputProps('patientname')}
-    />
-        <NumberInput
-      defaultValue={0}
-      placeholder="Patient Age"
-      label="Age"
-       size='md'
-      {...form.getInputProps('age')}
-        />
-
-    <Select
-      label="Sex "
-      placeholder="Select"
-      data={[
-        { value: 'male', label: 'male' },
-        { value: 'female', label: 'female' },
-        { value: 'others', label: 'others' },
-      ]}
-       size='md'
-    radius='md'
-    mt='md'
-    />
-     <Select
-      label="Procedure"
-      placeholder='Select (e.g., "Upper gastrointestinal endoscopy")'
-      data={[
-        { value: 'lazer', label: 'lazer' },
-        { value: 'pipe', label: 'pipe' },
-        { value: 'other', label: 'other' },
-      ]}
-       size='md'
-    radius='md'
-    mt='md'
-    />
-     <TextInput
-                placeholder="Mobile Number"
-                label=" Patient Mobile Number "
-                type='number'
-                size='md'
-                radius='md'
-                mt='md'
-                {...form.getInputProps('patientphone')}
+          </div>
+          <h4>Patient Information</h4>
+          <form onSubmit={form.onSubmit(console.log)}>
+            {/* <div className='fullname'>Your Full Name</div> */}
+            <TextInput
+              placeholder="Patient Name"
+              label=" Enter Patientname"
+              size='md'
+              radius='md'
+              {...form.getInputProps('patientname')}
             />
-       
-        <div>            
-                <TextInput
+            <NumberInput
+              defaultValue={0}
+              placeholder="Patient Age"
+              label="Age"
+              size='md'
+              {...form.getInputProps('age')}
+            />
+
+            <Select
+              label="Sex "
+              placeholder="Select"
+              data={[
+                { value: 'male', label: 'male' },
+                { value: 'female', label: 'female' },
+                { value: 'others', label: 'others' },
+              ]}
+              size='md'
+              radius='md'
+              mt='md'
+            />
+            <Select
+              label="Procedure"
+              placeholder='Select (e.g., "Upper gastrointestinal endoscopy")'
+              data={[
+                { value: 'lazer', label: 'lazer' },
+                { value: 'pipe', label: 'pipe' },
+                { value: 'other', label: 'other' },
+              ]}
+              size='md'
+              radius='md'
+              mt='md'
+            />
+            <TextInput
+              placeholder="Mobile Number"
+              label=" Patient Mobile Number "
+              type='number'
+              size='md'
+              radius='md'
+              mt='md'
+              {...form.getInputProps('patientphone')}
+            />
+
+            <div>
+              <TextInput
                 label="Patient Email "
-                placeholder=" @123abc.com" 
+                placeholder=" @123abc.com"
                 {...form.getInputProps('patientemail')}
                 size='md'
                 radius='md'
                 mt="md"
-                icon={<MdOutlineEmail/>}
-                style={{padding:'md'}}
-                />    
-          </div>
-          <TextInput
-        placeholder="Reffered By"
-        label=" Reffered By"
-        size='md'
-         radius='md'
-         mt='md'
-         {...form.getInputProps('refferedby')}
-    />
-        {/* <FileInput
+                icon={<MdOutlineEmail />}
+                style={{ padding: 'md' }}
+              />
+            </div>
+            <TextInput
+              placeholder="Reffered By"
+              label=" Reffered By"
+              size='md'
+              radius='md'
+              mt='md'
+              {...form.getInputProps('refferedby')}
+            />
+            {/* <FileInput
         label="  "
         icon={<FiVideo className='capture'/>}
         placeholder="Start Live Capture "
@@ -140,14 +140,14 @@ const PatientInfo = () => {
     
         }}
 /> */}
-   <Button variant="filled" color="violet"  mt ='md' radius='md' fullWidth>
-        <FiVideo className='capture'/>Start Live Capture
-        </Button>
-      </form>
-      </Card>
+            <Button variant="filled" color="violet" mt='md' radius='md' fullWidth>
+              <FiVideo className='capture' />Start Live Capture
+            </Button>
+          </form>
+        </Card>
 
-    
-    </div>
+
+      </div>
     </div>
   )
 }
