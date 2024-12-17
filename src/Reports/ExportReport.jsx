@@ -29,8 +29,8 @@ const ExportReport = () => {
     const [medicationText, setMedicationText] = useState('')
     const [remarksText, setRemarksText] = useState('')
     const [reportModal, setReportModal] = useState(false)
-    const [fileModal, setfileModal] = useState(false)
-    const [file, setFile] = useState(null);
+    // const [fileModal, setfileModal] = useState(false)
+    // const [file, setFile] = useState(null);
     const selectedPatient = JSON.parse(localStorage.getItem('selectedPatient'))
 
 
@@ -73,7 +73,7 @@ const ExportReport = () => {
 
     };
 
-    const handleDownloadPDF = async (dateTime) => {
+    const handleDownloadPDF = async () => {
         if (targetRef.current) {
             // Generate the canvas from the targetRef div
             const canvas = await html2canvas(targetRef.current);
