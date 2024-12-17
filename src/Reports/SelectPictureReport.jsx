@@ -111,7 +111,7 @@ const SelectPictureReport = () => {
                     <SimpleGrid cols={6}>
                         <Flex direction={"column"}>
                             <Text fw={600}>Name</Text>
-                            <Text>{selectedPatient.patient_name}</Text>
+                            <Text>{selectedPatient.name}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
@@ -126,17 +126,17 @@ const SelectPictureReport = () => {
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Sex</Text>
-                            <Text>{selectedPatient.gender}</Text>
+                            <Text>{selectedPatient.sex}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Reffered by</Text>
-                            <Text>{selectedPatient.referred}</Text>
+                            <Text>{selectedPatient.referredBy}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Date & Time</Text>
-                            <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
+                            <Text>{formatDateTime(selectedPatient.dateTime)}</Text>
 
                         </Flex>
                     </SimpleGrid>
@@ -144,15 +144,16 @@ const SelectPictureReport = () => {
                     <SimpleGrid cols={2}>
                         <Flex direction={"column"}>
                             <Text fw={600}>Phone Number</Text>
-                            <Text>{selectedPatient.mobile}</Text>
+                            <Text>{selectedPatient.phone}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Email</Text>
-                            <Text>{selectedPatient.patient_email}</Text>
+                            <Text>{selectedPatient.email}</Text>
                         </Flex>
                     </SimpleGrid>
                 </Card>
+
                 <Space h={"1rem"} />
                 <SimpleGrid cols={3}>
                     {capturedImages.map((image, index) => (
