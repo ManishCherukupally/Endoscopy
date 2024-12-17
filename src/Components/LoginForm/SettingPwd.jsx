@@ -44,7 +44,6 @@ const SettingPwd = () => {
             password: form.values.password,
             confirm_password: form.values.confirm_password,
             email,
-            withCredentials:true
           }, {
             headers: { 'Content-Type': 'application/json' }
           });

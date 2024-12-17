@@ -712,7 +712,10 @@ const CameronWilliamson = () => {
   
         try {
           const PatientReport = await client.get('/patient_report_file/', {
-            params: { patient_id: patientId },}, 
+            withCredentials:true,
+            params: { patient_id: patientId },
+           
+          }, 
             // Corrected to `params`
             {
               headers: { 'Content-Type': 'application/json' },

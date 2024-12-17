@@ -269,7 +269,6 @@ const Login = () => {
       const response = await client.post('/login/', {
         username: form.values.username,
         password: form.values.password,
-        withCredentials: true,
       });
 
       console.log(response);

@@ -605,7 +605,7 @@ const PatientInfo = () => {
 
     try {
       const response = await client.post('/add-patient/',
-        {
+        {withCredentials: true,
           patient_name: form.values.patient_name,
           patient_email: form.values.patient_email,
           age: form.values.age,
@@ -613,7 +613,7 @@ const PatientInfo = () => {
           gender: form.values.gender,
           procedure: form.values.procedure,
           referred: form.values.referred,
-          withCredentials: true
+          
         },
         {
           headers: { 'Content-Type': 'application/json' }

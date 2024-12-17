@@ -31,7 +31,6 @@ const ForgotPwd = () => {
     try {
       const response = await client.post('/forgot/',
         { email: form.values.email,
-          withCredentials:true
 
          },
         { headers: { "Content-Type": "application/json" } }

@@ -62,7 +62,6 @@ const OtpEmail = () => {
     try {
       const response = await client.post('/forgot/',
         { email,
-          withCredentials:true
          },
         { headers: { "Content-Type": "application/json" } }
       );

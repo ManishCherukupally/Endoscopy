@@ -891,6 +891,8 @@ import axios from "axios";
 import { IoPersonOutline } from "react-icons/io5";
 import { FaRegFileAlt } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
+import { useCookies } from "react-cookie";
+import { format } from "date-fns";
 // axios.defaults.withCredentials = true;
 // axios.defaults.xsrfCookieName='csrftoken';
 // axios.defaults.xsrfHeaderName='x-csrftoken'
@@ -901,8 +903,14 @@ const AllPatients = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState({});
   const [selectAll, setSelectAll] = useState(false);
+  const [token, setToken, removeToken] = useCookies(['sessionid']);
 
   const selectedCount = Object.values(selectedRows).filter((isSelected) => isSelected).length;
+
+  const formatDateTime = (date) => {
+          let dateString = new Date(date)
+          return format(dateString, "dd MMMM yyyy | h:mm a");
+      };
 
   useEffect(() => {
     fetchPatients();
@@ -974,12 +982,12 @@ const AllPatients = () => {
   const Logout = async ()=>{
     try{
     let logoutdata = await client.post('/logout/',{
-      withCredentials:true
     })
     console.log(logoutdata)
     console.log(logoutdata.data)
     if(logoutdata.data.message === 'Successfully_logged_out.'){
       localStorage.clear()
+      removeToken(['sessionid']);
       console.log("All localStorage items cleared.");
       navigate('/')
     }
@@ -1206,7 +1214,7 @@ const AllPatients = () => {
                          alignItems: "center",
                        }}
                      >
-                       <span>{item.updated_at}</span>
+                       <span>{formatDateTime(item.updated_at)}</span>
                        <span
                          style={{
                            cursor: "pointer",
