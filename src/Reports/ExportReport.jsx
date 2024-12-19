@@ -14,6 +14,7 @@ import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { format } from 'date-fns'
 import axios from 'axios'
+import client from '../Components/Api'
 
 const ExportReport = () => {
     const navigate = useNavigate()
@@ -32,7 +33,8 @@ const ExportReport = () => {
     // const [fileModal, setfileModal] = useState(false)
     // const [file, setFile] = useState(null);
     const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
-
+   
+// console.log(dateandTime[0]);
 
     // const handleFullscreen = (index) => {
     //     const element = imageRefs.current[index];
@@ -89,8 +91,26 @@ const ExportReport = () => {
             pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 
             // Automatically save the PDF to the default downloads directory
-            pdf.save("Endoscopy-report.pdf");
+            // pdf.save("Endoscopy-report.pdf");
+            var date = new Date()
+    var dateArray = date.toISOString().split(".")
+    var dateandTime = dateArray[0].split("T")
 
+            var fileName =`${selectedPatient.patient_name}_${dateandTime[0]}.pdf`
+            pdf.save(fileName);
+
+            //api need to be written here//_______________________________
+
+
+            client.post('/patient_save_report/',{
+                withCredentials:true,
+                patient_details_id: selectedPatient.id,
+                pdf_file_path: fileName,
+                date:dateandTime[0],
+                time:dateandTime[1]
+            })
+            .then((resp)=>console.log(resp.data)
+            )
             // setfileModal(true)
             // // Create a FormData object to send the file
             // const formData = new FormData();

@@ -1033,7 +1033,7 @@ const AllPatients = () => {
         <Card
           style={{
             width: "100%",
-            height: "100%",
+            height: "auto",
             borderRadius: "24px",
             border: "1px solid #ccc",
             padding: "32px",

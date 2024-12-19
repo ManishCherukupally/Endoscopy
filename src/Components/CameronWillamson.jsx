@@ -674,21 +674,27 @@
 
 // export default CameronWilliamson;
 
-import { Button, Card, Text, Select, Tabs, Modal } from '@mantine/core';
+import { Button, Card, Text, Select, Tabs, Modal,Image } from '@mantine/core';
 import React, {useState,useRef,useEffect} from 'react';
 import { IoChevronBackSharp } from 'react-icons/io5';
-import { IconPencil } from '@tabler/icons-react';
+import { IconFile, IconPencil } from '@tabler/icons-react';
 import { BiMessageDetail } from 'react-icons/bi';
 import { BsCameraVideo } from 'react-icons/bs';
 // import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import client from './Api';
+import { useDisclosure } from '@mantine/hooks';
+import { Group } from '@mantine/core';
+import * as pdfjsLib from 'pdfjs-dist';
+import axios from 'axios';
+import { format } from 'date-fns';
+
 
 const CameronWilliamson = () => {
   const [patientDetails, setPatientDetails] = useState(null);
   const [records, setRecords] = useState([]);
-  console.log(records);
-  
+  // console.log(records);
+  const [opend, { open, close }] = useDisclosure(false);
   const [opened, setOpened] = useState(false);
 
   const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
@@ -701,7 +707,61 @@ const CameronWilliamson = () => {
   //   { date: '12 May 2020 | 8:00 pm', id: 4 },
   //   { date: '11 May 2020 | 9:15 pm', id: 5 },
   // ];
+  const [imageSrc, setImageSrc] = useState(null);
+// console.log(imageSrc);
+
+  // pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;  const handlePdfConvert= async (pdfUrl) =>{
+  //   const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+  //   const page = await pdf.getPage(1); // Render the first page (adjust if needed)
+
+  //   const viewport = page.getViewport({ scale: 1 });
+  //   const canvas = document.createElement('canvas');
+  //   const context = canvas.getContext('2d');
+
+  //   canvas.width = viewport.width;
+  //   canvas.height = viewport.height;
+
+  //   const renderContext = {
+  //     canvasContext: context,
+  //     viewport: viewport,
+  //   };
+
+  //   await page.render(renderContext).promise;
+
+  //   // Convert canvas to image (base64)
+  //   const imgData = canvas.toDataURL('image/png');
+  //   setImageSrc(imgData);
   
+  // }
+  const formatDateTime = (date) => {
+          let dateString = new Date(date)
+          return format(dateString, "dd MMMM yyyy | h:mm a");
+      };
+
+  const handlePdfConvert =(url)=>{
+    const apiKey = process.env.REACT_APP_API_KEY;
+console.log(apiKey);
+  //   axios.post(
+  //     "https://api.pdf.co/v1/pdf/convert/to/png",
+  //     {
+  //         url: url, // Single URL to convert
+  //         pages: "1"   // Convert the first page only
+  //     },
+  //     {
+  //         headers: {
+  //             "Content-Type": "application/json",
+  //             "x-api-key": apiKey
+  //         }
+  //     }
+  // )
+  // .then(response => {
+  //     console.log("Conversion successful:", response.data);
+  //     // Response will contain PNG links for each converted page
+  // })
+  // .catch(error => {
+  //     console.error("Error during conversion:", error.response ? error.response.data : error.message);
+  // });
+  }
   useEffect(() => {
     const Report = async () => {
       const patientId = localStorage.getItem('patientid'); // Corrected key name
@@ -714,7 +774,6 @@ const CameronWilliamson = () => {
           const PatientReport = await client.get('/patient_report_file/', {
             withCredentials:true,
             params: { patient_id: patientId },
-           
           }, 
             // Corrected to `params`
             {
@@ -758,8 +817,26 @@ const navigate=useNavigate()
         >
           {item.date} || { item.time}
         </Text>
+        
   
         {/* Preview Button */}
+         <Modal opened={opend} onClose={close} title="Preview" fullScreen>
+         <Card>
+    {item.report_file?.match(/\.(jpg|jpeg|png|gif)$/i) ? (
+      <Image
+        src={imageSrc}
+        maw={200}
+        alt="Patient Report"
+      />
+    ) : (
+      <div style={{ textAlign: 'center', padding: '20px' }}>
+        <IconFile size={50} color="gray" />
+        <Text color="dimmed">This file format is not supported for preview. Please provide an image file.</Text>
+      </div>
+    )}
+  </Card>
+      </Modal>
+      <Group position="center">
         <Button
           variant="outline"
           style={{
@@ -777,11 +854,17 @@ const navigate=useNavigate()
             gap: '8px', // Space between icon or elements inside the button
             color:"black"
           }}
-          onClick={()=>{navigate(item.report_file)}}
-        >
+          // onClick={()=>{navigate(item.report_file)}}
+          onClick={()=>{
+            // open()
+            handlePdfConvert(item.report_file)
+          }}
+        > 
+         Preview
+         </Button>
+          </Group>
           
-          Preview
-        </Button>
+        
   
         {/* Export Select */}
         
@@ -1052,8 +1135,8 @@ const navigate=useNavigate()
     <div>{selectedPatient.age}</div>
     <div>{selectedPatient.gender}</div>
     <div>{selectedPatient.referred}</div>
-    <div>{selectedPatient.updated_at}</div>
-    
+    <div>{ formatDateTime(selectedPatient.updated_at)}</div>
+   
   </div>
   {/* Additional Information */}
   <div
