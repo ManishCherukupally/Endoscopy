@@ -94,9 +94,10 @@ const ExportReport = () => {
             // pdf.save("Endoscopy-report.pdf");
             var date = new Date()
     var dateArray = date.toISOString().split(".")
-    var dateandTime = dateArray[0].split("T")
+    console.log(dateArray)
+    var dateandTime = dateArray[0]
 
-            var fileName =`${selectedPatient.patient_name}_${dateandTime[0]}.pdf`
+            var fileName =`${selectedPatient.patient_name}_${dateandTime}.pdf`
             pdf.save(fileName);
 
             //api need to be written here//_______________________________

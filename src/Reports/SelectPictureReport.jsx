@@ -79,6 +79,8 @@ const SelectPictureReport = () => {
         // }
     };
     // const toggleSelectMode = () => setselectImage(!selectImage);
+
+    const timer=localStorage.getItem('time')
     return (
         <div>
             <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} mt={"lg"} style={{ borderRadius: "1rem" }} >
@@ -97,7 +99,7 @@ const SelectPictureReport = () => {
                     <Flex direction={"column"} align={"center"}>
 
                         <Text fz={16} fw={600}>Examine Time</Text>
-                        <Text >05:56 Min</Text>
+                        <Text >{timer}</Text>
                     </Flex>
 
                     <Group>

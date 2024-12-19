@@ -690,78 +690,37 @@ import axios from 'axios';
 import { format } from 'date-fns';
 
 
+
+
 const CameronWilliamson = () => {
-  const [patientDetails, setPatientDetails] = useState(null);
+  
   const [records, setRecords] = useState([]);
   // console.log(records);
   const [opend, { open, close }] = useDisclosure(false);
   const [opened, setOpened] = useState(false);
 
   const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
-  // const [patientid, setpatientid]= useState(null)
-  const buttonRef = useRef(null);
-  // const records = [
-  //   { date: '15 May 2020 | 7:00 pm', id: 1 },
-  //   { date: '14 May 2020 | 6:30 pm', id: 2 },
-  //   { date: '13 May 2020 | 5:45 pm', id: 3 },
-  //   { date: '12 May 2020 | 8:00 pm', id: 4 },
-  //   { date: '11 May 2020 | 9:15 pm', id: 5 },
-  // ];
-  const [imageSrc, setImageSrc] = useState(null);
-// console.log(imageSrc);
-
-  // pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;  const handlePdfConvert= async (pdfUrl) =>{
-  //   const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
-  //   const page = await pdf.getPage(1); // Render the first page (adjust if needed)
-
-  //   const viewport = page.getViewport({ scale: 1 });
-  //   const canvas = document.createElement('canvas');
-  //   const context = canvas.getContext('2d');
-
-  //   canvas.width = viewport.width;
-  //   canvas.height = viewport.height;
-
-  //   const renderContext = {
-  //     canvasContext: context,
-  //     viewport: viewport,
-  //   };
-
-  //   await page.render(renderContext).promise;
-
-  //   // Convert canvas to image (base64)
-  //   const imgData = canvas.toDataURL('image/png');
-  //   setImageSrc(imgData);
   
-  // }
+  const buttonRef = useRef(null);
+  
+  
+  const [url, setUrl] = useState(null)
+  const[Record,SingleRecord]=useState(null)
+
+  
+
+  function pdfResult( file){
+    
+    setUrl(file)
+
+    console.log(file)
+  }
+
   const formatDateTime = (date) => {
           let dateString = new Date(date)
           return format(dateString, "dd MMMM yyyy | h:mm a");
       };
 
-  const handlePdfConvert =(url)=>{
-    const apiKey = process.env.REACT_APP_API_KEY;
-console.log(apiKey);
-  //   axios.post(
-  //     "https://api.pdf.co/v1/pdf/convert/to/png",
-  //     {
-  //         url: url, // Single URL to convert
-  //         pages: "1"   // Convert the first page only
-  //     },
-  //     {
-  //         headers: {
-  //             "Content-Type": "application/json",
-  //             "x-api-key": apiKey
-  //         }
-  //     }
-  // )
-  // .then(response => {
-  //     console.log("Conversion successful:", response.data);
-  //     // Response will contain PNG links for each converted page
-  // })
-  // .catch(error => {
-  //     console.error("Error during conversion:", error.response ? error.response.data : error.message);
-  // });
-  }
   useEffect(() => {
     const Report = async () => {
       const patientId = localStorage.getItem('patientid'); // Corrected key name
@@ -780,8 +739,13 @@ console.log(apiKey);
               headers: { 'Content-Type': 'application/json' },
              },// Fixed header location
           );
+          if(PatientReport.data === 0){
+            alert('no reports')
+          }
           console.log('Patient Report:', PatientReport.data.patient_reports);
           setRecords(PatientReport.data.patient_reports)
+          // console.log("length:",PatientReport.data.patient_reports.length)
+         
         } catch (error) {
           console.error('Error fetching patient report:', error);
         }
@@ -792,6 +756,16 @@ console.log(apiKey);
 
     Report();
   }, []); 
+
+  const LatestRecord = (records) => {
+    if (!records || records.length === 0) {
+      console.error("No records available.");
+      return null;
+    }
+    return records[records.length - 1];
+    
+  };
+  
 const navigate=useNavigate()
   const renderRecords = () =>
     records.map((item) => (
@@ -821,20 +795,20 @@ const navigate=useNavigate()
   
         {/* Preview Button */}
          <Modal opened={opend} onClose={close} title="Preview" fullScreen>
-         <Card>
-    {item.report_file?.match(/\.(jpg|jpeg|png|gif)$/i) ? (
-      <Image
-        src={imageSrc}
-        maw={200}
-        alt="Patient Report"
+        
+     <Card>
+      {/* {fileContent}
+      <Document file={item.report_file}>
+
+      </Document> */}
+     <iframe
+        src={url}
+        width="100%"
+        height="600px"
+        title="Patient Report"
       />
-    ) : (
-      <div style={{ textAlign: 'center', padding: '20px' }}>
-        <IconFile size={50} color="gray" />
-        <Text color="dimmed">This file format is not supported for preview. Please provide an image file.</Text>
-      </div>
-    )}
-  </Card>
+     </Card>
+  {/* </Card> */}
       </Modal>
       <Group position="center">
         <Button
@@ -856,8 +830,11 @@ const navigate=useNavigate()
           }}
           // onClick={()=>{navigate(item.report_file)}}
           onClick={()=>{
-            // open()
-            handlePdfConvert(item.report_file)
+            // handleFilePreview(item.report_file)
+            open() 
+            pdfResult(item.report_file)
+            // setUrl(item.report_file)
+            // handlePdfConvert(item.report_file)
           }}
         > 
          Preview
@@ -977,6 +954,10 @@ const navigate=useNavigate()
       </div>
     ));
 
+
+
+
+
   const handleModalOpen = () => {
     setOpened(true);
   };
@@ -997,7 +978,7 @@ const navigate=useNavigate()
       <Card
         style={{
           width: '100%',
-          height: '100%',
+          height: 'auto',
           borderRadius: '16px',
           padding: '24px',
           backgroundColor: '#fff',
@@ -1042,9 +1023,34 @@ const navigate=useNavigate()
             <Button style={{ backgroundColor: '#EDE9FE', color: 'black' }} onClick={handleModalOpen} leftIcon={<BiMessageDetail style={{fontSize:"large"}}/>}>
               View All Comments (32)
             </Button>
-            <Button style={{ backgroundColor: '#EDE9FE', color: 'black',textDecoration:"underline",textUnderlineOffset:"3px",textDecorationThickness:"1.30px" }}>
+
+            <Modal opened={opend} onClose={close} title="Preview" fullScreen>
+              <Card>
+                <iframe
+                  src={url}
+                  width="100%"
+                  height="600px"
+                  title="Patient Report"
+                />
+              </Card>
+              </Modal>
+
+              <Group position="center">
+              <Button
+                onClick={() => {
+                  open(); // Call the function to open the modal
+                  const lastRecord = LatestRecord(records); // Call LatestRecord to get the last record
+                  pdfResult(lastRecord.report_file); // Pass the last record to pdfResult
+                }}
+              >
+                Last Visit Report
+              </Button>
+              </Group>
+
+            {/* <Button style={{ backgroundColor: '#EDE9FE', color: 'black',textDecoration:"underline",textUnderlineOffset:"3px",textDecorationThickness:"1.30px" }}
+            onClick={LatestRecord}>
               Last Visit Report
-            </Button>
+            </Button> */}
             <Button
             onClick={()=> navigate("/videocapturing")}
               variant="gradient"
@@ -1206,7 +1212,7 @@ const navigate=useNavigate()
                   
                 }}
               >
-                Recent 6
+                Records:{records.length}
               </Text>
               </div>
               {renderRecords()}
