@@ -21,7 +21,7 @@ const Videocapturing = () => {
     const [externalDeviceId, setExternalDeviceId] = useState("");
     const [capturedImages, setCapturedImages] = useState([]);
 
-    const selectedPatient = JSON.parse(localStorage.getItem('selectedPatient'))
+    const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
     // console.log(selectedPatient);
 
     if (capturedImages.length > 0) {
@@ -133,7 +133,7 @@ const Videocapturing = () => {
                     </Flex>
 
                     <Group>
-                        <Button variant='light' color='red' radius={8}>Cancel capture</Button>
+                        <Button variant='light' color='red' radius={8} onClick={()=> navigate('/allpatients')}>Cancel capture</Button>
                         <Button bg='#8158F5' radius={8} onClick={() => navigate("/selectpicture")}>Save & Continue</Button>
                     </Group>
                 </Flex>

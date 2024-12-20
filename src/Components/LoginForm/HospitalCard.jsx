@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Image, Group, Text, Grid, Divider } from '@mantine/core';
+import { Card, Image, Group, Text, Grid, Divider, SimpleGrid, Flex, Space } from '@mantine/core';
 import logo1 from '../../assets/Component 13.jpg';
 import frame1 from '../../assets/Frame 1261155515.jpg'
 import frame2 from '../../assets/Frame 1261155514.jpg'
@@ -8,11 +8,17 @@ import frame4 from '../../assets/Frame 1261155514 (3).jpg'
 import frame5 from '../../assets/Frame 1261155514 (2).jpg'
 import frame6 from '../../assets/Frame 1261155514 (1).jpg'
 import logo from '../../assets/Vector.jpg'
+import { format } from 'date-fns';
 
 const HospitalCard = (props) => {
   const { selectedImages, remarks, medication } = props
   // console.log(selectedImages);
+  const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
 
+ const formatDateTime = (date) => {
+        let dateString = new Date(date)
+        return format(dateString, "dd MMMM yyyy | h:mm a");
+    };
   return (
     <div className='parent'>
       <div className='header'>
@@ -29,20 +35,52 @@ const HospitalCard = (props) => {
               </div>
             </div>
           </Card>
-          <Card shadow="sm" padding="lg" radius="md" withBorder mb='md' style={{ backgroundColor: '#EBEDF4' }}>
-            <div className='hospitalpatient'>
-              <div><b>Name</b><div>Cameron Williamson</div></div>
-              <div><b>Patient Id</b><div>12345</div></div>
-              <div><b>Age</b><div>45</div></div>
-              <div><b>Sex</b><div>Male</div></div>
-              <div><b>Refferd By</b><div>Self</div></div>
-              <div><b>Date&Time</b><div>15 May 2020|7:00 pm</div></div>
-            </div>
-            <div id='hospitalpatient'>
-              <div><b>Phone Number</b><div>+91-8867452314</div></div>
-              <div><b>Email</b><div>georgia.young@example.com</div></div>
-            </div>
-          </Card>
+          <Card bg={"#EBEDF4"} radius={12}>
+                             <SimpleGrid cols={6}>
+                                 <Flex direction={"column"}>
+                                     <Text fw={600}>Name</Text>
+                                     <Text>{selectedPatient.patient_name}</Text>
+                                 </Flex>
+         
+                                 <Flex direction={"column"}>
+                                     <Text fw={600}>Patient ID</Text>
+                                     <Text>{selectedPatient.id}</Text>
+                                 </Flex>
+         
+                                 <Flex direction={"column"}>
+                                     <Text fw={600}>Age</Text>
+                                     <Text>{selectedPatient.age}</Text>
+                                 </Flex>
+         
+                                 <Flex direction={"column"}>
+                                     <Text fw={600}>Sex</Text>
+                                     <Text>{selectedPatient.gender}</Text>
+                                 </Flex>
+         
+                                 <Flex direction={"column"}>
+                                     <Text fw={600}>Reffered by</Text>
+                                     <Text>{selectedPatient.referred}</Text>
+                                 </Flex>
+         
+                                 <Flex direction={"column"}>
+                                     <Text fw={600}>Date & Time</Text>
+                                     <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
+         
+                                 </Flex>
+                             </SimpleGrid>
+                             <Space h={12} />
+                             <SimpleGrid cols={2}>
+                                 <Flex direction={"column"}>
+                                     <Text fw={600}>Phone Number</Text>
+                                     <Text>{selectedPatient.mobile}</Text>
+                                 </Flex>
+         
+                                 <Flex direction={"column"}>
+                                     <Text fw={600}>Email</Text>
+                                     <Text>{selectedPatient.patient_email}</Text>
+                                 </Flex>
+                             </SimpleGrid>
+                         </Card>
           <div style={{
             width: '100%',
             display: 'flex',

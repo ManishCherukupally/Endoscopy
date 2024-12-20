@@ -165,7 +165,7 @@ const ExportReport = () => {
                     <SimpleGrid cols={6}>
                         <Flex direction={"column"}>
                             <Text fw={600}>Name</Text>
-                            <Text>{selectedPatient.name}</Text>
+                            <Text>{selectedPatient.patient_name}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
@@ -207,7 +207,6 @@ const ExportReport = () => {
                         </Flex>
                     </SimpleGrid>
                 </Card>
-
                 <Space h={"1rem"} />
 
                 <Textarea placeholder='Write your remarks'

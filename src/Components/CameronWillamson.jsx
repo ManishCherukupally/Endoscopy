@@ -675,27 +675,69 @@
 // export default CameronWilliamson;
 
 import { Button, Card, Text, Select, Tabs, Modal } from '@mantine/core';
-import React, {useState,useRef} from 'react';
+import React, {useState,useRef,useEffect} from 'react';
 import { IoChevronBackSharp } from 'react-icons/io5';
 import { IconPencil } from '@tabler/icons-react';
 import { BiMessageDetail } from 'react-icons/bi';
 import { BsCameraVideo } from 'react-icons/bs';
+// import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import client from './Api';
 
 const CameronWilliamson = () => {
+  const [patientDetails, setPatientDetails] = useState(null);
+  const [records, setRecords] = useState([]);
+  console.log(records);
+  
   const [opened, setOpened] = useState(false);
-  const buttonRef = useRef(null);
-  const records = [
-    { date: '15 May 2020 | 7:00 pm', id: 1 },
-    { date: '14 May 2020 | 6:30 pm', id: 2 },
-    { date: '13 May 2020 | 5:45 pm', id: 3 },
-    { date: '12 May 2020 | 8:00 pm', id: 4 },
-    { date: '11 May 2020 | 9:15 pm', id: 5 },
-  ];
 
+  const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
+  // const [patientid, setpatientid]= useState(null)
+  const buttonRef = useRef(null);
+  // const records = [
+  //   { date: '15 May 2020 | 7:00 pm', id: 1 },
+  //   { date: '14 May 2020 | 6:30 pm', id: 2 },
+  //   { date: '13 May 2020 | 5:45 pm', id: 3 },
+  //   { date: '12 May 2020 | 8:00 pm', id: 4 },
+  //   { date: '11 May 2020 | 9:15 pm', id: 5 },
+  // ];
+  
+  useEffect(() => {
+    const Report = async () => {
+      const patientId = localStorage.getItem('patientid'); // Corrected key name
+     
+      if (patientId) {
+        // setPatientDetails(patientId); // Set state from localStorage
+        console.log("selected patient Id=",patientId)
+  
+        try {
+          const PatientReport = await client.get('/patient_report_file/', {
+            withCredentials:true,
+            params: { patient_id: patientId },
+           
+          }, 
+            // Corrected to `params`
+            {
+              headers: { 'Content-Type': 'application/json' },
+             },// Fixed header location
+          );
+          console.log('Patient Report:', PatientReport.data.patient_reports);
+          setRecords(PatientReport.data.patient_reports)
+        } catch (error) {
+          console.error('Error fetching patient report:', error);
+        }
+      } else {
+        console.error('No patient ID found in local storage');
+      }
+    };
+
+    Report();
+  }, []); 
+const navigate=useNavigate()
   const renderRecords = () =>
-    records.map((record) => (
+    records.map((item) => (
       <div
-        key={record.id}
+        key={item.id}
         style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -714,7 +756,7 @@ const CameronWilliamson = () => {
             marginRight:"20%"
           }}
         >
-          {record.date}
+          {item.date} || { item.time}
         </Text>
   
         {/* Preview Button */}
@@ -735,7 +777,9 @@ const CameronWilliamson = () => {
             gap: '8px', // Space between icon or elements inside the button
             color:"black"
           }}
+          onClick={()=>{navigate(item.report_file)}}
         >
+          
           Preview
         </Button>
   
@@ -897,6 +941,7 @@ const CameronWilliamson = () => {
                 alignItems: 'center',
                 backgroundColor: '#E2E8F0',
               }}
+              onClick={()=>{navigate('/allpatients')}}
             >
               <IoChevronBackSharp />
             </Button>
@@ -907,7 +952,7 @@ const CameronWilliamson = () => {
                 color: '#1E293B',
               }}
             >
-              Cameron Williamson
+              {selectedPatient.patient_name}
             </Text>
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
@@ -918,9 +963,11 @@ const CameronWilliamson = () => {
               Last Visit Report
             </Button>
             <Button
+            onClick={()=> navigate("/videocapturing")}
               variant="gradient"
               gradient={{ from: '#7C3AED', to: '#9333EA' }}
-              leftIcon={<BsCameraVideo  style={{fontSize:"large"}}/>}
+              leftIcon={<BsCameraVideo  style={{fontSize:"large"}}/>
+          }
             >
               Start Live Capture
             </Button>
@@ -1000,12 +1047,13 @@ const CameronWilliamson = () => {
       color: '#6B7280',
     }}
   >
-    <div >Cameron Williamson</div>
-    <div>12345</div>
-    <div>44</div>
-    <div>Female</div>
-    <div>Self</div>
-    <div>15 May 2020 | 7:00 pm</div>
+    <div >{selectedPatient.patient_name}</div>
+    <div>{selectedPatient.id}</div>
+    <div>{selectedPatient.age}</div>
+    <div>{selectedPatient.gender}</div>
+    <div>{selectedPatient.referred}</div>
+    <div>{selectedPatient.updated_at}</div>
+    
   </div>
   {/* Additional Information */}
   <div
@@ -1020,9 +1068,12 @@ const CameronWilliamson = () => {
     }}
   >
     <div style={{ fontWeight: '700', color: '#374151' }}>Phone Number</div>
-    <div style={{fontWeight:"700",color:"#374151"}}>Email</div>
-    <div >+91-8837372732</div>
-    <div style={{marginLeft:"30%"}}>georgia.young@example.com</div>
+    <div style={{fontWeight:"700",color:"#374151",marginLeft:"40%"}}>Email</div>
+    {/* <div >+91-8837372732</div>
+
+    <div style={{marginLeft:"30%"}}>georgia.young@example.com</div> */}
+    <div>{selectedPatient.mobile}</div>
+    <div style={{marginLeft:"40%"}}>{selectedPatient.patient_email}</div>
   </div>
 </Card>
 
