@@ -1180,9 +1180,10 @@ const AllPatients = () => {
             </thead>
             <tbody>
               {filteredData.map((item) => (
-                <tr
+                <tr 
                   key={item.id}
                   style={{
+                    cursor:'pointer',
                     backgroundColor: selectedRows[item.id] ? "#8158F529" : "transparent",
                     borderRadius: "16px",
                     transition: "background-color 0.3s ease",
