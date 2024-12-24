@@ -75,7 +75,7 @@ const ExportReport = () => {
 
     };
 
-    const handleDownloadPDF = async () => {
+    const   handleDownloadPDF = async (dateTime) => {
         if (targetRef.current) {
             // Generate the canvas from the targetRef div
             const canvas = await html2canvas(targetRef.current);
@@ -92,12 +92,12 @@ const ExportReport = () => {
 
             // Automatically save the PDF to the default downloads directory
             // pdf.save("Endoscopy-report.pdf");
-            var date = new Date()
-    var dateArray = date.toISOString().split(".")
-    console.log(dateArray)
-    var dateandTime = dateArray[0]
+    //         var date = new Date()
+    // var dateArray = date.toISOString().split(".")
+    // console.log(dateArray)
+    // var dateandTime = dateArray[0]
 
-            var fileName =`${selectedPatient.patient_name}_${dateandTime}.pdf`
+            var fileName =`${selectedPatient.patient_name}_${dateTime[0]}${dateTime[1].replace(/:/g, "_")}.pdf`
             pdf.save(fileName);
 
             //api need to be written here//_______________________________
@@ -107,8 +107,8 @@ const ExportReport = () => {
                 withCredentials:true,
                 patient_details_id: selectedPatient.id,
                 pdf_file_path: fileName,
-                date:dateandTime[0],
-                time:dateandTime[1]
+                date:dateTime[0],
+                time:dateTime[1]
             })
             .then((resp)=>console.log(resp.data)
             )
@@ -143,9 +143,11 @@ const ExportReport = () => {
             var date = new Date()
             var dateArray = date.toISOString().split(".")
             var dateandTime = dateArray[0].split("T")
+console.log(dateandTime);
+
             handleDownloadPDF(dateandTime); // Call after the modal content is rendered
 
-        }, 600);
+        }, 100);
         if (selectedImages.length > 0) {
             window.localStorage.setItem('selectedImages', JSON.stringify(selectedImages));
         }
