@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ActionIcon, Button, Card, Center, Checkbox, Container, FileInput, Flex, Group, Image, Modal, Overlay, Radio, Select, SimpleGrid, Space, Stack, Text, Textarea, TextInput } from '@mantine/core'
+import { ActionIcon, Button, Card, Center, Checkbox, Container, Flex, Group, Image, Modal, Overlay, Radio, Select, SimpleGrid, Space, Stack, Text, Textarea, TextInput } from '@mantine/core'
 import Vector from "../assets/Vector.png"
 import Pic from "../assets/intestine.png"
 import { MdOutlineEdit, MdOutlineChevronLeft, MdArrowDownward, MdAdd } from 'react-icons/md'
@@ -13,6 +13,7 @@ import HospitalCard from '../Components/LoginForm/HospitalCard'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { format } from 'date-fns'
+
 import axios from 'axios'
 import client from '../Components/Api'
 
@@ -30,11 +31,15 @@ const ExportReport = () => {
     const [medicationText, setMedicationText] = useState('')
     const [remarksText, setRemarksText] = useState('')
     const [reportModal, setReportModal] = useState(false)
+
+
+    const selectedPatient = JSON.parse(localStorage.getItem('selectedPatient'))
+
     // const [fileModal, setfileModal] = useState(false)
     // const [file, setFile] = useState(null);
-    const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
-   
-// console.log(dateandTime[0]);
+    // const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
+
+    // console.log(dateandTime[0]);
 
     // const handleFullscreen = (index) => {
     //     const element = imageRefs.current[index];
@@ -75,13 +80,14 @@ const ExportReport = () => {
 
     };
 
-    const   handleDownloadPDF = async (dateTime) => {
+    const handleDownloadPDF = async (dateTime) => {
         if (targetRef.current) {
             // Generate the canvas from the targetRef div
             const canvas = await html2canvas(targetRef.current);
 
             // Initialize jsPDF
             const pdf = new jsPDF();
+
             // Scale canvas content to fit the PDF page
             const imgData = canvas.toDataURL("image/png");
             const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -91,48 +97,7 @@ const ExportReport = () => {
             pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 
             // Automatically save the PDF to the default downloads directory
-            // pdf.save("Endoscopy-report.pdf");
-    //         var date = new Date()
-    // var dateArray = date.toISOString().split(".")
-    // console.log(dateArray)
-    // var dateandTime = dateArray[0]
-
-            var fileName =`${selectedPatient.patient_name}_${dateTime[0]}${dateTime[1].replace(/:/g, "_")}.pdf`
-            pdf.save(fileName);
-
-            //api need to be written here//_______________________________
-
-
-            client.post('/patient_save_report/',{
-                withCredentials:true,
-                patient_details_id: selectedPatient.id,
-                pdf_file_path: fileName,
-                date:dateTime[0],
-                time:dateTime[1]
-            })
-            .then((resp)=>console.log(resp.data)
-            )
-            // setfileModal(true)
-            // // Create a FormData object to send the file
-            // const formData = new FormData();
-            // formData.append('pdf_file_path', file); // Append the PDF file
-            // formData.append('date', dateTime[0]); // Append the date
-            // formData.append('time', dateTime[1]); // Append the time
-
-
-            // try {
-            //     // Send the file to the server using axios
-            //     const response = await axios.post('http://192.168.29.251:8005/patient_save_report/', formData, {
-            //         headers: {
-            //             'Content-Type': 'multipart/form-data'
-            //         }
-            //     });
-
-            //     console.log('File uploaded successfully:', response.data);
-            // } catch (error) {
-            //     console.error('Error uploading file:', error);
-            // }
-
+            pdf.save("Endoscopy-report.pdf");
         }
     };
 
@@ -143,17 +108,13 @@ const ExportReport = () => {
             var date = new Date()
             var dateArray = date.toISOString().split(".")
             var dateandTime = dateArray[0].split("T")
-console.log(dateandTime);
+            console.log(dateandTime);
 
             handleDownloadPDF(dateandTime); // Call after the modal content is rendered
-
-        }, 100);
+        }, 600);
         if (selectedImages.length > 0) {
             window.localStorage.setItem('selectedImages', JSON.stringify(selectedImages));
         }
-
-
-
 
     }
     const formatDateTime = (date) => {
@@ -167,9 +128,6 @@ console.log(dateandTime);
                     <HospitalCard remarks={remarksText} medication={medicationText} selectedImages={JSON.parse(localStorage.getItem('selectedImages')) || []} />
                 </div>
             </Modal>
-            {/* <Modal centered opened={fileModal} onClose={() => setfileModal(false)}>
-                <FileInput value={file} onChange={(e) => setFile(e.target.files[0])} label="Upload File" />
-            </Modal> */}
             <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} mt={"lg"} style={{ borderRadius: "1rem" }} >
 
                 <Group>
@@ -236,17 +194,17 @@ console.log(dateandTime);
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Sex</Text>
-                            <Text>{selectedPatient.gender}</Text>
+                            <Text>{selectedPatient.sex}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Reffered by</Text>
-                            <Text>{selectedPatient.referred}</Text>
+                            <Text>{selectedPatient.referredBy}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Date & Time</Text>
-                            <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
+                            <Text>{formatDateTime(selectedPatient.dateTime)}</Text>
 
                         </Flex>
                     </SimpleGrid>
@@ -254,16 +212,15 @@ console.log(dateandTime);
                     <SimpleGrid cols={2}>
                         <Flex direction={"column"}>
                             <Text fw={600}>Phone Number</Text>
-                            <Text>{selectedPatient.mobile}</Text>
+                            <Text>{selectedPatient.phone}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Email</Text>
-                            <Text>{selectedPatient.patient_email}</Text>
+                            <Text>{selectedPatient.email}</Text>
                         </Flex>
                     </SimpleGrid>
                 </Card>
-
                 <Space h={"1rem"} />
 
                 <Textarea placeholder='Write your remarks'

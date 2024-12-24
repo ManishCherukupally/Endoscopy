@@ -26,7 +26,7 @@ import CameronWilliamson from './Components/CameronWillamson';
 import VideocapturingPage from "./pages/VideocapturingPage";
 import SelectPicturePage from "./pages/SelectPicturePage";
 import ExportReportPage from "./pages/ExportReportPage";
-
+import EditImagePage from "./pages/EditImagePage"
 
 // import Hills from './7hills';
 
@@ -57,6 +57,7 @@ const App = () => {
           <Route path="/videocapturing" element={<VideocapturingPage/>} />
           <Route path="/selectpicture" element={<SelectPicturePage/>} />
           <Route path="/exportreport" element={<ExportReportPage/>} />
+          <Route path="/editreport" element={<EditImagePage/>} />
           {/* <Route path="/register" element={<Registeration />}/>
           <Route path="/forgot" element={<ForgotPwd />}/>
           <Route path="/otpnumber" element={<OtpNumber/>}/>
