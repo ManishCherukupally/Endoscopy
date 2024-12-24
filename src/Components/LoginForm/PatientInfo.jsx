@@ -719,9 +719,9 @@ const PatientInfo = () => {
               Add Patient
             </Button>
           </form>
-          <Button variant="filled" color="violet" mt='md' radius='md' fullWidth>
+          {/* <Button variant="filled" color="violet" mt='md' radius='md' fullWidth>
             <FiVideo className='capture' /> Start Live Capture
-          </Button>
+          </Button> */}
         </Card>
       </div>
     </div>

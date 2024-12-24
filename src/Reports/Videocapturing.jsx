@@ -20,6 +20,23 @@ const Videocapturing = () => {
     const navigate = useNavigate()
     const [externalDeviceId, setExternalDeviceId] = useState("");
     const [capturedImages, setCapturedImages] = useState([]);
+    const [seconds, setSeconds] = useState(0);
+
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+          setSeconds((prevSeconds) => prevSeconds + 1);
+        }, 1000);
+    
+        return () => clearInterval(interval); // Cleanup interval on unmount
+      }, []);
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const displaySeconds = seconds % 60;
+    
+      // Format time to always show two digits
+      const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
+      localStorage.setItem('time',formattedTime)
 
     const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
     // console.log(selectedPatient);
@@ -129,11 +146,11 @@ const Videocapturing = () => {
                             title="Recording..."
                         ></div>
 
-                        <Text c={"#D94444"} fz={24} fw={600}>05:56 Min</Text>
+                        <Text c={"#D94444"} fz={24} fw={600}>{formattedTime}</Text>
                     </Flex>
 
                     <Group>
-                        <Button variant='light' color='red' radius={8} onClick={()=> navigate('/allpatients')}>Cancel capture</Button>
+                        <Button variant='light' color='red' radius={8} onClick={()=> navigate('/cameronwillamson')}>Cancel capture</Button>
                         <Button bg='#8158F5' radius={8} onClick={() => navigate("/selectpicture")}>Save & Continue</Button>
                     </Group>
                 </Flex>

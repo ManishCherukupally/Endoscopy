@@ -674,34 +674,53 @@
 
 // export default CameronWilliamson;
 
-import { Button, Card, Text, Select, Tabs, Modal } from '@mantine/core';
+import { Button, Card, Text, Select, Tabs, Modal,Image } from '@mantine/core';
 import React, {useState,useRef,useEffect} from 'react';
 import { IoChevronBackSharp } from 'react-icons/io5';
-import { IconPencil } from '@tabler/icons-react';
+import { IconFile, IconPencil } from '@tabler/icons-react';
 import { BiMessageDetail } from 'react-icons/bi';
 import { BsCameraVideo } from 'react-icons/bs';
 // import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import client from './Api';
+import { useDisclosure } from '@mantine/hooks';
+import { Group } from '@mantine/core';
+import * as pdfjsLib from 'pdfjs-dist';
+import axios from 'axios';
+import { format } from 'date-fns';
+
+
+
 
 const CameronWilliamson = () => {
-  const [patientDetails, setPatientDetails] = useState(null);
-  const [records, setRecords] = useState([]);
-  console.log(records);
   
+  const [records, setRecords] = useState([]);
+  // console.log(records);
+  const [opend, { open, close }] = useDisclosure(false);
   const [opened, setOpened] = useState(false);
 
   const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
-  // const [patientid, setpatientid]= useState(null)
-  const buttonRef = useRef(null);
-  // const records = [
-  //   { date: '15 May 2020 | 7:00 pm', id: 1 },
-  //   { date: '14 May 2020 | 6:30 pm', id: 2 },
-  //   { date: '13 May 2020 | 5:45 pm', id: 3 },
-  //   { date: '12 May 2020 | 8:00 pm', id: 4 },
-  //   { date: '11 May 2020 | 9:15 pm', id: 5 },
-  // ];
   
+  const buttonRef = useRef(null);
+  
+  
+  const [url, setUrl] = useState(null)
+  const[Record,SingleRecord]=useState(null)
+
+  
+
+  function pdfResult( file){
+    
+    setUrl(file)
+
+    console.log(file)
+  }
+
+  const formatDateTime = (date) => {
+          let dateString = new Date(date)
+          return format(dateString, "dd MMMM yyyy | h:mm a");
+      };
+
   useEffect(() => {
     const Report = async () => {
       const patientId = localStorage.getItem('patientid'); // Corrected key name
@@ -714,15 +733,19 @@ const CameronWilliamson = () => {
           const PatientReport = await client.get('/patient_report_file/', {
             withCredentials:true,
             params: { patient_id: patientId },
-           
           }, 
             // Corrected to `params`
             {
               headers: { 'Content-Type': 'application/json' },
              },// Fixed header location
           );
+          if(PatientReport.data === 0){
+            alert('no reports')
+          }
           console.log('Patient Report:', PatientReport.data.patient_reports);
           setRecords(PatientReport.data.patient_reports)
+          // console.log("length:",PatientReport.data.patient_reports.length)
+         
         } catch (error) {
           console.error('Error fetching patient report:', error);
         }
@@ -733,6 +756,16 @@ const CameronWilliamson = () => {
 
     Report();
   }, []); 
+
+  const LatestRecord = (records) => {
+    if (!records || records.length === 0) {
+      console.error("No records available.");
+      return null;
+    }
+    return records[records.length - 1];
+    
+  };
+  
 const navigate=useNavigate()
   const renderRecords = () =>
     records.map((item) => (
@@ -758,8 +791,26 @@ const navigate=useNavigate()
         >
           {item.date} || { item.time}
         </Text>
+        
   
         {/* Preview Button */}
+         <Modal opened={opend} onClose={close} title="Preview" fullScreen>
+        
+     <Card>
+      {/* {fileContent}
+      <Document file={item.report_file}>
+
+      </Document> */}
+     <iframe
+        src={url}
+        width="100%"
+        height="600px"
+        title="Patient Report"
+      />
+     </Card>
+  {/* </Card> */}
+      </Modal>
+      <Group position="center">
         <Button
           variant="outline"
           style={{
@@ -777,11 +828,20 @@ const navigate=useNavigate()
             gap: '8px', // Space between icon or elements inside the button
             color:"black"
           }}
-          onClick={()=>{navigate(item.report_file)}}
-        >
+          // onClick={()=>{navigate(item.report_file)}}
+          onClick={()=>{
+            // handleFilePreview(item.report_file)
+            open() 
+            pdfResult(item.report_file)
+            // setUrl(item.report_file)
+            // handlePdfConvert(item.report_file)
+          }}
+        > 
+         Preview
+         </Button>
+          </Group>
           
-          Preview
-        </Button>
+        
   
         {/* Export Select */}
         
@@ -894,6 +954,10 @@ const navigate=useNavigate()
       </div>
     ));
 
+
+
+
+
   const handleModalOpen = () => {
     setOpened(true);
   };
@@ -914,7 +978,7 @@ const navigate=useNavigate()
       <Card
         style={{
           width: '100%',
-          height: '100%',
+          height: 'auto',
           borderRadius: '16px',
           padding: '24px',
           backgroundColor: '#fff',
@@ -959,9 +1023,34 @@ const navigate=useNavigate()
             <Button style={{ backgroundColor: '#EDE9FE', color: 'black' }} onClick={handleModalOpen} leftIcon={<BiMessageDetail style={{fontSize:"large"}}/>}>
               View All Comments (32)
             </Button>
-            <Button style={{ backgroundColor: '#EDE9FE', color: 'black',textDecoration:"underline",textUnderlineOffset:"3px",textDecorationThickness:"1.30px" }}>
+
+            <Modal opened={opend} onClose={close} title="Preview" fullScreen>
+              <Card>
+                <iframe
+                  src={url}
+                  width="100%"
+                  height="600px"
+                  title="Patient Report"
+                />
+              </Card>
+              </Modal>
+
+              <Group position="center">
+              <Button
+                onClick={() => {
+                  open(); // Call the function to open the modal
+                  const lastRecord = LatestRecord(records); // Call LatestRecord to get the last record
+                  pdfResult(lastRecord.report_file); // Pass the last record to pdfResult
+                }}
+              >
+                Last Visit Report
+              </Button>
+              </Group>
+
+            {/* <Button style={{ backgroundColor: '#EDE9FE', color: 'black',textDecoration:"underline",textUnderlineOffset:"3px",textDecorationThickness:"1.30px" }}
+            onClick={LatestRecord}>
               Last Visit Report
-            </Button>
+            </Button> */}
             <Button
             onClick={()=> navigate("/videocapturing")}
               variant="gradient"
@@ -1052,8 +1141,8 @@ const navigate=useNavigate()
     <div>{selectedPatient.age}</div>
     <div>{selectedPatient.gender}</div>
     <div>{selectedPatient.referred}</div>
-    <div>{selectedPatient.updated_at}</div>
-    
+    <div>{ formatDateTime(selectedPatient.updated_at)}</div>
+   
   </div>
   {/* Additional Information */}
   <div
@@ -1123,7 +1212,7 @@ const navigate=useNavigate()
                   
                 }}
               >
-                Recent 6
+                Records:{records.length}
               </Text>
               </div>
               {renderRecords()}

@@ -1032,11 +1032,11 @@ const AllPatients = () => {
       >
         <Card
           style={{
-            width: "100%",
-            height: "100%",
+            width: "auto",
+            height: "auto",
             borderRadius: "24px",
             border: "1px solid #ccc",
-            padding: "32px",
+            padding: "32px 15px",
             gap: "48px",
           }}
         >
@@ -1180,9 +1180,10 @@ const AllPatients = () => {
             </thead>
             <tbody>
               {filteredData.map((item) => (
-                <tr
+                <tr 
                   key={item.id}
                   style={{
+                    cursor:'pointer',
                     backgroundColor: selectedRows[item.id] ? "#8158F529" : "transparent",
                     borderRadius: "16px",
                     transition: "background-color 0.3s ease",

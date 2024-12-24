@@ -14,6 +14,9 @@ import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { format } from 'date-fns'
 
+import axios from 'axios'
+import client from '../Components/Api'
+
 const ExportReport = () => {
     const navigate = useNavigate()
     // const [hoverCard, setHoverCard] = useState(null)
@@ -29,8 +32,14 @@ const ExportReport = () => {
     const [remarksText, setRemarksText] = useState('')
     const [reportModal, setReportModal] = useState(false)
 
+
     const selectedPatient = JSON.parse(localStorage.getItem('selectedPatient'))
 
+    // const [fileModal, setfileModal] = useState(false)
+    // const [file, setFile] = useState(null);
+    // const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
+
+    // console.log(dateandTime[0]);
 
     // const handleFullscreen = (index) => {
     //     const element = imageRefs.current[index];
@@ -71,7 +80,7 @@ const ExportReport = () => {
 
     };
 
-    const handleDownloadPDF = async () => {
+    const handleDownloadPDF = async (dateTime) => {
         if (targetRef.current) {
             // Generate the canvas from the targetRef div
             const canvas = await html2canvas(targetRef.current);
@@ -96,7 +105,12 @@ const ExportReport = () => {
     const handleExportReport = () => {
         setReportModal(true);
         setTimeout(() => {
-            handleDownloadPDF(); // Call after the modal content is rendered
+            var date = new Date()
+            var dateArray = date.toISOString().split(".")
+            var dateandTime = dateArray[0].split("T")
+            console.log(dateandTime);
+
+            handleDownloadPDF(dateandTime); // Call after the modal content is rendered
         }, 600);
         if (selectedImages.length > 0) {
             window.localStorage.setItem('selectedImages', JSON.stringify(selectedImages));

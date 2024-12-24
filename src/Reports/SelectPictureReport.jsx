@@ -34,6 +34,7 @@ const SelectPictureReport = () => {
         setCapturedImages(updatedImages);
     };
 
+
     const startDrawing = (e) => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
@@ -78,6 +79,9 @@ const SelectPictureReport = () => {
 
 
 
+    // const toggleSelectMode = () => setselectImage(!selectImage);
+
+    const timer = localStorage.getItem('time')
     return (
         <div>
             <Container maw="90rem" bg="#FFFFFF" p="1rem" mt="lg" style={{ borderRadius: '1rem' }}>
@@ -90,6 +94,73 @@ const SelectPictureReport = () => {
                     </Text>
                 </Group>
                 <Space h={15} />
+
+                <Flex justify={"space-between"} align={"center"}>
+                    <Group spacing={"sm"}>
+                        <Image src={Vector} maw={40} mah={40} />
+                        <Text fz={32} fw={600}>Endoscopy</Text>
+                    </Group>
+
+                    <Flex direction={"column"} align={"center"}>
+
+                        <Text fz={16} fw={600}>Examine Time</Text>
+                        <Text >{timer}</Text>
+                    </Flex>
+
+                    <Group>
+
+                        <Button bg='#8158F5' radius={8} onClick={() => navigate("/exportreport")}>Export Report</Button>
+                    </Group>
+                </Flex>
+
+                <Space h={20} />
+                <Card bg={"#EBEDF4"} radius={12}>
+                    <SimpleGrid cols={6}>
+                        <Flex direction={"column"}>
+                            <Text fw={600}>Name</Text>
+                            <Text>{selectedPatient.patient_name}</Text>
+                        </Flex>
+
+                        <Flex direction={"column"}>
+                            <Text fw={600}>Patient ID</Text>
+                            <Text>{selectedPatient.id}</Text>
+                        </Flex>
+
+                        <Flex direction={"column"}>
+                            <Text fw={600}>Age</Text>
+                            <Text>{selectedPatient.age}</Text>
+                        </Flex>
+
+                        <Flex direction={"column"}>
+                            <Text fw={600}>Sex</Text>
+                            <Text>{selectedPatient.gender}</Text>
+                        </Flex>
+
+                        <Flex direction={"column"}>
+                            <Text fw={600}>Reffered by</Text>
+                            <Text>{selectedPatient.referred}</Text>
+                        </Flex>
+
+                        <Flex direction={"column"}>
+                            <Text fw={600}>Date & Time</Text>
+                            <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
+
+                        </Flex>
+                    </SimpleGrid>
+                    <Space h={12} />
+                    <SimpleGrid cols={2}>
+                        <Flex direction={"column"}>
+                            <Text fw={600}>Phone Number</Text>
+                            <Text>{selectedPatient.mobile}</Text>
+                        </Flex>
+
+                        <Flex direction={"column"}>
+                            <Text fw={600}>Email</Text>
+                            <Text>{selectedPatient.patient_email}</Text>
+                        </Flex>
+                    </SimpleGrid>
+                </Card>
+                <Space h={"1rem"} />
                 <SimpleGrid cols={3}>
                     {capturedImages.map((image, index) => (
                         <div key={index} style={{ position: 'relative' }}>
