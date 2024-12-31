@@ -13,6 +13,8 @@ import HospitalCard from '../Components/LoginForm/HospitalCard'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { format } from 'date-fns'
+import ReactDOM from 'react-dom/client';
+
 
 import axios from 'axios'
 import client from '../Components/Api'
@@ -32,8 +34,9 @@ const ExportReport = () => {
     const [remarksText, setRemarksText] = useState('')
     const [reportModal, setReportModal] = useState(false)
 
+    const [printReport, setPrintReport] = useState(false)
 
-    const selectedPatient = JSON.parse(localStorage.getItem('selectedPatient'))
+    const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
 
     // const [fileModal, setfileModal] = useState(false)
     // const [file, setFile] = useState(null);
@@ -87,7 +90,6 @@ const ExportReport = () => {
 
             // Initialize jsPDF
             const pdf = new jsPDF();
-
             // Scale canvas content to fit the PDF page
             const imgData = canvas.toDataURL("image/png");
             const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -97,7 +99,48 @@ const ExportReport = () => {
             pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 
             // Automatically save the PDF to the default downloads directory
-            pdf.save("Endoscopy-report.pdf");
+            // pdf.save("Endoscopy-report.pdf");
+            //         var date = new Date()
+            // var dateArray = date.toISOString().split(".")
+            // console.log(dateArray)
+            // var dateandTime = dateArray[0]
+
+            var fileName = `${selectedPatient.patient_name}_${dateTime[0]}${dateTime[1].replace(/:/g, "_")}.pdf`
+            pdf.save(fileName);
+
+            //api need to be written here//_______________________________
+
+
+            client.post('/patient_save_report/', {
+                withCredentials: true,
+                patient_details_id: selectedPatient.id,
+                pdf_file_path: fileName,
+                date: dateTime[0],
+                time: dateTime[1]
+            })
+                .then((resp) => console.log(resp.data)
+                )
+            // setfileModal(true)
+            // // Create a FormData object to send the file
+            // const formData = new FormData();
+            // formData.append('pdf_file_path', file); // Append the PDF file
+            // formData.append('date', dateTime[0]); // Append the date
+            // formData.append('time', dateTime[1]); // Append the time
+
+
+            // try {
+            //     // Send the file to the server using axios
+            //     const response = await axios.post('http://192.168.29.251:8005/patient_save_report/', formData, {
+            //         headers: {
+            //             'Content-Type': 'multipart/form-data'
+            //         }
+            //     });
+
+            //     console.log('File uploaded successfully:', response.data);
+            // } catch (error) {
+            //     console.error('Error uploading file:', error);
+            // }
+
         }
     };
 
@@ -121,11 +164,46 @@ const ExportReport = () => {
         let dateString = new Date(date)
         return format(dateString, "dd MMMM yyyy | h:mm a");
     };
+
+    const handlePrint = () => {
+        const originalContent = document.body.innerHTML; // Save the original content of the page
+
+        // Render the HospitalCard in the body for printing
+        const selectedImages = JSON.parse(localStorage.getItem('selectedImages')) || [];
+        document.body.innerHTML = `
+            <div id="printContainer">
+                <style>
+                    @page { size: auto; margin: 10mm; } /* Optional: Adjust margins for printing */
+                    body { margin: 0; padding: 0; }
+                </style>
+            </div>
+        `;
+
+        const printContainer = document.getElementById("printContainer");
+        ReactDOM.createRoot(printContainer).render(
+            <HospitalCard
+                remarks={remarksText}
+                medication={medicationText}
+                selectedImages={selectedImages}
+            />
+        );
+
+        // Trigger print and restore the page after printing
+        setTimeout(() => {
+            window.print();
+            document.body.innerHTML = originalContent; // Restore the original page content
+            window.location.reload(); // Optional: Reload to ensure proper rendering
+        }, 500);
+    };
+
+
     return (
         <div>
+            <div id="printContainer" style={{ display: "none" }}></div>
             <Modal fullScreen opened={reportModal} onClose={() => setReportModal(false)}>
                 <div ref={targetRef}>
                     <HospitalCard remarks={remarksText} medication={medicationText} selectedImages={JSON.parse(localStorage.getItem('selectedImages')) || []} />
+                    {/* {printReport && window.print()} */}
                 </div>
             </Modal>
             <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} mt={"lg"} style={{ borderRadius: "1rem" }} >
@@ -169,7 +247,9 @@ const ExportReport = () => {
                                 />
                             </Flex>
                         </Card>
-                        <ActionIcon radius={8} h={44} w={50} size={"lg"} style={{ border: "1px solid black" }} c={"black"}><TbPrinter /></ActionIcon>
+                        <ActionIcon radius={8} h={44} w={50} size={"lg"} style={{ border: "1px solid black" }} c={"black"}
+                            onClick={(handlePrint)}
+                        ><TbPrinter /></ActionIcon>
                         <Button bg='#8158F5' radius={8} h={44} onClick={() => { handleExportReport() }}>Export</Button>
                     </Group>
                 </Flex>
@@ -194,17 +274,17 @@ const ExportReport = () => {
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Sex</Text>
-                            <Text>{selectedPatient.sex}</Text>
+                            <Text>{selectedPatient.gender}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Reffered by</Text>
-                            <Text>{selectedPatient.referredBy}</Text>
+                            <Text>{selectedPatient.referred}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Date & Time</Text>
-                            <Text>{formatDateTime(selectedPatient.dateTime)}</Text>
+                            <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
 
                         </Flex>
                     </SimpleGrid>
@@ -212,12 +292,12 @@ const ExportReport = () => {
                     <SimpleGrid cols={2}>
                         <Flex direction={"column"}>
                             <Text fw={600}>Phone Number</Text>
-                            <Text>{selectedPatient.phone}</Text>
+                            <Text>{selectedPatient.mobile}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Email</Text>
-                            <Text>{selectedPatient.email}</Text>
+                            <Text>{selectedPatient.patient_email}</Text>
                         </Flex>
                     </SimpleGrid>
                 </Card>
@@ -264,6 +344,7 @@ const ExportReport = () => {
 
                                 width={'100%'} height={"400px"}
                                 radius={12}
+
                             />
                             {selectImage && (
                                 <Overlay radius={12} top={0} left={0} opacity={0}>

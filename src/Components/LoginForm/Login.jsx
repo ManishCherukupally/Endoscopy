@@ -133,7 +133,7 @@
 //     e.preventDefault();
 //     const isValid = !form.validate().hasErrors;
 //     if (!isValid) return;
-   
+
 
 //     try {
 //       const response = await client.post('/login/',
@@ -141,11 +141,11 @@
 //           username: form.values.username,
 //           password: form.values.password,
 //           withCredentials:true
-         
+
 //         },
 //         {
 //           headers: { 'Content-Type': 'application/json' },
-          
+
 //         }
 //       );
 //       console.log(response)
@@ -236,7 +236,7 @@
 // export default Login;
 
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@mantine/form';
 import { PasswordInput, TextInput, Button, Box, Card, Checkbox, Text, Image, Divider } from '@mantine/core';
 import { MdOutlineEmail, MdLockOutline } from "react-icons/md";
@@ -246,6 +246,7 @@ import client from '../Api'; // Assuming you have an axios client setup
 
 const Login = () => {
   const navigate = useNavigate();
+  const [loader, setLoader] = useState(false)
 
   const form = useForm({
     initialValues: {
@@ -261,6 +262,7 @@ const Login = () => {
   });
 
   const submithandler = async (e) => {
+    setLoader(true)
     e.preventDefault();
     const isValid = !form.validate().hasErrors;
     if (!isValid) return;
@@ -273,6 +275,7 @@ const Login = () => {
 
       console.log(response);
       if (response.data && response.data.status === 'user_validated') {
+        setLoader(false)
         navigate('/allpatients');
         console.log(response.data.accessToken);
       } else if (response.data.status === 'unauthorized_user') {
@@ -324,7 +327,7 @@ const Login = () => {
                 <Text>Forgot Password?</Text>
               </Link>
             </div>
-            <Button type="submit" mt="sm" fullWidth color="violet" radius="md">
+            <Button type="submit" mt="sm" fullWidth color="violet" radius="md" loading={loader}>
               Login
             </Button>
             <Button variant="light" color="violet" mt="md" radius="md" fullWidth onClick={() => { navigate('/register') }}>

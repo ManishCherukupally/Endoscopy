@@ -29,14 +29,14 @@
 //       // cnfpassword:(value, values)=>(value !== values.length ? null:"do not matched"),
 //       cnfpassword: (value, values) =>
 //         value !== values.password ? 'Passwords do not match' : null,
-      
+
 //       // mobile_no:(value)=>( /^\d{10}$/.test(value)? null:'Invalid phone number'),
 //       mobile_no: (value) => (value && value.length == 10 ? null : 'Phone number must be a valid 10-digit number'),
 
 //       speciality:(value) =>(value.trim().length===0?"select the speciality":null),
 
 //     }
-        
+
 //       });
 //       const theme = useMantineTheme();
 //       const navigate=useNavigate()
@@ -132,7 +132,7 @@
 //           <IconPhoto size="3.2rem" stroke={1.5} />
 //         </Dropzone.Idle>
 
-       
+
 //       </Group>
 //     </Dropzone>
 
@@ -176,7 +176,7 @@
 //                 {...form.getInputProps('username')}
 //             />
 //         {/* <div className='login_password'>Login Password</div> */}
-        
+
 //         <PasswordInput
 //             placeholder="Password"
 //             label="Password"
@@ -189,7 +189,7 @@
 //              />
 
 // {/* <div className='login_password_cnf'>Confirm Login Password</div> */}
-        
+
 //         <PasswordInput
 //             placeholder="Confirm Password"
 //             label="Confirm Password"
@@ -200,7 +200,7 @@
 //             {...form.getInputProps('cnfpassword')}
 //             withAsterisk
 //              />
-            
+
 //             {/* <div className='phone'>Mobile Number</div> */}
 //         <TextInput
 //                 placeholder="Mobile Number"
@@ -364,14 +364,14 @@
 //             </Radio.Group>
 
 
-        
+
 //         <Button type="submit" variant="filled" color="violet"  mt ='md' radius='md' fullWidth>
 //             Create Account
 //         </Button>
 //       </form>
 //       </Card>
 //     {/* </Box> */}
-    
+
 //     // </div>
 
 //       //       <Button variant="filled" color="violet" mt='md' radius='md' fullWidth>
@@ -401,6 +401,7 @@ import logo from '../../assets/Vector.jpg';
 
 const Registration = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [loader, setLoader] = useState(false)
   const theme = useMantineTheme();
   const navigate = useNavigate();
 
@@ -435,6 +436,7 @@ const Registration = () => {
   };
 
   const handleFormSubmit = async (e) => {
+    setLoader(true)
     e.preventDefault();
     const isValid = !form.validate().hasErrors;
     if (!isValid) return;
@@ -456,10 +458,12 @@ const Registration = () => {
       );
 
       if (result.data && result.data.status === 'User_created_successfully!') {
+        setLoader(false)
         navigate('/');
       }
     } catch (error) {
       if (error.response?.data) {
+        setLoader(false)
         const backendErrors = error.response.data;
         Object.keys(backendErrors).forEach((field) => {
           form.setFieldError(field, backendErrors[field]);
@@ -601,7 +605,7 @@ const Registration = () => {
                 ))}
               </div>
             </Radio.Group>
-            <Button type="submit" variant="filled" color="violet" mt="md" radius="md" fullWidth>
+            <Button loading={loader} type="submit" variant="filled" color="violet" mt="md" radius="md" fullWidth>
               Create Account
             </Button>
           </form>

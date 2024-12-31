@@ -25,25 +25,25 @@ const Videocapturing = () => {
 
     useEffect(() => {
         const interval = setInterval(() => {
-          setSeconds((prevSeconds) => prevSeconds + 1);
+            setSeconds((prevSeconds) => prevSeconds + 1);
         }, 1000);
-    
+
         return () => clearInterval(interval); // Cleanup interval on unmount
-      }, []);
-      const hours = Math.floor(seconds / 3600);
-      const minutes = Math.floor((seconds % 3600) / 60);
-      const displaySeconds = seconds % 60;
-    
-      // Format time to always show two digits
-      const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
-      localStorage.setItem('time',formattedTime)
+    }, []);
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const displaySeconds = seconds % 60;
+
+    // Format time to always show two digits
+    const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
+    localStorage.setItem('time', formattedTime)
 
     const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
     // console.log(selectedPatient);
 
-    if (capturedImages.length > 0) {
-        window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages));
-    }
+    // if (capturedImages.length > 0) {
+    //     window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages));
+    // }
     const webcamRef = useRef(null);
     useEffect(() => {
         const getExternalCamera = async () => {
@@ -74,19 +74,34 @@ const Videocapturing = () => {
     }, []);
 
     const videoConstraints = {
-        width: 998,
+        width: 750,
         height: 676,
         facingMode: "user",
         deviceId: externalDeviceId,
     };
+
+    useEffect(() => {
+        // Load captured images from localStorage on mount
+        const savedImages = JSON.parse(localStorage.getItem('capturedImages')) || [];
+        setCapturedImages(savedImages);
+    }, []);
+
+    const saveImagesToLocalStorage = (images) => {
+        localStorage.setItem('capturedImages', JSON.stringify(images));
+    };
+
     const handleCapture = () => {
         if (webcamRef.current) {
             const imageSrc = webcamRef.current.getScreenshot();
-            setCapturedImages([...capturedImages, imageSrc]);
+            const updatedImages = [...capturedImages, imageSrc];
+            setCapturedImages(updatedImages);
+            saveImagesToLocalStorage(updatedImages); // Save to localStorage
         }
     };
 
     const handleDeleteImage = (index) => {
+        window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages.filter((_, i) => i !== index)))
+
         setCapturedImages(capturedImages.filter((_, i) => i !== index));
     };
 
@@ -150,7 +165,7 @@ const Videocapturing = () => {
                     </Flex>
 
                     <Group>
-                        <Button variant='light' color='red' radius={8} onClick={()=> navigate('/cameronwillamson')}>Cancel capture</Button>
+                        <Button variant='light' color='red' radius={8} onClick={() => navigate('/cameronwillamson')}>Cancel capture</Button>
                         <Button bg='#8158F5' radius={8} onClick={() => navigate("/selectpicture")}>Save & Continue</Button>
                     </Group>
                 </Flex>
@@ -174,17 +189,17 @@ const Videocapturing = () => {
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Sex</Text>
-                            <Text>{selectedPatient.sex}</Text>
+                            <Text>{selectedPatient.gender}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Reffered by</Text>
-                            <Text>{selectedPatient.referredBy}</Text>
+                            <Text>{selectedPatient.referred}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Date & Time</Text>
-                            <Text>{formatDateTime(selectedPatient.dateTime)}</Text>
+                            <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
 
                         </Flex>
                     </SimpleGrid>
@@ -192,12 +207,12 @@ const Videocapturing = () => {
                     <SimpleGrid cols={2}>
                         <Flex direction={"column"}>
                             <Text fw={600}>Phone Number</Text>
-                            <Text>{selectedPatient.phone}</Text>
+                            <Text>{selectedPatient.mobile}</Text>
                         </Flex>
 
                         <Flex direction={"column"}>
                             <Text fw={600}>Email</Text>
-                            <Text>{selectedPatient.email}</Text>
+                            <Text>{selectedPatient.patient_email}</Text>
                         </Flex>
                     </SimpleGrid>
                 </Card>
@@ -206,7 +221,7 @@ const Videocapturing = () => {
 
                 <Grid>
                     <Grid.Col span={9}>
-                        <div style={{ position: "relative", width: "998px", height: "676px", margin: "0 auto" }}>
+                        <div style={{ position: "relative", width: "750px", height: "676px", margin: "0 auto" }}>
                             {externalDeviceId ? (
                                 <>
                                     <Webcam
@@ -273,7 +288,7 @@ const Videocapturing = () => {
 
                                 {capturedImages.map((image, index) => (
                                     <div key={index} style={{ position: 'relative' }}>
-                                        <Image src={image} alt={`Captured ${index + 1}`} width={150} height={150} radius={12} />
+                                        <Image src={image} alt={`Captured ${index + 1}`} width={100} height={100} radius={12} />
                                         <Overlay
 
                                             position="absolute"
@@ -283,7 +298,7 @@ const Videocapturing = () => {
                                             zIndex={1}
                                             visible={true} // Always show the overlay
                                         >
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px' }}>
                                                 {/* <Button size={20} >Edit</Button> */}
                                                 <ActionIcon size={30} variant='tranperant' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' /></ActionIcon>
                                                 <ActionIcon size={30} variant='tranperant' bg={"white"} radius={"50%"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' /></ActionIcon>

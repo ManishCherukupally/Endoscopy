@@ -1,154 +1,142 @@
 import React from 'react';
-import { Card, Image, Group, Text, Grid, Divider, SimpleGrid, Flex, Space } from '@mantine/core';
+import { Card, Image, Group, Text, SimpleGrid, Flex, Divider, Space } from '@mantine/core';
 import logo1 from '../../assets/Component 13.jpg';
-import frame1 from '../../assets/Frame 1261155515.jpg'
-import frame2 from '../../assets/Frame 1261155514.jpg'
-import frame3 from '../../assets/Frame 1261155514 (4).jpg'
-import frame4 from '../../assets/Frame 1261155514 (3).jpg'
-import frame5 from '../../assets/Frame 1261155514 (2).jpg'
-import frame6 from '../../assets/Frame 1261155514 (1).jpg'
-import logo from '../../assets/Vector.jpg'
+import logo from '../../assets/Vector.jpg';
 import { format } from 'date-fns';
 
 const HospitalCard = (props) => {
-  const { selectedImages, remarks, medication } = props
-  // console.log(selectedImages);
-  const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
+  const { selectedImages, remarks, medication } = props;
+  const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'));
 
- const formatDateTime = (date) => {
-        let dateString = new Date(date)
-        return format(dateString, "dd MMMM yyyy | h:mm a");
-    };
+  const formatDateTime = (date) => {
+    let dateString = new Date(date);
+    return format(dateString, 'dd MMMM yyyy | h:mm a');
+  };
+
   return (
-    <div className='parent'>
-      <div className='header'>
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
-          <Card shadow="sm" padding="lg" radius="md" withBorder className='hospitalcard' mb='md'>
-            <div className='imageflex'>
-              <div className='image' >
-                <Image maw={90} radius="md" src={logo1} alt="Random image" />
-              </div>
-              <div>
-                <div style={{ fontWeight: 'bold', fontSize: '1.8rem', marginBottom: '0.5rem' }}>THE INSTITUTE FOR SPECIAL SURGERY JOY HOSPITAL</div>
-                <div style={{ fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '0.5rem' }}>423 AB, 10 TH ROAD, CHEMBUR, MUMBAL - 71 </div>
-                <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>TEL: 528 4298, 528 4281, 528 691</div>
-              </div>
-            </div>
-          </Card>
-          <Card bg={"#EBEDF4"} radius={12}>
-                             <SimpleGrid cols={6}>
-                                 <Flex direction={"column"}>
-                                     <Text fw={600}>Name</Text>
-                                     <Text>{selectedPatient.patient_name}</Text>
-                                 </Flex>
-         
-                                 <Flex direction={"column"}>
-                                     <Text fw={600}>Patient ID</Text>
-                                     <Text>{selectedPatient.id}</Text>
-                                 </Flex>
-         
-                                 <Flex direction={"column"}>
-                                     <Text fw={600}>Age</Text>
-                                     <Text>{selectedPatient.age}</Text>
-                                 </Flex>
-         
-                                 <Flex direction={"column"}>
-                                     <Text fw={600}>Sex</Text>
-                                     <Text>{selectedPatient.gender}</Text>
-                                 </Flex>
-         
-                                 <Flex direction={"column"}>
-                                     <Text fw={600}>Reffered by</Text>
-                                     <Text>{selectedPatient.referred}</Text>
-                                 </Flex>
-         
-                                 <Flex direction={"column"}>
-                                     <Text fw={600}>Date & Time</Text>
-                                     <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
-         
-                                 </Flex>
-                             </SimpleGrid>
-                             <Space h={12} />
-                             <SimpleGrid cols={2}>
-                                 <Flex direction={"column"}>
-                                     <Text fw={600}>Phone Number</Text>
-                                     <Text>{selectedPatient.mobile}</Text>
-                                 </Flex>
-         
-                                 <Flex direction={"column"}>
-                                     <Text fw={600}>Email</Text>
-                                     <Text>{selectedPatient.patient_email}</Text>
-                                 </Flex>
-                             </SimpleGrid>
-                         </Card>
-          <div style={{
-            width: '100%',
-            display: 'flex',
-            gap: '1rem',
-
-          }}>
-            <Card shadow="sm" padding="sm" radius="md" withBorder mb='md' style={{ width: '50%', backgroundColor: '#EBEDF4' }}>
-              <div style={{ marginBottom: '0.5rem' }}><b>Remarks</b></div>
-              <Text fz={"lg"}>{remarks}</Text>
+    <div style={{ width: '794px', height: '1123px', margin: '0 auto', padding: '1rem', backgroundColor: '#fff' }}>
+      <Card shadow="sm" padding="lg" radius="md" withBorder style={{ height: '100%' }}>
+        <Flex direction="column" justify="space-between" style={{ height: '100%' }}>
+          <div>
+            {/* Header Section */}
+            <Card shadow="sm" padding="lg" radius="md" withBorder mb="md" bg={"black"} >
+              <Flex align="center" gap={"lg"}>
+                <Image maw={90} radius="50%" src={"https://s3-alpha-sig.figma.com/img/1087/db42/59fd3e813c356ab560ab3cbd12d1a8f0?Expires=1736121600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=j9ijLZIS3XShvn7cFuNabypT9v67QCLgr2k~vJSQrT6FgoqBExk2um0Q4oO8HJoMpQ8Q3X0wmQVl0LjmFpWSxOtsBJneRXMJ5jqwU42QmQ-pZFsrzIjaPh2E3~8LiBVhtFfg94Aju9QRgtd59bRGyGMQjcd9kE9nYhmfD9uDYzpaqzbjwzra2ZvzxHdNO-YY26xUsfRtv08cqgKfd4wEVG4-Ghe-J7lOeYvwAllpH34KydKxkZAg9zVp7ak0IWRE~5U5RgUF0rS2Rl9-3B5wHxlrPleEC4G2uzZHX9fW2J6DLgvPMQhxLclwCGKh8FmXsphOW6i3os3~1dFW4KC~EQ__"} alt="Hospital Logo" />
+                <div>
+                  <Text weight={700} c={"white"} size="xl" mb="xs">
+                    THE INSTITUTE FOR SPECIAL SURGERY JOY HOSPITAL
+                  </Text>
+                  <Text weight={600} c={"white"} size="lg" mb="xs">
+                    423 AB, 10 TH ROAD, CHEMBUR, MUMBAL - 71
+                  </Text>
+                  <Text weight={500} c={"white"} size="sm">
+                    TEL: 528 4298, 528 4281, 528 691
+                  </Text>
+                </div>
+              </Flex>
             </Card>
-            <Card shadow="sm" padding="lg" radius="md" withBorder mb='md' style={{ width: '50%', backgroundColor: '#EBEDF4' }}>
-              <div><b>Medication</b></div>
-              {/* <ul>
-                <li>Antacids</li>
-                <li>H2-Receptor Antagonists</li>
-                <li>eAnti-nausea</li>
-                <li>Pain Relievers</li>
-              </ul> */}
-              {medication}
+
+            {/* Patient Information */}
+            <Card bg="#EBEDF4" radius={12} mb="md">
+              <SimpleGrid cols={6} spacing="sm">
+                <Flex direction="column">
+                  <Text fw={600}>Name</Text>
+                  <Text>{selectedPatient.patient_name}</Text>
+                </Flex>
+                <Flex direction="column">
+                  <Text fw={600}>Patient ID</Text>
+                  <Text>{selectedPatient.id}</Text>
+                </Flex>
+                <Flex direction="column">
+                  <Text fw={600}>Age</Text>
+                  <Text>{selectedPatient.age}</Text>
+                </Flex>
+                <Flex direction="column">
+                  <Text fw={600}>Sex</Text>
+                  <Text>{selectedPatient.gender}</Text>
+                </Flex>
+                <Flex direction="column">
+                  <Text fw={600}>Referred by</Text>
+                  <Text>{selectedPatient.referred}</Text>
+                </Flex>
+                <Flex direction="column">
+                  <Text fw={600}>Date & Time</Text>
+                  <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
+                </Flex>
+              </SimpleGrid>
+              <Space h={12} />
+              <SimpleGrid cols={2} spacing="sm">
+                <Flex direction="column">
+                  <Text fw={600}>Phone Number</Text>
+                  <Text>{selectedPatient.mobile}</Text>
+                </Flex>
+                <Flex direction="column">
+                  <Text fw={600}>Email</Text>
+                  <Text>{selectedPatient.patient_email}</Text>
+                </Flex>
+              </SimpleGrid>
             </Card>
-          </div>
 
-          <div style={{
-            width: '100%',
-            height: 'auto',
-            display: 'flex',
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: '1rem',
-          }}>
-
-            {selectedImages.map((image, index) => (
-              <Card key={index} shadow="sm" padding="lg" radius="md" withBorder mb='md' style={{ width: '49%', backgroundColor: '#EBEDF4' }}>
-                <Card.Section>
-                  <Image
-                    src={image}
-                    style={{
-                      height: '100%',
-                      width: '100%',
-                      objectFit: 'fill'
-                    }}
-                    alt="Disection of right crura.  (Comment)"
-                  />
-                  <Text weight={500}>Disection of right crura.  (Comment)</Text>
-                </Card.Section>
+            {/* Remarks and Medication */}
+            <SimpleGrid cols={2} spacing="lg">
+              <Card shadow="sm" padding="sm" radius="md" withBorder style={{ backgroundColor: '#EBEDF4' }}>
+                <Text weight={600} size="md" mb="xs">
+                  Remarks
+                </Text>
+                <Text size="sm">{remarks}</Text>
               </Card>
-            ))}
+              <Card shadow="sm" padding="sm" radius="md" withBorder style={{ backgroundColor: '#EBEDF4' }}>
+                <Text weight={600} size="md" mb="xs">
+                  Medication
+                </Text>
+                <Text size="sm">{medication}</Text>
+              </Card>
+            </SimpleGrid>
 
-
-          </div>
-          <Divider size="md" />
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', gap: '5px' }}>
-              <div>
-                <Image maw={40} radius="md" src={logo} alt="Random image" />
-              </div>
-              <div style={{ padding: '0.7rem 0' }}>
-                <div><b>Name of Sotware or Company</b></div>
-                <div>www.xyzsoftware.com</div>
-              </div>
+            {/* Images Section */}
+            <div style={{ marginTop: '1rem' }}>
+              <SimpleGrid cols={2} spacing="sm">
+                {selectedImages.map((image, index) => (
+                  <Card key={index} shadow="sm" padding="sm" radius="md" withBorder>
+                    <Card.Section>
+                      <Image
+                        src={image}
+                        alt={`Image ${index + 1}`}
+                        style={{
+                          height: '200px',
+                          width: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </Card.Section>
+                    <Text weight={500} align="center" mt="sm">
+                      Image {index + 1}
+                    </Text>
+                  </Card>
+                ))}
+              </SimpleGrid>
             </div>
-            <div style={{ padding: '1.7rem 0' }}>Consulted By______________</div>
           </div>
-        </Card>
-
-      </div>
+          <div>
+            {/* Footer Section */}
+            <Divider size="md" my="lg" />
+            <Flex justify="space-between" align="center">
+              <Flex align="center" gap="sm">
+                <Image maw={40} radius="md" src={logo} alt="Software Logo" />
+                <div>
+                  <Text weight={600} size="sm">
+                    Name of Software or Company
+                  </Text>
+                  <Text size="xs">www.xyzsoftware.com</Text>
+                </div>
+              </Flex>
+              <Text size="sm">Consulted By ______________</Text>
+            </Flex>
+          </div>
+        </Flex>
+      </Card>
     </div>
-  )
-}
+  );
+};
 
-export default HospitalCard
+export default HospitalCard;

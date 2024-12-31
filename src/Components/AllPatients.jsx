@@ -147,7 +147,7 @@
 
 //   const handleDelete = async () => {
 //     const selectedIds = Object.keys(selectedRows).filter((id) => selectedRows[id]);
-    
+
 //     if (selectedIds.length === 0) {
 //       alert("Please select at least one patient to delete.");
 //       return;
@@ -158,7 +158,7 @@
 //         "/delete_patients/multiple-delete/",
 //         {  withCredentials:true,
 //           data: { ids: selectedIds },
-          
+
 //         },
 //         {
 //           headers:{'Content-Type':'application/json'}
@@ -329,7 +329,7 @@
 
 //       <Menu.Dropdown p='md'>
 //         <Menu.Item icon={<IoPersonOutline size={24}  style={{backgroundColor:'#EBEDF4',borderRadius:'50%',padding:'5px'}}/>}>Edit Profile</Menu.Item>
-        
+
 //         <Menu.Divider />
 
 //         <Menu.Item icon={< FaRegFileAlt size={24} style={{backgroundColor:'#EBEDF4',borderRadius:'45%',padding:'5px'}}/>}>Header Setting</Menu.Item>
@@ -339,7 +339,7 @@
 //         > <BiLogOut style={{marginRight:'0.5rem',fontSize:'large'}} />Logout</Button>
 //       </Menu.Dropdown>
 //     </Menu>
- 
+
 //             </div>
 //           </div>
 //           <div
@@ -354,7 +354,7 @@
 //               All Patients <small style={{ fontFamily: "intert", fontWeight: "200" }}>{data.length}</small>
 //             </h2>
 //             <div style={{ display: "flex", alignItems: "center" }}>
-              
+
 //               <div
 //                 style={{
 //                   backgroundColor: "#EBEDF4",
@@ -496,7 +496,7 @@
 //                     transition: "background-color 0.3s ease",
 //                   }}
 //                   onClick={(e) => { 
-                   
+
 //                     // Prevent navigation if a checkbox is clicked
 //                     if (e.target.type !== "checkbox") {
 //                       localStorage.setItem("patientid", item.id);
@@ -533,7 +533,7 @@
 //                        >
 //                          ⋮
 //                        </span>
-                       
+
 //                     <input
 //                       type="checkbox"
 //                       id={`checkbox-${item.id}`}
@@ -785,11 +785,11 @@
 //               onClick={handleDelete}
 //             />
 //           </div>
-              
+
 //             </div>
-            
+
 //           </div>
-         
+
 //           <Table striped highlightOnHover withBorder withColumnBorders mb={"xs"} style={{ fontFamily: "inter" }}>
 //             <thead>
 //               <tr style={{ backgroundColor: "lightgray" }}>
@@ -879,7 +879,7 @@
 
 
 import React, { useState, useEffect } from "react";
-import { Card, Table, Image, Text, Group, TextInput, Button,Menu } from "@mantine/core";
+import { Card, Table, Image, Text, Group, TextInput, Button, Menu, ActionIcon } from "@mantine/core";
 import Vector from "../assets/Vector.jpg";
 import Img2 from "../assets/Img2.jpg";
 import Img3 from "../assets/Component 13.jpg";
@@ -893,6 +893,7 @@ import { FaRegFileAlt } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
 import { useCookies } from "react-cookie";
 import { format } from "date-fns";
+import setting from "../assets/settings.png"
 // axios.defaults.withCredentials = true;
 // axios.defaults.xsrfCookieName='csrftoken';
 // axios.defaults.xsrfHeaderName='x-csrftoken'
@@ -908,9 +909,9 @@ const AllPatients = () => {
   const selectedCount = Object.values(selectedRows).filter((isSelected) => isSelected).length;
 
   const formatDateTime = (date) => {
-          let dateString = new Date(date)
-          return format(dateString, "dd MMMM yyyy | h:mm a");
-      };
+    let dateString = new Date(date)
+    return format(dateString, "dd MMMM yyyy | h:mm a");
+  };
 
   useEffect(() => {
     fetchPatients();
@@ -918,12 +919,12 @@ const AllPatients = () => {
 
   const fetchPatients = async () => {
     try {
-      const response = await client.get("/all/",{
-        withCredentials:true
+      const response = await client.get("/all/", {
+        withCredentials: true
       });
       console.log(response)
       console.log("API Response:", response.data);
-      setData(response.data);
+      setData(response.data.reverse());
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -950,7 +951,7 @@ const AllPatients = () => {
 
   const handleDelete = async () => {
     const selectedIds = Object.keys(selectedRows).filter((id) => selectedRows[id]);
-    
+
     if (selectedIds.length === 0) {
       alert("Please select at least one patient to delete.");
       return;
@@ -959,16 +960,17 @@ const AllPatients = () => {
     try {
       const response = await client.delete(
         "/delete_patients/multiple-delete/",
-        {  withCredentials:true,
+        {
+          withCredentials: true,
           data: { ids: selectedIds },
-          
+
         },
         {
-          headers:{'Content-Type':'application/json'}
+          headers: { 'Content-Type': 'application/json' }
         }
       );
       console.log(response)
-      console.log({selectedIds})
+      console.log({ selectedIds })
       console.log("Delete Response:", response.data);
       const updatedData = data.filter((item) => !selectedIds.includes(String(item.id)));
       setSelectedRows({});
@@ -977,28 +979,28 @@ const AllPatients = () => {
       console.error("Error deleting patients:", error);
     }
   };
-  const navigate=useNavigate()
+  const navigate = useNavigate()
 
-  const Logout = async ()=>{
-    try{
-    let logoutdata = await client.post('/logout/',{
-    })
-    console.log(logoutdata)
-    console.log(logoutdata.data)
-    if(logoutdata.data.message === 'Successfully_logged_out.'){
-      localStorage.clear()
-      removeToken(['sessionid']);
-      console.log("All localStorage items cleared.");
-      navigate('/')
+  const Logout = async () => {
+    try {
+      let logoutdata = await client.post('/logout/', {
+      })
+      console.log(logoutdata)
+      console.log(logoutdata.data)
+      if (logoutdata.data.message === 'Successfully_logged_out.') {
+        localStorage.clear()
+        removeToken(['sessionid']);
+        console.log("All localStorage items cleared.");
+        navigate('/')
+      }
+      else {
+        console.log('Error while logout')
+      }
     }
-    else{
-      console.log('Error while logout')
+    catch (error) {
+      console.error('Error', error)
     }
   }
-  catch(error){
-    console.error('Error',error)
-  }
-  } 
 
   const filteredData = data.filter(
     (item) =>
@@ -1008,9 +1010,9 @@ const AllPatients = () => {
       (item.gender && item.gender.toLowerCase().includes(searchTerm.toLocaleLowerCase())) ||
       (item.procedure && item.procedure.toLowerCase().includes(searchTerm.toLocaleLowerCase())) ||
       (item.referred && item.referred.toLowerCase().includes(searchTerm.toLocaleLowerCase())) ||
-      (item.id && String(item.id).includes(searchTerm))||
-      (item.age && String(item.age).includes(searchTerm))||
-      (item.datetime&&(String(item.datetime).includes(searchTerm)))
+      (item.id && String(item.id).includes(searchTerm)) ||
+      (item.age && String(item.age).includes(searchTerm)) ||
+      (item.datetime && (String(item.datetime).includes(searchTerm)))
 
   );
 
@@ -1064,41 +1066,41 @@ const AllPatients = () => {
                 justifyContent: "center",
                 width: "50px",
                 height: "35px",
-                borderRadius: "var(--Roundness6round)",
+                borderRadius: "4px",
                 backgroundColor: "#EBEDF4",
                 marginLeft: "1rem",
                 marginTop: "3px",
               }}
             >
-              <Image src={Img2} maw={25} alt="Notification Icon" style={{ backgroundColor: "#EBEDF4" }} />
+              <Image src={setting} maw={18} alt="Notification Icon" style={{ backgroundColor: "#EBEDF4" }} />
             </div>
             <div style={{ marginLeft: "1rem" }}>
-              <Button  color="violet" onClick={()=>{navigate('/patientinfo')}} > Add new patient
+              <Button color="violet" onClick={() => { navigate('/patientinfo') }} > Add new patient
               </Button>
             </div>
             <div style={{ marginLeft: "0.5rem" }}>
               {/* <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} /> */}
-              <Menu shadow="md" width={250} offset={8} withArrow arrowPosition="center" 
-              radius={10} position="bottom-end">
-      <Menu.Target >
-        <Button variant="white"  style={{marginRight:'-1rem'}}> 
-          <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} />
-        </Button>
-      </Menu.Target>
+              <Menu shadow="md" width={250} offset={8} withArrow arrowPosition="center"
+                radius={10} position="bottom-end">
+                <Menu.Target >
+                  <Button variant="white" style={{ marginRight: '-1rem' }}>
+                    <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} />
+                  </Button>
+                </Menu.Target>
 
-      <Menu.Dropdown p='md'>
-        <Menu.Item icon={<IoPersonOutline size={24}  style={{backgroundColor:'#EBEDF4',borderRadius:'50%',padding:'5px'}}/>}>Edit Profile</Menu.Item>
-        
-        <Menu.Divider />
+                <Menu.Dropdown p='md'>
+                  <Menu.Item icon={<IoPersonOutline size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}>Edit Profile</Menu.Item>
 
-        <Menu.Item icon={< FaRegFileAlt size={24} style={{backgroundColor:'#EBEDF4',borderRadius:'45%',padding:'5px'}}/>}>Header Setting</Menu.Item>
-        <Button variant="light" color="red" fullWidth mt={'1rem'} mb={'1rem'}
-        type="submit"
-        onClick={Logout}
-        > <BiLogOut style={{marginRight:'0.5rem',fontSize:'large'}} />Logout</Button>
-      </Menu.Dropdown>
-    </Menu>
- 
+                  <Menu.Divider />
+
+                  <Menu.Item icon={< FaRegFileAlt size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '45%', padding: '5px' }} />}>Header Setting</Menu.Item>
+                  <Button variant="light" color="red" fullWidth mt={'1rem'} mb={'1rem'}
+                    type="submit"
+                    onClick={Logout}
+                  > <BiLogOut style={{ marginRight: '0.5rem', fontSize: 'large' }} />Logout</Button>
+                </Menu.Dropdown>
+              </Menu>
+
             </div>
           </div>
           <div
@@ -1110,10 +1112,10 @@ const AllPatients = () => {
             }}
           >
             <h2 style={{ fontFamily: "inter" }}>
-              All Patients <small style={{ fontFamily: "intert", fontWeight: "200" }}>{data.length}</small>
+              All Patients <small style={{ fontWeight: "200", fontSize: "18px" }}>{data.length}</small>
             </h2>
             <div style={{ display: "flex", alignItems: "center" }}>
-              
+
               <div
                 style={{
                   backgroundColor: "#EBEDF4",
@@ -1125,20 +1127,21 @@ const AllPatients = () => {
                 }}
               >
                 <Text style={{ fontSize: "18px", fontFamily: "inter" }}>
-                <input
-                type="checkbox"
-                checked={selectAll}
-                onChange={handleSelectAll}
-                style={{
-                  cursor: "pointer",
-                  marginRight: "10px",
-                  borderRadius: "3px",
-                  width: "10px",
-                  height: "10px",
-                  transform: "scale(1.5)",
-                }}
-               />
-                 {selectedCount} Selected
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAll}
+                    style={{
+                      cursor: "pointer",
+                      marginRight: "10px",
+                      borderRadius: "3px",
+                      width: "12px",
+                      height: "12px",
+                      transform: "scale(1.5)",
+
+                    }}
+                  />
+                  {selectedCount} Selected
                 </Text>
               </div>
               <div
@@ -1153,7 +1156,7 @@ const AllPatients = () => {
                 }}
               >
                 <FiTrash2
-                  size={25}
+                  size={20}
                   color="#FF6B6B"
                   style={{ cursor: "pointer" }}
                   onClick={handleDelete}
@@ -1163,9 +1166,9 @@ const AllPatients = () => {
             </div>
           </div>
 
-          <Table striped highlightOnHover withBorder withColumnBorders mb={"xs"} style={{ fontFamily: "inter" }}>
+          <Table striped highlightOnHover withBorder withColumnBorders mb={"xs"}>
             <thead>
-              <tr style={{ backgroundColor: "lightgray" }}>
+              <tr style={{ backgroundColor: "#EBEDF4" }}>
                 <th>Name</th>
                 <th>Patient ID</th>
                 <th>Age</th>
@@ -1180,22 +1183,22 @@ const AllPatients = () => {
             </thead>
             <tbody>
               {filteredData.map((item) => (
-                <tr 
+                <tr
                   key={item.id}
                   style={{
-                    cursor:'pointer',
+                    cursor: 'pointer',
                     backgroundColor: selectedRows[item.id] ? "#8158F529" : "transparent",
                     borderRadius: "16px",
                     transition: "background-color 0.3s ease",
                   }}
-                  onClick={(e) => { 
-                   
+                  onClick={(e) => {
+
                     // Prevent navigation if a checkbox is clicked
                     if (e.target.type !== "checkbox") {
                       localStorage.setItem("patientid", item.id);
-                      const patientData=JSON.stringify(item)
-                      localStorage.setItem('selectedpatient',patientData)
-                      navigate("/cameronwillamson"); 
+                      const patientData = JSON.stringify(item)
+                      localStorage.setItem('selectedpatient', patientData)
+                      navigate("/cameronwillamson");
                     }
                   }}
                 >
@@ -1208,39 +1211,39 @@ const AllPatients = () => {
                   <td>{item.patient_email}</td>
                   <td>{item.referred}</td>
                   <td>
-                   <div className="accent"
+                    <div className="accent"
                       style={{
-                         display: "flex",
-                         justifyContent: "space-between",
-                         alignItems: "center",
-                       }}
-                     >
-                       <span>{formatDateTime(item.updated_at)}</span>
-                       <span
-                         style={{
-                           cursor: "pointer",
-                           fontSize: "18px",
-                           marginLeft: "10px",
-                           color: "#999",
-                         }}
-                       >
-                         ⋮
-                       </span>
-                       
-                    <input
-                      type="checkbox"
-                      id={`checkbox-${item.id}`}
-                      checked={!!selectedRows[item.id]}
-                      onChange={() => handleCheckboxChange(item.id)}
-                      style={{
-                        cursor: "pointer",
-                        marginLeft: "10px",
-                        borderRadius: "3px",
-                        width: "10px",
-                        height: "10px",
-                        transform: "scale(1.5)",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                       }}
-                    />
+                    >
+                      <span>{formatDateTime(item.updated_at)}</span>
+                      <span
+                        style={{
+                          cursor: "pointer",
+                          fontSize: "18px",
+                          marginLeft: "10px",
+                          color: "#999",
+                        }}
+                      >
+                        ⋮
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        id={`checkbox-${item.id}`}
+                        checked={!!selectedRows[item.id]}
+                        onChange={() => handleCheckboxChange(item.id)}
+                        style={{
+                          cursor: "pointer",
+                          marginLeft: "10px",
+                          borderRadius: "3px",
+                          width: "10px",
+                          height: "10px",
+                          transform: "scale(1.5)",
+                        }}
+                      />
                     </div>
                   </td>
                 </tr>
