@@ -165,7 +165,10 @@ const Videocapturing = () => {
                     </Flex>
 
                     <Group>
-                        <Button variant='light' color='red' radius={8} onClick={() => navigate('/cameronwillamson')}>Cancel capture</Button>
+                        <Button variant='light' color='red' radius={8} onClick={() => {
+                            navigate('/allpatients')
+                            localStorage.clear()
+                        }}>Cancel capture</Button>
                         <Button bg='#8158F5' radius={8} onClick={() => navigate("/selectpicture")}>Save & Continue</Button>
                     </Group>
                 </Flex>

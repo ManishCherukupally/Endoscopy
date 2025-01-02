@@ -279,12 +279,17 @@ const Login = () => {
         navigate('/allpatients');
         console.log(response.data.accessToken);
       } else if (response.data.status === 'unauthorized_user') {
+        setLoader(false)
+
         form.setFieldError('username', 'Invalid username or password');
       } else {
+        setLoader(false)
+
         console.error('Unexpected response:', response);
         form.setFieldError('username', 'Invalid credentials');
       }
     } catch (error) {
+      setLoader(false)
       console.error('Login failed:', error.response?.data || error.message);
       form.setFieldError('username', error.response?.data?.detail || 'Invalid username/email or password');
     }
