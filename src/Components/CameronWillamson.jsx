@@ -723,35 +723,34 @@ const CameronWilliamson = () => {
   };
 
   useEffect(() => {
-
     const Report = async () => {
-      const patientId = localStorage.getItem('patientid'); // Corrected key name
+      const patientId = localStorage.getItem('patientid'); // Get patient ID from localStorage
 
       if (patientId) {
-        // setPatientDetails(patientId); // Set state from localStorage
-        console.log("selected patient Id=", patientId)
+        console.log("Selected patient ID =", patientId);
 
         try {
           const PatientReport = await client.get('/patient_report_file/', {
             withCredentials: true,
             params: { patient_id: patientId },
-          },
-            // Corrected to `params`
-            {
-              headers: { 'Content-Type': 'application/json' },
-            },// Fixed header location
-          );
+            headers: { 'Content-Type': 'application/json' },
+          });
+
           if (PatientReport.data.status) {
-            setnoRecords(true)
+            setnoRecords(true);
+            return;
           }
-          // console.log('Patient Report:', PatientReport.data.patient_reports);
-          setRecords(PatientReport.data.patient_reports)
-          // console.log("length:",PatientReport.data.patient_reports.length)
+
+          const records = PatientReport.data.patient_reports;
+          if (records && records.length > 0) {
+            setRecords(records.reverse()); // Reverse the array and set to state
+          } else {
+            setnoRecords(true);
+          }
 
         } catch (error) {
           console.error('Error fetching patient report:', error);
-          setnoRecords(true)
-
+          setnoRecords(true);
         }
       } else {
         console.error('No patient ID found in local storage');
@@ -760,6 +759,7 @@ const CameronWilliamson = () => {
 
     Report();
   }, []);
+
 
   const LatestRecord = (records) => {
     if (!records || records.length === 0) {
@@ -771,199 +771,193 @@ const CameronWilliamson = () => {
   };
 
   const navigate = useNavigate()
-  const renderRecords = () => {
-    records.map((item) => (
-      <div
-        key={item.id}
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 0',
-          borderBottom: '1px solid #E2E8F0',
-        }}
-      >
-        {/* Date */}
-        <Text
-          style={{
-            flex: 2,
-            margin: 0,
-            color: '#333',
-            fontWeight: 500,
-            marginRight: "20%"
-          }}
-        >
-          {item.date} || {item.time}
-        </Text>
+  // const renderRecords = () => {
+  //   records.map((item) => (
+  //     <div
+  //       key={item.id}
+  //       style={{
+  //         display: 'flex',
+  //         justifyContent: 'space-between',
+  //         alignItems: 'center',
+  //         padding: '12px 0',
+  //         borderBottom: '1px solid #E2E8F0',
+  //       }}
+  //     >
+  //       {/* Date */}
+  //       <Text
+  //         style={{
+  //           flex: 2,
+  //           margin: 0,
+  //           color: '#333',
+  //           fontWeight: 500,
+  //           marginRight: "20%"
+  //         }}
+  //       >
+  //         {item.date} || {item.time}
+  //       </Text>
 
 
-        {/* Preview Button */}
-        <Modal opened={opend} onClose={close} title="Preview" fullScreen>
+  //       {/* Preview Button */}
+  //       <Modal opened={opend} onClose={close} title="Preview" fullScreen>
 
-          <Card>
-            {/* {fileContent}
-        <Document file={item.report_file}>
-  
-        </Document> */}
-            <iframe
-              src={url}
-              width="100%"
-              height="600px"
-              title="Patient Report"
-            />
-          </Card>
-          {/* </Card> */}
-        </Modal>
-        <Group position="center">
-          <Button
-            variant="outline"
-            style={{
-              // width: '110px', // Hug width
-              // height: '44px', // Fixed height
-              borderColor: 'black', // Border color
-              borderRadius: '8px', // Adjust border radius for rounded corners
-              borderWidth: '1px', // Border width
-              padding: '12px 24px', // Padding: Top, Right, Bottom, Left
-              textAlign: 'center', // Center text alignment
-              marginLeft: '5rem', // Additional spacing from the left
-              display: 'flex', // Ensure content is centered inside the button
-              alignItems: 'center', // Vertical center
-              justifyContent: 'center', // Horizontal center
-              gap: '8px', // Space between icon or elements inside the button
-              color: "black"
-            }}
-            // onClick={()=>{navigate(item.report_file)}}
-            onClick={() => {
-              // handleFilePreview(item.report_file)
-              open()
-              pdfResult(item.report_file)
-              // setUrl(item.report_file)
-              // handlePdfConvert(item.report_file)
-            }}
-          >
-            Preview
-          </Button>
-        </Group>
+  //         <Card>
+  //           {/* {fileContent}
+  //       <Document file={item.report_file}>
 
-
-
-        {/* Export Select */}
-
-        {/* <Select
-            placeholder="Export Report as"
-            data={['PDF', 'DOCX']}
-            style={{
-              flex: 1.5,
-              maxWidth: '150px',
-              fontSize: '14px',
-              marginLeft:"12px",
-              
-            }}
-  
-          /> */}
-        <Button
-          variant="outline"
-          style={{
-            width: 'auto',
-            height: '38px',
-            borderColor: 'black',
-            borderRadius: '8px',
-            borderWidth: '1px',
-            padding: '12px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between', // Spacing between button content
-            gap: '8px', // Gap between button content and Select
-            backgroundColor: 'white', // White background
-            textAlign: 'center', // Center text alignment
-            marginLeft: '5rem', // Spacing from the left
-            color: 'black', // Text color
-            cursor: 'pointer', // Pointer cursor for hover effect
-          }}
-        >
-          {/* Select Dropdown */}
-          <Select
-            placeholder="Export Report as"
-            data={['PDF', 'DOCX']}
-            styles={{
-              input: {
-                border: 'none', // Remove border for seamless integration
-                fontSize: '14px', // Font size for readability
-                color: 'black', // Text color
-              },
-              dropdown: {
-                backgroundColor: 'white', // Background color for dropdown
-                borderRadius: '8px', // Rounded corners for dropdown
-                border: '1px solid black', // Border for dropdown
-              },
-              item: {
-                '&[data-hovered]': {
-                  backgroundColor: '#E2E8F0', // Hover color for dropdown items
-                  color: 'black', // Hover text color
-                },
-              },
-            }}
-            style={{
-              flex: 1,
-              maxWidth: '150px', // Restrict dropdown width
-              fontSize: '14px', // Font size
-              color: 'black', // Text color
-            }}
-          />
-        </Button>
-
-        {/* Export Button */}
-        <Button
-          style={{
-            width: '6%', // Adjust width as a percentage of the container
-            height: '38px', // Fixed height (or use percentage like '10%')
-            backgroundColor: '#D3D3D3', // Background color
-            color: 'black', // Text color
-            textAlign: 'center', // Center text alignment
-            marginLeft: '5rem', // Spacing from the left
-            fontSize: '16px', // Adjust font size as needed
-            borderRadius: '8px', // Rounded corners
-            // border: '1px solid #5B21B6', // Add a border if needed
-            display: 'flex', // Ensure button content is aligned
-            alignItems: 'center', // Center content vertically
-            justifyContent: 'center', // Center content horizontally
-            cursor: 'pointer', // Change cursor on hover
-          }}
-        >
-          Export
-        </Button>
-        <div style={{
-          width: "44px", // Circle diameter
-          height: "44px", // Circle diameter
-          backgroundColor: "#EBEDF4", // Background color
-          borderRadius: "50%", // Makes it a perfect circle
-          display: "flex", // Flexbox to center content
-          justifyContent: "center", // Horizontally center the icon
-          alignItems: "center", // Vertically center the icon
-          marginLeft: "2rem"
-        }}>
-          <IconPencil
-            size={16}
-            color="#4B5563"
-            style={{
-              flex: 0.5,
-              cursor: 'pointer',
-              textAlign: 'center',
-            }}
-          />
-        </div>
-
-        {/* Edit Icon */}
-
-      </div>
-    ))
-  }
+  //       </Document> */}
+  //           <iframe
+  //             src={`${client.defaults.baseURL}/media${url}`}
+  //             width="100%"
+  //             height="600px"
+  //             title="Patient Report"
+  //           />
+  //         </Card>
+  //         {/* </Card> */}
+  //       </Modal>
+  //       <Group position="center">
+  //         <Button
+  //           variant="outline"
+  //           style={{
+  //             // width: '110px', // Hug width
+  //             // height: '44px', // Fixed height
+  //             borderColor: 'black', // Border color
+  //             borderRadius: '8px', // Adjust border radius for rounded corners
+  //             borderWidth: '1px', // Border width
+  //             padding: '12px 24px', // Padding: Top, Right, Bottom, Left
+  //             textAlign: 'center', // Center text alignment
+  //             marginLeft: '5rem', // Additional spacing from the left
+  //             display: 'flex', // Ensure content is centered inside the button
+  //             alignItems: 'center', // Vertical center
+  //             justifyContent: 'center', // Horizontal center
+  //             gap: '8px', // Space between icon or elements inside the button
+  //             color: "black"
+  //           }}
+  //           // onClick={()=>{navigate(item.report_file)}}
+  //           onClick={() => {
+  //             // handleFilePreview(item.report_file)
+  //             open()
+  //             pdfResult(item.report_file)
+  //             // setUrl(item.report_file)
+  //             // handlePdfConvert(item.report_file)
+  //           }}
+  //         >
+  //           Preview
+  //         </Button>
+  //       </Group>
 
 
 
+  //       {/* Export Select */}
 
+  //       {/* <Select
+  //           placeholder="Export Report as"
+  //           data={['PDF', 'DOCX']}
+  //           style={{
+  //             flex: 1.5,
+  //             maxWidth: '150px',
+  //             fontSize: '14px',
+  //             marginLeft:"12px",
 
+  //           }}
 
+  //         /> */}
+  //       <Button
+  //         variant="outline"
+  //         style={{
+  //           width: 'auto',
+  //           height: '38px',
+  //           borderColor: 'black',
+  //           borderRadius: '8px',
+  //           borderWidth: '1px',
+  //           padding: '12px 16px',
+  //           display: 'flex',
+  //           alignItems: 'center',
+  //           justifyContent: 'space-between', // Spacing between button content
+  //           gap: '8px', // Gap between button content and Select
+  //           backgroundColor: 'white', // White background
+  //           textAlign: 'center', // Center text alignment
+  //           marginLeft: '5rem', // Spacing from the left
+  //           color: 'black', // Text color
+  //           cursor: 'pointer', // Pointer cursor for hover effect
+  //         }}
+  //       >
+  //         {/* Select Dropdown */}
+  //         <Select
+  //           placeholder="Export Report as"
+  //           data={['PDF', 'DOCX']}
+  //           styles={{
+  //             input: {
+  //               border: 'none', // Remove border for seamless integration
+  //               fontSize: '14px', // Font size for readability
+  //               color: 'black', // Text color
+  //             },
+  //             dropdown: {
+  //               backgroundColor: 'white', // Background color for dropdown
+  //               borderRadius: '8px', // Rounded corners for dropdown
+  //               border: '1px solid black', // Border for dropdown
+  //             },
+  //             item: {
+  //               '&[data-hovered]': {
+  //                 backgroundColor: '#E2E8F0', // Hover color for dropdown items
+  //                 color: 'black', // Hover text color
+  //               },
+  //             },
+  //           }}
+  //           style={{
+  //             flex: 1,
+  //             maxWidth: '150px', // Restrict dropdown width
+  //             fontSize: '14px', // Font size
+  //             color: 'black', // Text color
+  //           }}
+  //         />
+  //       </Button>
+
+  //       {/* Export Button */}
+  //       <Button
+  //         style={{
+  //           width: '6%', // Adjust width as a percentage of the container
+  //           height: '38px', // Fixed height (or use percentage like '10%')
+  //           backgroundColor: '#D3D3D3', // Background color
+  //           color: 'black', // Text color
+  //           textAlign: 'center', // Center text alignment
+  //           marginLeft: '5rem', // Spacing from the left
+  //           fontSize: '16px', // Adjust font size as needed
+  //           borderRadius: '8px', // Rounded corners
+  //           // border: '1px solid #5B21B6', // Add a border if needed
+  //           display: 'flex', // Ensure button content is aligned
+  //           alignItems: 'center', // Center content vertically
+  //           justifyContent: 'center', // Center content horizontally
+  //           cursor: 'pointer', // Change cursor on hover
+  //         }}
+  //       >
+  //         Export
+  //       </Button>
+  //       <div style={{
+  //         width: "44px", // Circle diameter
+  //         height: "44px", // Circle diameter
+  //         backgroundColor: "#EBEDF4", // Background color
+  //         borderRadius: "50%", // Makes it a perfect circle
+  //         display: "flex", // Flexbox to center content
+  //         justifyContent: "center", // Horizontally center the icon
+  //         alignItems: "center", // Vertically center the icon
+  //         marginLeft: "2rem"
+  //       }}>
+  //         <IconPencil
+  //           size={16}
+  //           color="#4B5563"
+  //           style={{
+  //             flex: 0.5,
+  //             cursor: 'pointer',
+  //             textAlign: 'center',
+  //           }}
+  //         />
+  //       </div>
+
+  //       {/* Edit Icon */}
+
+  //     </div>
+  //   ))
+  // }
 
   const handleModalOpen = () => {
     setOpened(true);
@@ -1034,7 +1028,7 @@ const CameronWilliamson = () => {
             <Modal opened={opend} onClose={close} title="Preview" fullScreen>
               <Card>
                 <iframe
-                  src={url}
+                  src={`${client.defaults.baseURL}/media${url}`}
                   width="100%"
                   height="600px"
                   title="Patient Report"
@@ -1260,7 +1254,7 @@ const CameronWilliamson = () => {
   
         </Document> */}
                       <iframe
-                        src={url}
+                        src={`${client.defaults.baseURL}/media${url}`}
                         width="100%"
                         height="600px"
                         title="Patient Report"
@@ -1450,7 +1444,7 @@ const CameronWilliamson = () => {
   
         </Document> */}
                     <iframe
-                      src={url}
+                      src={`${client.defaults.baseURL}/media${url}`}
                       width="100%"
                       height="600px"
                       title="Patient Report"
