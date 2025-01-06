@@ -74,7 +74,7 @@ const Videocapturing = () => {
     }, []);
 
     const videoConstraints = {
-        width: 750,
+        width: 900,
         height: 676,
         facingMode: "user",
         deviceId: externalDeviceId,
@@ -91,22 +91,13 @@ const Videocapturing = () => {
     };
 
     const handleCapture = () => {
-        const videoElement = document.getElementById("live-video");
-        if (videoElement) {
-            const canvas = document.createElement("canvas");
-            canvas.width = videoElement.width;
-            canvas.height = videoElement.height;
-            const context = canvas.getContext("2d");
-            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
-            const imageSrc = canvas.toDataURL("image/png");
-            const updatedImages = [...capturedImages.slice(-20), imageSrc]; // Keep only the last 9 images
+        if (webcamRef.current) {
+            const imageSrc = webcamRef.current.getScreenshot();
+            const updatedImages = [...capturedImages, imageSrc];
             setCapturedImages(updatedImages);
             saveImagesToLocalStorage(updatedImages); // Save to localStorage
         }
     };
-
-
 
     const handleDeleteImage = (index) => {
         window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages.filter((_, i) => i !== index)))
@@ -233,10 +224,10 @@ const Videocapturing = () => {
 
                 <Grid>
                     <Grid.Col span={9}>
-                        <div style={{ position: "relative", width: "750px", height: "676px" }}>
+                        <div style={{ position: "relative", width: "900px", height: "676px", margin: "0 auto" }}>
                             {externalDeviceId ? (
                                 <>
-                                    {/* <Webcam
+                                    <Webcam
                                         ref={webcamRef}
                                         audio={false}
                                         videoConstraints={videoConstraints}
@@ -245,15 +236,6 @@ const Videocapturing = () => {
                                             height: "100%",
                                             borderRadius: "12px",
                                         }}
-                                    /> */}
-                                    <img
-                                        id="live-video"
-                                        ref={webcamRef}
-                                        src="http://127.0.0.1:8000/video_feed/"
-                                        autoPlay={true}
-                                        controls={false}
-                                        crossOrigin="anonymous"
-                                        style={{ width: 750, height: 676, borderRadius: "12px" }}
                                     />
                                     {/* Fullscreen icon positioned in the top-right corner */}
                                     <MdFullscreen
@@ -309,7 +291,7 @@ const Videocapturing = () => {
 
                                 {capturedImages.map((image, index) => (
                                     <div key={index} style={{ position: 'relative' }}>
-                                        <Image src={image} alt={`Captured ${index + 1}`} width={100} height={100} radius={12} />
+                                        <Image src={image} alt={`Captured ${index + 1}`} width={150} height={150} radius={12} />
                                         <Overlay
 
                                             position="absolute"

@@ -38,8 +38,6 @@ const ExportReport = () => {
 
     const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
     const [value, setValue] = useState(null)
-    const [fileName, setFileName] = useState(null)
-    const [reportId, setReportId] = useState(null)
     // console.log(value);
 
     // const [fileModal, setfileModal] = useState(false)
@@ -110,7 +108,6 @@ const ExportReport = () => {
             // var dateandTime = dateArray[0]
 
             var fileName = `${selectedPatient.patient_name}_${dateTime[0]}${dateTime[1].replace(/:/g, "_")}.pdf`
-            setFileName(fileName)
             pdf.save(fileName);
 
             //api need to be written here//_______________________________
@@ -123,11 +120,7 @@ const ExportReport = () => {
                 date: dateTime[0],
                 time: dateTime[1]
             })
-                .then((resp) => {
-                    setReportId(resp.data.report_id)
-                    console.log(reportId)
-                }
-
+                .then((resp) => console.log(resp.data)
                 )
             // setfileModal(true)
             // // Create a FormData object to send the file
@@ -153,31 +146,22 @@ const ExportReport = () => {
         }
     };
 
-    const handleSave = () => {
-        setReportModal(true);
-        setTimeout(() => {
-            var date = new Date()
-            var dateArray = date.toISOString().split(".")
-            var dateandTime = dateArray[0].split("T")
-            console.log(dateandTime);
 
-            handleDownloadPDF(dateandTime); // Call after the modal content is rendered
-        }, 600);
-        if (selectedImages.length > 0) {
-            window.localStorage.setItem('selectedImages', JSON.stringify(selectedImages));
-        }
-
-    }
     const handleExportReport = () => {
         if (value === 'mail') {
-            client.post("/send-email/", {
-                email: selectedPatient.patient_email,
-                name: selectedPatient.patient_name,
-                report_id: reportId
-            })
-                .then((resp) => console.log(resp.data))
-        }
+            setReportModal(true);
+            setTimeout(() => {
+                var date = new Date()
+                var dateArray = date.toISOString().split(".")
+                var dateandTime = dateArray[0].split("T")
+                console.log(dateandTime);
 
+                handleDownloadPDF(dateandTime); // Call after the modal content is rendered
+            }, 600);
+            if (selectedImages.length > 0) {
+                window.localStorage.setItem('selectedImages', JSON.stringify(selectedImages));
+            }
+        }
         else if (value === 'whatsapp') {
             window.open("https://web.whatsapp.com", "_blank");
         }
@@ -254,7 +238,7 @@ const ExportReport = () => {
                         <ActionIcon radius={8} h={44} w={50} size={"lg"} style={{ border: "1px solid black" }} c={"black"}
                             onClick={(handlePrint)}
                         ><TbPrinter /></ActionIcon>
-                        <Button color='violet' radius={8} h={44} onClick={handleSave}>Save</Button>
+                        {/* <Button color='violet' radius={8} h={44}>Save</Button> */}
                         <Card withBorder p={'0.3rem'} radius={8} pl={"1rem"} style={{ overflow: "visible", position: "relative" }}>
                             <Flex gap={15} align={"center"}>
                                 <Text fz={14}>Export Report as</Text>
