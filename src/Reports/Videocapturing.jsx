@@ -91,13 +91,22 @@ const Videocapturing = () => {
     };
 
     const handleCapture = () => {
-        if (webcamRef.current) {
-            const imageSrc = webcamRef.current.getScreenshot();
-            const updatedImages = [...capturedImages, imageSrc];
+        const videoElement = document.getElementById("live-video");
+        if (videoElement) {
+            const canvas = document.createElement("canvas");
+            canvas.width = videoElement.width;
+            canvas.height = videoElement.height;
+            const context = canvas.getContext("2d");
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            const imageSrc = canvas.toDataURL("image/png");
+            const updatedImages = [...capturedImages.slice(-20), imageSrc]; // Keep only the last 9 images
             setCapturedImages(updatedImages);
             saveImagesToLocalStorage(updatedImages); // Save to localStorage
         }
     };
+
+
 
     const handleDeleteImage = (index) => {
         window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages.filter((_, i) => i !== index)))
@@ -167,7 +176,7 @@ const Videocapturing = () => {
                     <Group>
                         <Button variant='light' color='red' radius={8} onClick={() => {
                             navigate('/allpatients')
-                            localStorage.clear()
+
                         }}>Cancel capture</Button>
                         <Button bg='#8158F5' radius={8} onClick={() => navigate("/selectpicture")}>Save & Continue</Button>
                     </Group>
@@ -224,10 +233,10 @@ const Videocapturing = () => {
 
                 <Grid>
                     <Grid.Col span={9}>
-                        <div style={{ position: "relative", width: "750px", height: "676px", margin: "0 auto" }}>
+                        <div style={{ position: "relative", width: "750px", height: "676px" }}>
                             {externalDeviceId ? (
                                 <>
-                                    <Webcam
+                                    {/* <Webcam
                                         ref={webcamRef}
                                         audio={false}
                                         videoConstraints={videoConstraints}
@@ -236,6 +245,15 @@ const Videocapturing = () => {
                                             height: "100%",
                                             borderRadius: "12px",
                                         }}
+                                    /> */}
+                                    <img
+                                        id="live-video"
+                                        ref={webcamRef}
+                                        src="http://127.0.0.1:8000/video_feed/"
+                                        autoPlay={true}
+                                        controls={false}
+                                        crossOrigin="anonymous"
+                                        style={{ width: 750, height: 676, borderRadius: "12px" }}
                                     />
                                     {/* Fullscreen icon positioned in the top-right corner */}
                                     <MdFullscreen

@@ -915,6 +915,7 @@ const AllPatients = () => {
 
   useEffect(() => {
     fetchPatients();
+    localStorage.clear()
   }, []);
 
   const fetchPatients = async () => {
