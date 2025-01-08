@@ -80,7 +80,7 @@ const HospitalCard = (props) => {
     <div>
       <div ref={printRef}>
         {imageChunks.map((chunk, chunkIndex) => (
-          <div
+          <div className="chunk-class"
             key={chunkIndex}
             style={{
               width: '794px',
