@@ -1090,11 +1090,15 @@ const AllPatients = () => {
                 </Menu.Target>
 
                 <Menu.Dropdown p='md'>
-                  <Menu.Item icon={<IoPersonOutline size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}>Edit Profile</Menu.Item>
+                  <Menu.Item icon={<IoPersonOutline size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
+                  // onClick={() => navigate("/register")}
+                  >Edit Profile</Menu.Item>
 
                   <Menu.Divider />
 
-                  <Menu.Item icon={< FaRegFileAlt size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '45%', padding: '5px' }} />}>Header Setting</Menu.Item>
+                  <Menu.Item icon={< FaRegFileAlt size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '45%', padding: '5px' }} />}
+                    onClick={() => navigate("/headersetting")}
+                  >Header Setting</Menu.Item>
                   <Button variant="light" color="red" fullWidth mt={'1rem'} mb={'1rem'}
                     type="submit"
                     onClick={Logout}

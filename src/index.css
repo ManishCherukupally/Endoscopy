@@ -778,7 +778,6 @@ top:1.5rem
  }
  .dropzone1{
   width: 18%;
-  height: auto;
   border-radius: 50%;
   /* margin-left: 1rem; */
  }
@@ -895,4 +894,10 @@ padding-bottom: 0.1rem;
 }
 .mantine-fp9t1o{
   margin-top: 0%;
+}
+.mantine-189n011{
+  height: 100%;
+}
+.mantine-Radio-icon{
+  display: none;
 }

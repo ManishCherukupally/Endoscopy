@@ -40,6 +40,7 @@ const ExportReport = () => {
     const [value, setValue] = useState(null)
     const [fileName, setFileName] = useState(null)
     const [reportId, setReportId] = useState(null)
+    const [comments, setComments] = useState([]);
     // console.log(value);
 
     // const [fileModal, setfileModal] = useState(false)
@@ -67,6 +68,7 @@ const ExportReport = () => {
 
     useEffect(() => {
         setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || [])
+        setComments(JSON.parse(localStorage.getItem('imageComments')) || []);
 
     }, [])
 
@@ -226,7 +228,7 @@ const ExportReport = () => {
             <div id="printContainer" style={{ display: "none" }}></div>
             <Modal fullScreen opened={reportModal} onClose={() => setReportModal(false)} closeButtonProps={{ size: "lg" }}>
                 <div ref={targetRef}>
-                    <HospitalCard remarks={remarksText} medication={medicationText} selectedImages={JSON.parse(localStorage.getItem('selectedImages')) || []} />
+                    <HospitalCard comments={comments} remarks={remarksText} medication={medicationText} selectedImages={JSON.parse(localStorage.getItem('selectedImages')) || []} />
                     {/* {printReport && window.print()} */}
                 </div>
             </Modal>
@@ -254,7 +256,9 @@ const ExportReport = () => {
                         <ActionIcon radius={8} h={44} w={50} size={"lg"} style={{ border: "1px solid black" }} c={"black"}
                             onClick={(handlePrint)}
                         ><TbPrinter /></ActionIcon>
+
                         <Button color='violet' radius={8} h={44} onClick={handleSave}>Save</Button>
+
                         <Card withBorder p={'0.3rem'} radius={8} pl={"1rem"} style={{ overflow: "visible", position: "relative" }}>
                             <Flex gap={15} align={"center"}>
                                 <Text fz={14}>Export Report as</Text>
@@ -376,6 +380,10 @@ const ExportReport = () => {
                                 radius={12}
 
                             />
+                            <Flex>
+                                <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>
+                                {comments[index] && <Text ml={"sm"}>{comments[index]}</Text>}
+                            </Flex>
                             {selectImage && (
                                 <Overlay radius={12} top={0} left={0} opacity={0}>
                                     <Flex justify="flex-end" p={10}>

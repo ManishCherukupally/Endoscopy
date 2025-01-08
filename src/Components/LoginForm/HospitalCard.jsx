@@ -6,8 +6,9 @@ import { format } from 'date-fns';
 import html2pdf from 'html2pdf.js';
 
 const HospitalCard = (props) => {
-  const { selectedImages, remarks, medication } = props;
+  const { selectedImages, remarks, medication, comments } = props;
   const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'));
+  const headerSettings = JSON.parse(localStorage.getItem('headerSettings'));
 
   const printRef = useRef(null);
 
@@ -22,12 +23,10 @@ const HospitalCard = (props) => {
     const firstChunkSize = 4;
     const subsequentChunkSize = 6;
 
-    // Add first chunk
     if (images.length > 0) {
       chunks.push(images.slice(0, firstChunkSize));
     }
 
-    // Add subsequent chunks
     for (let i = firstChunkSize; i < images.length; i += subsequentChunkSize) {
       chunks.push(images.slice(i, i + subsequentChunkSize));
     }
@@ -51,11 +50,34 @@ const HospitalCard = (props) => {
     html2pdf().set(options).from(element).save();
   };
 
+  const Header = () => (
+    <Card shadow="sm" padding="lg" radius="md" withBorder bg="black" mb={0}>
+      <Flex align="center" gap="lg">
+        <Image maw={90} radius="50%" src={logo1} alt="Hospital Logo" />
+        <div>
+          <Text weight={700} color="white" size="xl" mb="xs">
+            {headerSettings?.hospitalname || 'THE INSTITUTE FOR SPECIAL SURGERY JOY HOSPITAL'}
+          </Text>
+          <Text weight={600} color="white" size="lg" mb="xs">
+            {headerSettings?.hospitaladdress || '423 AB, 10 TH ROAD, CHEMBUR, MUMBAL - 71'}
+          </Text>
+          <Flex gap="lg">
+            <Text weight={500} color="white" size="sm">
+              TEL: {headerSettings?.hospitalnumber || '528 4298, 528 4281, 528 691'}
+            </Text>
+            {headerSettings?.hospitalemail && (
+              <Text weight={500} color="white" size="sm">
+                {headerSettings.hospitalemail}
+              </Text>
+            )}
+          </Flex>
+        </div>
+      </Flex>
+    </Card>
+  );
+
   return (
     <div>
-      {/* <button onClick={downloadPDF} style={{ marginBottom: '1rem' }}>
-        Download PDF
-      </button> */}
       <div ref={printRef}>
         {imageChunks.map((chunk, chunkIndex) => (
           <div
@@ -66,31 +88,17 @@ const HospitalCard = (props) => {
               margin: '0 auto',
               padding: '1rem',
               backgroundColor: '#fff',
-              pageBreakAfter: 'always', // Ensures a new page for each chunk
+              pageBreakAfter: 'always',
             }}
           >
             <Card shadow="sm" padding="lg" radius="md" withBorder style={{ height: '100%' }}>
               <Flex direction="column" justify="space-between" style={{ height: '100%' }}>
-                {/* Header Section */}
+                {/* Render Header for Each Page */}
+                <Header />
+
+                {/* First Page Only: Patient Details */}
                 {chunkIndex === 0 && (
                   <div>
-                    <Card shadow="sm" padding="lg" radius="md" withBorder mb="md" bg="black">
-                      <Flex align="center" gap="lg">
-                        <Image maw={90} radius="50%" src={logo1} alt="Hospital Logo" />
-                        <div>
-                          <Text weight={700} color="white" size="xl" mb="xs">
-                            THE INSTITUTE FOR SPECIAL SURGERY JOY HOSPITAL
-                          </Text>
-                          <Text weight={600} color="white" size="lg" mb="xs">
-                            423 AB, 10 TH ROAD, CHEMBUR, MUMBAL - 71
-                          </Text>
-                          <Text weight={500} color="white" size="sm">
-                            TEL: 528 4298, 528 4281, 528 691
-                          </Text>
-                        </div>
-                      </Flex>
-                    </Card>
-
                     <Card bg="#EBEDF4" radius={12} mb="md">
                       <SimpleGrid cols={6} spacing="sm">
                         <Flex direction="column">
@@ -149,25 +157,29 @@ const HospitalCard = (props) => {
                 )}
 
                 {/* Images Section */}
-                <div style={{ marginTop: '1rem' }}>
+                <div>
                   <SimpleGrid cols={2} spacing="sm">
                     {chunk.map((image, index) => (
-                      <Card key={index} shadow="sm" padding="sm" radius="md">
-                        <Card.Section>
-                          <Image
-                            src={image}
-                            alt={`Image ${index + 1}`}
-                            style={{
-                              height: '230px',
-                              width: '100%',
-                              objectFit: 'cover',
-                            }}
-                          />
-                        </Card.Section>
-                        <Text weight={500} align="center" mt="sm">
-                          Image {index + 1}
-                        </Text>
-                      </Card>
+                      <Flex direction="column" key={index}>
+                        <Card shadow="sm" padding="sm" radius="md">
+                          <Card.Section h={250}>
+                            <Image
+                              src={image}
+                              alt={`Image ${index + 1}`}
+                              style={{
+                                width: '100%',
+                                objectFit: 'cover',
+                              }}
+                            />
+                          </Card.Section>
+                        </Card>
+                        <Flex>
+                          <Text ml="lg" fw={600}>
+                            Image: {index + 1}
+                          </Text>
+                          {comments[index] && <Text ml="sm">{comments[index]}</Text>}
+                        </Flex>
+                      </Flex>
                     ))}
                   </SimpleGrid>
                 </div>

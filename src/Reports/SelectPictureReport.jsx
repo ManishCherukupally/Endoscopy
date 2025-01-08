@@ -9,82 +9,71 @@ import { TbCircleDashedPlus } from 'react-icons/tb'
 import { format } from 'date-fns'
 
 const SelectPictureReport = () => {
-    const navigate = useNavigate()
-    const [hoverCard, setHoverCard] = useState(null)
-    const [commentModal, setcommentModal] = useState(false)
-    // const [selectImage, setselectImage] = useState(false)
+    const navigate = useNavigate();
+    const [hoverCard, setHoverCard] = useState(null);
+    const [commentModal, setcommentModal] = useState(false);
+    const [currentComment, setCurrentComment] = useState(""); // For the current comment being entered
+    const [comments, setComments] = useState([]); // Array to hold comments for each image
     const imageRefs = useRef([]);
     const [capturedImages, setCapturedImages] = useState([]);
-    const [fullscreen, setFullScreen] = useState(false)
+    const [fullscreen, setFullScreen] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(null); // Track the current image index for the modal
 
-    const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'))
+    const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'));
+
+    useEffect(() => {
+        setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || []);
+        setComments(JSON.parse(localStorage.getItem('imageComments')) || []);
+    }, []);
+
     const handleFullscreen = (index) => {
-        setFullScreen(true)
+        setFullScreen(true);
         const element = imageRefs.current[index];
-
         if (element) {
-            // // Apply fullscreen styles dynamically
-            // element.style.width = "100%";
-            // element.style.height = "100%";
-            // element.style.objectFit = "contain"; // Ensures aspect ratio is maintained
-            // element.style.margin = "0";
-            // element.style.padding = "0";
-
-            // Trigger fullscreen for the element
             if (element.requestFullscreen) {
                 element.requestFullscreen();
             } else if (element.mozRequestFullScreen) {
-                element.mozRequestFullScreen(); // Firefox
+                element.mozRequestFullScreen();
             } else if (element.webkitRequestFullscreen) {
-                element.webkitRequestFullscreen(); // Chrome, Safari, Opera
+                element.webkitRequestFullscreen();
             } else if (element.msRequestFullscreen) {
-                element.msRequestFullscreen(); // IE/Edge
+                element.msRequestFullscreen();
             }
-
-            // Reset styles when exiting fullscreen
-            // document.addEventListener("fullscreenchange", () => resetStyles(element));
-            // document.addEventListener("webkitfullscreenchange", () => resetStyles(element));
-            // document.addEventListener("mozfullscreenchange", () => resetStyles(element));
-            // document.addEventListener("MSFullscreenChange", () => resetStyles(element));
         }
     };
 
-    // Reset styles after exiting fullscreen
-    // const resetStyles = (element) => {
-    //     setFullScreen(false)
-    //     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-    //         element.style.width = "";
-    //         element.style.height = "";
-    //         element.style.objectFit = "";
-    //         element.style.margin = "";
-    //         element.style.padding = "";
-    //     }
-    // };
+    const handleDeleteImage = (index) => {
+        const updatedImages = capturedImages.filter((_, i) => i !== index);
+        const updatedComments = comments.filter((_, i) => i !== index);
 
-    useEffect(() => {
-        setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || [])
+        localStorage.setItem('capturedImages', JSON.stringify(updatedImages));
+        localStorage.setItem('imageComments', JSON.stringify(updatedComments));
 
-    }, [])
+        setCapturedImages(updatedImages);
+        setComments(updatedComments);
+    };
+
+    const handleAddComment = () => {
+        if (currentImageIndex === null) return;
+
+        const updatedComments = [...comments];
+        updatedComments[currentImageIndex] = currentComment; // Update comment for the current image
+
+        setComments(updatedComments);
+        localStorage.setItem('imageComments', JSON.stringify(updatedComments));
+        setCurrentComment(""); // Clear the textarea
+        setcommentModal(false);
+    };
     const formatDateTime = (date) => {
         let dateString = new Date(date)
         return format(dateString, "dd MMMM yyyy | h:mm a");
     };
 
-
-    const handleDeleteImage = (index) => {
-        window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages.filter((_, i) => i !== index)))
-        setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || [])
-        // if (capturedImages.length > 0) {
-        //     window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages));
-        // }
-    };
-    // const toggleSelectMode = () => setselectImage(!selectImage);
-
     const timer = localStorage.getItem('time')
     return (
         <div>
-            <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} mt={"lg"} style={{ borderRadius: "1rem" }} >
-
+            <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} mt={"lg"} style={{ borderRadius: "1rem" }}>
+                {/* Header and Patient Details */}
                 <Group>
                     <ActionIcon variant='light' size={"lg"} onClick={() => navigate("/videocapturing")}><MdOutlineChevronLeft size={20} /></ActionIcon>
                     <Text fz={20} fw={600}>Select Picture & Add Title To Selected Pictures</Text>
@@ -155,68 +144,89 @@ const SelectPictureReport = () => {
                         </Flex>
                     </SimpleGrid>
                 </Card>
+                {/* Other UI Elements */}
                 <Space h={"1rem"} />
                 <SimpleGrid cols={3}>
                     {capturedImages.map((image, index) => (
-                        <div key={index} style={{ position: 'relative' }}
-                            onMouseEnter={() => setHoverCard(index)}
-                            onMouseLeave={() => setHoverCard(null)} >
-                            <Image
-                                ref={(el) => (imageRefs.current[index] = el)}
-                                src={image} alt={image.alt} width={'100%'} height={"100%"} radius={12} />
-
-                            {hoverCard === index && (
-                                <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0.5}>
-                                    <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-                                        {/* <Button size={20} >Edit</Button> */}
-                                        <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                        <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
-                                    </div>
-
-                                    <Center h={200} mx="auto">
-                                        {commentModal ? (<Card w={"80%"}>
-                                            <Stack>
-                                                <Group align='center'>
-                                                    <ActionIcon variant='light' onClick={() => setcommentModal(false)}><RxCross2 /></ActionIcon>
-                                                    <Text>1234520241023160501</Text>
-                                                </Group>
-                                                <Textarea label="Comment"
-                                                    placeholder='Write a comment' />
-                                                <Button fz={"sm"} bg='#8158F5'>Add Comment To Image</Button>
-                                            </Stack>
-                                        </Card>) : (
-                                            <Flex direction={"column"} align={"center"} gap={"xl"}>
-                                                <ActionIcon variant='transperant' size={100} c='white' onClick={() => setcommentModal(true)}><TbCircleDashedPlus size={100} /></ActionIcon>
-                                                <Button variant='transperant' bg={"white"} c={"black"}
-                                                    onClick={() => handleFullscreen(index)}
-                                                >See Image</Button>
-                                            </Flex>
-                                        )}
-
-                                    </Center>
-                                </Overlay>
-                            )}
-                            <Overlay
-
-                                position="absolute"
-                                top={0}
-                                left={0}
-                                opacity={0}
-                                zIndex={1}
-                                visible={true} // Always show the overlay
+                        <Flex direction={"column"} key={index}>
+                            <div
+                                style={{ position: 'relative' }}
+                                onMouseEnter={() => setHoverCard(index)}
+                                onMouseLeave={() => setHoverCard(null)}
                             >
-                                <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-                                    {/* <Button size={20} >Edit</Button> */}
-                                    <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                    <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"}><RxCross2 color='red' size={23} /></ActionIcon>
-                                </div>
-                            </Overlay>
-                        </div>
+                                <Image
+                                    ref={(el) => (imageRefs.current[index] = el)}
+                                    src={image}
+                                    alt={`Image ${index + 1}`}
+                                    width={'100%'}
+                                    height={"100%"}
+                                    radius={12}
+                                />
+
+                                {hoverCard === index && (
+                                    <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0.5}>
+                                        <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
+                                            <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
+                                            <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
+                                        </div>
+
+                                        <Center h={200} mx="auto">
+                                            {commentModal && currentImageIndex === index ? (
+                                                <Card w={"80%"}>
+                                                    <Stack>
+                                                        <Group align='center'>
+                                                            <ActionIcon variant='light' onClick={() => setcommentModal(false)}><RxCross2 /></ActionIcon>
+                                                            <Text>Image: {index + 1}</Text>
+                                                        </Group>
+                                                        <Textarea
+                                                            label="Comment"
+                                                            placeholder='Write a comment'
+                                                            value={currentComment}
+                                                            onChange={(e) => setCurrentComment(e.target.value)}
+                                                        />
+                                                        <Button fz={"sm"} bg='#8158F5' onClick={handleAddComment}>
+                                                            Add Comment To Image
+                                                        </Button>
+                                                    </Stack>
+                                                </Card>
+                                            ) : (
+                                                <Flex direction={"column"} align={"center"} gap={"xl"}>
+                                                    <ActionIcon
+                                                        variant='transperant'
+                                                        size={100}
+                                                        c='white'
+                                                        onClick={() => {
+                                                            setcommentModal(true);
+                                                            setCurrentImageIndex(index);
+                                                            setCurrentComment(comments[index] || ""); // Load existing comment if available
+                                                        }}
+                                                    >
+                                                        <TbCircleDashedPlus size={100} />
+                                                    </ActionIcon>
+                                                    <Button
+                                                        variant='transperant'
+                                                        bg={"white"}
+                                                        c={"black"}
+                                                        onClick={() => handleFullscreen(index)}
+                                                    >
+                                                        See Image
+                                                    </Button>
+                                                </Flex>
+                                            )}
+                                        </Center>
+                                    </Overlay>
+                                )}
+                            </div>
+                            <Flex>
+
+                                {comments[index] ? <Text ml={"sm"}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
+                            </Flex>
+                        </Flex>
                     ))}
                 </SimpleGrid>
             </Container>
         </div>
-    )
-}
+    );
+};
 
-export default SelectPictureReport
+export default SelectPictureReport;

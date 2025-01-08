@@ -184,12 +184,12 @@ const CameronWilliamson = () => {
               View All Comments
             </Button> */}
 
-            <Modal opened={opend} onClose={close} title="Preview" fullScreen>
+            <Modal opened={opend} onClose={close} title="Preview" fullScreen closeButtonProps={{ size: "lg" }}>
               <Card>
                 <iframe
                   src={`${client.defaults.baseURL}/media${url}`}
                   width="100%"
-                  height="600px"
+                  // height="600px"
                   title="Patient Report"
                 />
               </Card>
