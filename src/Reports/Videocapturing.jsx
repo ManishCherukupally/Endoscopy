@@ -242,7 +242,7 @@ const Videocapturing = () => {
                         <div style={{ position: "relative", width: "750px", height: "676px" }}>
                             {externalDeviceId ? (
                                 <>
-                                    {/* <Webcam
+                                    <Webcam
                                         ref={webcamRef}
                                         audio={false}
                                         videoConstraints={videoConstraints}
@@ -251,16 +251,16 @@ const Videocapturing = () => {
                                             height: "100%",
                                             borderRadius: "12px",
                                         }}
-                                    /> */}
-                                    <img
+                                    />
+                                    {/* <img
                                         id="live-video"
                                         ref={webcamRef}
-                                        src="http://127.0.0.1:8000/video_feed/"
+                                        src="http://192.168.29.251:8000/video_feed/"
                                         autoPlay={true}
                                         controls={false}
                                         crossOrigin="anonymous"
                                         style={{ width: 750, height: 676, borderRadius: "12px" }}
-                                    />
+                                    /> */}
                                     {/* Fullscreen icon positioned in the top-right corner */}
                                     <MdFullscreen
                                         onClick={handleFullscreen}
