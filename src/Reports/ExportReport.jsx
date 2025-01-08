@@ -76,10 +76,20 @@ const ExportReport = () => {
         setSelectedImages((prev) =>
             checked ? [...prev, image] : prev.filter((item) => item !== image)
         );
-
     };
 
-    const toggleSelectMode = () => setselectImage(!selectImage);
+    const toggleSelectMode = () => {
+        // When entering select mode, ensure the previously selected images remain checked
+        if (selectImage) {
+            // Clear the selected images from the local storage and state
+            setSelectedImages([]);
+            localStorage.setItem('selectedImages', JSON.stringify([]));
+        }
+        setselectImage(!selectImage);
+    };
+
+
+    // const toggleSelectMode = () => setselectImage(!selectImage);
 
     const handleDeleteImage = (index) => {
         window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages.filter((_, i) => i !== index)))
@@ -370,26 +380,25 @@ const ExportReport = () => {
                         <div
                             key={index}
                             style={{ position: 'relative' }}
-
                         >
                             <Image
                                 ref={(el) => (imageRefs.current[index] = el)}
                                 src={image}
-
                                 width={'100%'} height={"400px"}
                                 radius={12}
-
                             />
+
                             <Flex>
-                                <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>
-                                {comments[index] && <Text ml={"sm"}>{comments[index]}</Text>}
+                                {comments[index] ? <Text ml={"sm"}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
                             </Flex>
+
                             {selectImage && (
                                 <Overlay radius={12} top={0} left={0} opacity={0}>
                                     <Flex justify="flex-end" p={10}>
                                         <Checkbox
                                             size="lg"
                                             color="violet"
+                                            checked={selectedImages.includes(image)} // Check if the image is already selected
                                             onChange={(e) =>
                                                 handleCheckboxChange(image, e.target.checked)
                                             }
@@ -400,12 +409,9 @@ const ExportReport = () => {
                             {!selectImage && (
                                 <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0}>
                                     <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-                                        {/* <Button size={20} >Edit</Button> */}
-                                        <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                        <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
+                                        <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
+                                        <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
                                     </div>
-
-
                                 </Overlay>
                             )}
                         </div>

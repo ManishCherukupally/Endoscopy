@@ -95,6 +95,7 @@ const HospitalCard = (props) => {
               <Flex direction="column" justify="space-between" style={{ height: '100%' }}>
                 {/* Render Header for Each Page */}
                 <Header />
+                <Space h={15} />
 
                 {/* First Page Only: Patient Details */}
                 {chunkIndex === 0 && (
@@ -153,36 +154,58 @@ const HospitalCard = (props) => {
                         <Text size="sm">{medication}</Text>
                       </Card>
                     </SimpleGrid>
+                    <Space h={15} />
                   </div>
+
                 )}
 
                 {/* Images Section */}
-                <div>
-                  <SimpleGrid cols={2} spacing="sm">
-                    {chunk.map((image, index) => (
-                      <Flex direction="column" key={index}>
-                        <Card shadow="sm" padding="sm" radius="md">
-                          <Card.Section h={250}>
-                            <Image
-                              src={image}
-                              alt={`Image ${index + 1}`}
-                              style={{
-                                width: '100%',
-                                objectFit: 'cover',
-                              }}
-                            />
-                          </Card.Section>
-                        </Card>
-                        <Flex>
-                          <Text ml="lg" fw={600}>
-                            Image: {index + 1}
-                          </Text>
-                          {comments[index] && <Text ml="sm">{comments[index]}</Text>}
+                <div style={{ flexGrow: 1 }}>
+                  <SimpleGrid
+                    cols={2}
+                    spacing="sm"
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: chunk.length > 1 ? '1fr 1fr' : '1fr',
+                      gap: '1rem',
+                      alignItems: 'center',
+                      justifyContent: chunk.length === 1 ? 'center' : 'space-between',
+                    }}
+                  >
+                    {chunk.map((image, index) => {
+                      // Get the actual index of the image from the selectedImages array
+                      const actualIndex = selectedImages.indexOf(image) + 1;
+
+                      return (
+                        <Flex direction="column" key={actualIndex} style={{ alignItems: 'center' }}>
+                          <Card shadow="sm" padding="sm" radius="md" style={{ width: '100%' }}>
+                            <Card.Section h={250}>
+                              <Image
+                                src={image}
+                                alt={`Image ${actualIndex}`}
+                                style={{
+                                  width: '100%',
+                                  objectFit: 'cover',
+                                }}
+                              />
+                            </Card.Section>
+                          </Card>
+                          <Flex>
+                            {comments[actualIndex - 1] ? (
+                              <Text ml={"sm"}>{comments[actualIndex - 1]}</Text>
+                            ) : (
+                              <Text ml={"lg"} fw={600}>
+                                Image: {actualIndex}
+                              </Text>
+                            )}
+                          </Flex>
                         </Flex>
-                      </Flex>
-                    ))}
+                      );
+                    })}
+
                   </SimpleGrid>
                 </div>
+
 
                 {/* Footer Section */}
                 <div>
