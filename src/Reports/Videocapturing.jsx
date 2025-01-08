@@ -90,29 +90,29 @@ const Videocapturing = () => {
         localStorage.setItem('capturedImages', JSON.stringify(images));
     };
 
-    // const handleCapture = () => {
-    //     const videoElement = document.getElementById("live-video");
-    //     if (videoElement) {
-    //         const canvas = document.createElement("canvas");
-    //         canvas.width = videoElement.width;
-    //         canvas.height = videoElement.height;
-    //         const context = canvas.getContext("2d");
-    //         context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
-    //         const imageSrc = canvas.toDataURL("image/png");
-    //         const updatedImages = [...capturedImages.slice(-20), imageSrc]; // Keep only the last 9 images
-    //         setCapturedImages(updatedImages);
-    //         saveImagesToLocalStorage(updatedImages); // Save to localStorage
-    //     }
-    // };
     const handleCapture = () => {
-        if (webcamRef.current) {
-            const imageSrc = webcamRef.current.getScreenshot();
-            const updatedImages = [...capturedImages, imageSrc];
+        const videoElement = document.getElementById("live-video");
+        if (videoElement) {
+            const canvas = document.createElement("canvas");
+            canvas.width = videoElement.width;
+            canvas.height = videoElement.height;
+            const context = canvas.getContext("2d");
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            const imageSrc = canvas.toDataURL("image/png");
+            const updatedImages = [...capturedImages.slice(-20), imageSrc]; // Keep only the last 9 images
             setCapturedImages(updatedImages);
             saveImagesToLocalStorage(updatedImages); // Save to localStorage
         }
     };
+    // const handleCapture = () => {
+    //     if (webcamRef.current) {
+    //         const imageSrc = webcamRef.current.getScreenshot();
+    //         const updatedImages = [...capturedImages, imageSrc];
+    //         setCapturedImages(updatedImages);
+    //         saveImagesToLocalStorage(updatedImages); // Save to localStorage
+    //     }
+    // };
 
 
 

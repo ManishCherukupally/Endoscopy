@@ -381,8 +381,7 @@ const ExportReport = () => {
 
                             />
                             <Flex>
-                                <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>
-                                {comments[index] && <Text ml={"sm"}>{comments[index]}</Text>}
+                                {comments[index] ? <Text ml={"sm"}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
                             </Flex>
                             {selectImage && (
                                 <Overlay radius={12} top={0} left={0} opacity={0}>
