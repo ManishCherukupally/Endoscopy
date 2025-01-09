@@ -22,7 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import report from "../../assets/report.png";
 
 const HeaderSetting = () => {
-  const [hoveredCard, setHoveredCard] = useState("1");
+  const [hoveredCard, setHoveredCard] = useState(null);
   const [loader, setLoader] = useState(false);
   const [modalOpened, setModalOpened] = useState(false); // Modal visibility state
   const [selectedImage, setSelectedImage] = useState(null); // Selected image index or src

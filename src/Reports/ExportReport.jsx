@@ -76,84 +76,79 @@ const ExportReport = () => {
         setSelectedImages((prev) =>
             checked ? [...prev, image] : prev.filter((item) => item !== image)
         );
-
     };
 
-    const toggleSelectMode = () => setselectImage(!selectImage);
+    const toggleSelectMode = () => {
+        // When entering select mode, ensure the previously selected images remain checked
+        if (selectImage) {
+            // Clear the selected images from the local storage and state
+            setSelectedImages([]);
+            localStorage.setItem('selectedImages', JSON.stringify([]));
+        }
+        setselectImage(!selectImage);
+    };
+
+
+    // const toggleSelectMode = () => setselectImage(!selectImage);
 
     const handleDeleteImage = (index) => {
-        window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages.filter((_, i) => i !== index)))
-        setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || [])
+        // Remove the selected image and its comment
+        const updatedImages = capturedImages.filter((_, i) => i !== index);
+        const updatedComments = comments.filter((_, i) => i !== index);
 
-        // console.log(window.localStorage.getItem('capturedImagess').length);
+        // Update localStorage
+        localStorage.setItem('capturedImages', JSON.stringify(updatedImages));
+        localStorage.setItem('imageComments', JSON.stringify(updatedComments));
+
+        // Update state
+        setCapturedImages(updatedImages);
+        setComments(updatedComments);
 
     };
 
     const handleDownloadPDF = async (dateTime) => {
         if (targetRef.current) {
-            // Generate the canvas from the targetRef div
-            const canvas = await html2canvas(targetRef.current);
-
-            // Initialize jsPDF
             const pdf = new jsPDF();
-            // Scale canvas content to fit the PDF page
-            const imgData = canvas.toDataURL("image/png");
+
+            // Scale for the PDF page
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            const pdfHeight = pdf.internal.pageSize.getHeight();
 
-            // Add the image to the PDF
-            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+            // Create a temporary div to store all content chunks
+            const chunks = document.querySelectorAll('.chunk-class'); // Assuming each chunk has a class `chunk-class`
 
-            // Automatically save the PDF to the default downloads directory
-            // pdf.save("Endoscopy-report.pdf");
-            //         var date = new Date()
-            // var dateArray = date.toISOString().split(".")
-            // console.log(dateArray)
-            // var dateandTime = dateArray[0]
+            for (let i = 0; i < chunks.length; i++) {
+                const canvas = await html2canvas(chunks[i]); // Capture each chunk
+                const imgData = canvas.toDataURL("image/png");
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
 
-            var fileName = `${selectedPatient.patient_name}_${dateTime[0]}${dateTime[1].replace(/:/g, "_")}.pdf`
-            setFileName(fileName)
+                const ratio = canvasWidth / canvasHeight;
+                const scaledWidth = pdfWidth;
+                const scaledHeight = scaledWidth / ratio;
+
+                if (i > 0) pdf.addPage(); // Add a new page for every chunk except the first
+                pdf.addImage(imgData, "PNG", 0, 0, scaledWidth, scaledHeight);
+            }
+
+            const fileName = `${selectedPatient.patient_name}_${dateTime[0]}${dateTime[1].replace(/:/g, "_")}.pdf`;
+            setFileName(fileName);
             pdf.save(fileName);
 
-            //api need to be written here//_______________________________
-
-
+            // Save to the server via the API
             client.post('/patient_save_report/', {
                 withCredentials: true,
                 patient_details_id: selectedPatient.id,
                 pdf_file_path: fileName,
                 date: dateTime[0],
-                time: dateTime[1]
-            })
-                .then((resp) => {
-                    setReportId(resp.data.report_id)
-                    console.log(reportId)
-                }
-
-                )
-            // setfileModal(true)
-            // // Create a FormData object to send the file
-            // const formData = new FormData();
-            // formData.append('pdf_file_path', file); // Append the PDF file
-            // formData.append('date', dateTime[0]); // Append the date
-            // formData.append('time', dateTime[1]); // Append the time
-
-
-            // try {
-            //     // Send the file to the server using axios
-            //     const response = await axios.post('http://192.168.29.251:8005/patient_save_report/', formData, {
-            //         headers: {
-            //             'Content-Type': 'multipart/form-data'
-            //         }
-            //     });
-
-            //     console.log('File uploaded successfully:', response.data);
-            // } catch (error) {
-            //     console.error('Error uploading file:', error);
-            // }
-
+                time: dateTime[1],
+            }).then((resp) => {
+                setReportId(resp.data.report_id);
+                console.log(reportId);
+            });
         }
     };
+
 
     const handleSave = () => {
         setReportModal(true);
@@ -211,6 +206,7 @@ const ExportReport = () => {
                 remarks={remarksText}
                 medication={medicationText}
                 selectedImages={selectedImages}
+                comments={comments}
             />
         );
 
@@ -370,25 +366,25 @@ const ExportReport = () => {
                         <div
                             key={index}
                             style={{ position: 'relative' }}
-
                         >
                             <Image
                                 ref={(el) => (imageRefs.current[index] = el)}
                                 src={image}
-
                                 width={'100%'} height={"400px"}
                                 radius={12}
-
                             />
+
                             <Flex>
                                 {comments[index] ? <Text ml={"sm"}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
                             </Flex>
+
                             {selectImage && (
                                 <Overlay radius={12} top={0} left={0} opacity={0}>
                                     <Flex justify="flex-end" p={10}>
                                         <Checkbox
                                             size="lg"
                                             color="violet"
+                                            checked={selectedImages.includes(image)} // Check if the image is already selected
                                             onChange={(e) =>
                                                 handleCheckboxChange(image, e.target.checked)
                                             }
@@ -399,12 +395,9 @@ const ExportReport = () => {
                             {!selectImage && (
                                 <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0}>
                                     <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-                                        {/* <Button size={20} >Edit</Button> */}
-                                        <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                        <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
+                                        <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
+                                        <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
                                     </div>
-
-
                                 </Overlay>
                             )}
                         </div>
