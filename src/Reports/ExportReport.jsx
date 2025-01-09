@@ -92,10 +92,17 @@ const ExportReport = () => {
     // const toggleSelectMode = () => setselectImage(!selectImage);
 
     const handleDeleteImage = (index) => {
-        window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages.filter((_, i) => i !== index)))
-        setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || [])
+        // Remove the selected image and its comment
+        const updatedImages = capturedImages.filter((_, i) => i !== index);
+        const updatedComments = comments.filter((_, i) => i !== index);
 
-        // console.log(window.localStorage.getItem('capturedImagess').length);
+        // Update localStorage
+        localStorage.setItem('capturedImages', JSON.stringify(updatedImages));
+        localStorage.setItem('imageComments', JSON.stringify(updatedComments));
+
+        // Update state
+        setCapturedImages(updatedImages);
+        setComments(updatedComments);
 
     };
 

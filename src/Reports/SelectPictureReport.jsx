@@ -43,14 +43,22 @@ const SelectPictureReport = () => {
     };
 
     const handleDeleteImage = (index) => {
+        // Remove the selected image and its comment
         const updatedImages = capturedImages.filter((_, i) => i !== index);
         const updatedComments = comments.filter((_, i) => i !== index);
 
+        // Update localStorage
         localStorage.setItem('capturedImages', JSON.stringify(updatedImages));
         localStorage.setItem('imageComments', JSON.stringify(updatedComments));
 
+        // Update state
         setCapturedImages(updatedImages);
         setComments(updatedComments);
+
+        // Reset hover state if needed
+        if (hoverCard === index) {
+            setHoverCard(null);
+        }
     };
 
     const handleAddComment = () => {
