@@ -1038,7 +1038,7 @@ const AllPatients = () => {
             width: "auto",
             height: "auto",
             borderRadius: "24px",
-            border: "1px solid #ccc",
+            // border: "1px solid #ccc",
             padding: "32px 15px",
             gap: "48px",
           }}

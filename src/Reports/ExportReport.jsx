@@ -24,10 +24,17 @@ const ExportReport = () => {
     // const [hoverCard, setHoverCard] = useState(null)
     // const [commentModal, setcommentModal] = useState(false)
     const [selectImage, setselectImage] = useState(false)
+    const [selectVideo, setselectVideo] = useState(false)
+
     const imageRefs = useRef([]);
     const targetRef = useRef()
     const [selectedImages, setSelectedImages] = useState([]);
     const [capturedImages, setCapturedImages] = useState([]);
+
+    const [capturedVideos, setCapturedVideos] = useState([]);
+    const [selectedVideos, setSelectedVideos] = useState([]);
+
+
 
 
     const [medicationText, setMedicationText] = useState('')
@@ -65,9 +72,14 @@ const ExportReport = () => {
     if (selectedImages.length > 0) {
         window.localStorage.setItem('selectedImages', JSON.stringify(selectedImages))
     }
+    if (selectedVideos.length > 0) {
+        window.localStorage.setItem('selectedVideos', JSON.stringify(selectedVideos))
+    }
 
     useEffect(() => {
         setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || [])
+        setCapturedVideos(JSON.parse(localStorage.getItem('capturedVideos')) || [])
+
         setComments(JSON.parse(localStorage.getItem('imageComments')) || []);
 
     }, [])
@@ -75,6 +87,12 @@ const ExportReport = () => {
     const handleCheckboxChange = (image, checked) => {
         setSelectedImages((prev) =>
             checked ? [...prev, image] : prev.filter((item) => item !== image)
+        );
+    };
+
+    const handleVideoCheckboxChange = (video, checked) => {
+        setSelectedVideos((prev) =>
+            checked ? [...prev, video] : prev.filter((item) => item !== video)
         );
     };
 
@@ -88,6 +106,15 @@ const ExportReport = () => {
         setselectImage(!selectImage);
     };
 
+    const toggleVideoSelectMode = () => {
+        // When entering select mode, ensure the previously selected images remain checked
+        if (selectedVideos) {
+            // Clear the selected images from the local storage and state
+            setSelectedVideos([]);
+            localStorage.setItem('selectedVideos', JSON.stringify([]));
+        }
+        setselectVideo(!selectVideo);
+    };
 
     // const toggleSelectMode = () => setselectImage(!selectImage);
 
@@ -104,6 +131,12 @@ const ExportReport = () => {
         setCapturedImages(updatedImages);
         setComments(updatedComments);
 
+    };
+
+    const handleDeleteVideo = (index) => {
+        const updatedVideos = capturedVideos.filter((_, i) => i !== index);
+        localStorage.setItem('capturedVideos', JSON.stringify(updatedVideos));
+        setCapturedVideos(updatedVideos);
     };
 
     const handleDownloadPDF = async (dateTime) => {
@@ -134,7 +167,7 @@ const ExportReport = () => {
             const fileName = `${selectedPatient.patient_name}_${dateTime[0]}${dateTime[1].replace(/:/g, "_")}.pdf`;
             setFileName(fileName);
             pdf.save(fileName);
-
+            const videoFilenames = selectedVideos.map(item => item.name)
             // Save to the server via the API
             client.post('/patient_save_report/', {
                 withCredentials: true,
@@ -142,12 +175,14 @@ const ExportReport = () => {
                 pdf_file_path: fileName,
                 date: dateTime[0],
                 time: dateTime[1],
+                list_of_video_report: videoFilenames
             }).then((resp) => {
                 setReportId(resp.data.report_id);
                 console.log(reportId);
             });
         }
     };
+    // console.log(selectedVideos.map(item => item.name));
 
 
     const handleSave = () => {
@@ -356,12 +391,46 @@ const ExportReport = () => {
                 <Flex align={"center"} justify={selectImage ? "space-between" : "flex-end"}>
                     {selectImage && <Text fz={20} fw={600}>Selected images : {selectedImages.length} </Text>}
                     <Group>
-                        <Button color='gray' variant='light' radius={"lg"} onClick={toggleSelectMode}>{selectImage ? 'Cancel' : 'Select images to export'}</Button>
+                        <Button color='gray' variant='light' radius={"lg"} onClick={() => {
+                            toggleVideoSelectMode()
+                            toggleSelectMode()
+                        }}>{selectImage ? 'Cancel' : 'Select images to export'}</Button>
                         <ActionIcon variant='light' size={"lg"} radius={12}><MdAdd size={25} /></ActionIcon>
                     </Group>
                 </Flex>
                 <Space h={"1rem"} />
                 <SimpleGrid cols={3}>
+                    {
+                        capturedVideos.map((video, index) => (
+                            <div
+                                key={index}
+                                style={{ position: 'relative' }}
+
+                            >
+                                <video
+                                    src={video.videoUrl}
+                                    controls
+                                    style={{ width: "100%", height: "auto", borderRadius: "12px" }}
+                                />
+                                {selectVideo && (
+                                    <Overlay radius={12} top={0} left={0} opacity={0}>
+                                        <Flex justify="flex-end" p={10}>
+                                            <Checkbox
+                                                size="lg"
+                                                color="violet"
+                                                checked={selectedVideos.includes(video)} // Check if the image is already selected
+                                                onChange={(e) =>
+                                                    handleVideoCheckboxChange(video, e.target.checked)
+                                                }
+                                            />
+                                        </Flex>
+                                    </Overlay>
+                                )}
+
+                            </div>
+                        ))
+                    }
+
                     {capturedImages.map((image, index) => (
                         <div
                             key={index}

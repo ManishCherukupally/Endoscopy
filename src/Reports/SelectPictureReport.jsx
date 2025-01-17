@@ -11,11 +11,15 @@ import { format } from 'date-fns'
 const SelectPictureReport = () => {
     const navigate = useNavigate();
     const [hoverCard, setHoverCard] = useState(null);
+    const [hovervideoCard, setHovervideoCard] = useState(null);
+
     const [commentModal, setcommentModal] = useState(false);
     const [currentComment, setCurrentComment] = useState(""); // For the current comment being entered
     const [comments, setComments] = useState([]); // Array to hold comments for each image
     const imageRefs = useRef([]);
     const [capturedImages, setCapturedImages] = useState([]);
+    const [capturedVideos, setCapturedVideos] = useState([]);
+
     const [fullscreen, setFullScreen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(null); // Track the current image index for the modal
 
@@ -23,6 +27,8 @@ const SelectPictureReport = () => {
 
     useEffect(() => {
         setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || []);
+        setCapturedVideos(JSON.parse(localStorage.getItem('capturedVideos')) || []);
+
         setComments(JSON.parse(localStorage.getItem('imageComments')) || []);
     }, []);
 
@@ -59,6 +65,12 @@ const SelectPictureReport = () => {
         if (hoverCard === index) {
             setHoverCard(null);
         }
+    };
+
+    const handleDeleteVideo = (index) => {
+        const updatedVideos = capturedVideos.filter((_, i) => i !== index);
+        localStorage.setItem('capturedVideos', JSON.stringify(updatedVideos));
+        setCapturedVideos(updatedVideos);
     };
 
     const handleAddComment = () => {
@@ -155,6 +167,22 @@ const SelectPictureReport = () => {
                 {/* Other UI Elements */}
                 <Space h={"1rem"} />
                 <SimpleGrid cols={3}>
+                    {
+                        capturedVideos.map((video, index) => (
+                            <div
+                                style={{ position: 'relative' }}
+                                onMouseEnter={() => setHovervideoCard(index)}
+                                onMouseLeave={() => setHovervideoCard(null)}
+                            >
+                                <video
+                                    src={video.videoUrl}
+                                    controls
+                                    style={{ width: "100%", height: "auto", borderRadius: "12px" }}
+                                />
+
+                            </div>
+                        ))
+                    }
                     {capturedImages.map((image, index) => (
                         <Flex direction={"column"} key={index}>
                             <div
