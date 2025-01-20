@@ -285,7 +285,7 @@ const ExportReport = () => {
                             onClick={() => setReportModal(true)}
                         >Preview</Button>
                         <ActionIcon radius={8} h={44} w={50} size={"lg"} style={{ border: "1px solid black" }} c={"black"}
-                            onClick={(handlePrint)}
+                            onClick={handlePrint}
                         ><TbPrinter /></ActionIcon>
 
                         <Button color='violet' radius={8} h={44} onClick={handleSave}>Save</Button>
@@ -439,7 +439,7 @@ const ExportReport = () => {
                             <Image
                                 ref={(el) => (imageRefs.current[index] = el)}
                                 src={image}
-                                width={'100%'} height={"400px"}
+                                width={'100%'} height={"100%"}
                                 radius={12}
                             />
 
