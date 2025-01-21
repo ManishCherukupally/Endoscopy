@@ -277,14 +277,16 @@ const Login = () => {
       if (response.data && response.data.status === 'user_validated') {
         setLoader(false)
         navigate('/allpatients');
+        window.localStorage.setItem("loginStatus", response.data.status)
         console.log(response.data.accessToken);
+
       } else if (response.data.status === 'unauthorized_user') {
         setLoader(false)
-
+        navigate("/")
         form.setFieldError('username', 'Invalid username or password');
       } else {
         setLoader(false)
-
+        navigate("/")
         console.error('Unexpected response:', response);
         form.setFieldError('username', 'Invalid credentials');
       }

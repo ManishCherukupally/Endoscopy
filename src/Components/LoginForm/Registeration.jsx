@@ -395,7 +395,7 @@ import { PasswordInput, TextInput, Button, Card, Image, Select, Radio, Group, Te
 import { MdOutlineEmail, MdLockOutline } from "react-icons/md";
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { IconUpload, IconPhoto, IconX } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import client from '../Api';
 import logo from '../../assets/Vector.jpg';
 
@@ -476,143 +476,148 @@ const Registration = () => {
   };
 
   return (
-    <div className="parent">
-      <div className="child1">
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
-          <div className="logo">
-            <Image maw={40} radius="md" src={logo} alt="Endoscopy Logo" />
-            <h2>Endoscopy</h2>
-          </div>
-          <h3>Create Your Account</h3>
-          <div className="imglogo">
-            <div className="circle">
-              <Dropzone
-                onDrop={(files) => console.log('Accepted files:', files)}
-                onReject={(files) => console.log('Rejected files:', files)}
-                maxSize={3 * 1024 ** 2}
-                accept={IMAGE_MIME_TYPE}
-              >
-                <Group position="center" spacing="xl" style={{ minHeight: rem(150), pointerEvents: 'none' }}>
-                  <Dropzone.Accept>
-                    <IconUpload
-                      size="3.2rem"
-                      stroke={1.5}
-                      className="upload"
-                      color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
-                    />
-                  </Dropzone.Accept>
-                  <Dropzone.Reject>
-                    <IconX
-                      size="3.2rem"
-                      stroke={1.5}
-                      color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                    />
-                  </Dropzone.Reject>
-                  <Dropzone.Idle>
-                    <IconPhoto size="3.2rem" stroke={1.5} />
-                  </Dropzone.Idle>
-                </Group>
-              </Dropzone>
-            </div>
-          </div>
-          <form onSubmit={handleFormSubmit}>
-            <TextInput
-              label="Your Full Name"
-              placeholder="Enter your name"
-              size="md"
-              radius="md"
-              {...form.getInputProps('first_name')}
-            />
-            <Select
-              label="Speciality"
-              placeholder="Select"
-              data={[
-                { value: 'react', label: 'React' },
-                { value: 'angular', label: 'Angular' },
-                { value: 'vue', label: 'Vue' },
-                { value: 'svelte', label: 'Svelte' },
-              ]}
-              size="md"
-              radius="md"
-              mt="md"
-              {...form.getInputProps('speciality')}
-            />
-            <TextInput
-              label="Login UserName"
-              placeholder="Enter your username"
-              size="md"
-              mt="md"
-              radius="md"
-              {...form.getInputProps('username')}
-            />
-            <PasswordInput
-              label="Password"
-              placeholder="Enter your password"
-              icon={<MdLockOutline />}
-              size="md"
-              radius="md"
-              mt="md"
-              {...form.getInputProps('password')}
-            />
-            <PasswordInput
-              label="Confirm Password"
-              placeholder="Re-enter your password"
-              icon={<MdLockOutline />}
-              size="md"
-              radius="md"
-              mt="md"
-              {...form.getInputProps('cnfpassword')}
-            />
-            <TextInput
-              label="Mobile Number"
-              placeholder="Enter your mobile number"
-              type="text"
-              size="md"
-              radius="md"
-              mt="md"
-              {...form.getInputProps('mobile_no')}
-              onChange={handleMobileChange}
-            />
-            <TextInput
-              label="Email ID"
-              placeholder="Enter your email"
-              icon={<MdOutlineEmail style={{ color: 'gray' }} />}
-              size="md"
-              radius="md"
-              mt="md"
-              {...form.getInputProps('email')}
-            />
-            <h4>Choose Template</h4>
-            <Radio.Group
-              value={form.values.template}
-              onChange={(value) => form.setFieldValue('template', value)}
-            >
-              <div className="container">
-                {['default', '1', '2', '3', '4'].map((value, index) => (
-                  <div
-                    key={index}
-                    className="card"
-                    onMouseEnter={() => setHoveredCard(value)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    <Radio value={value} className="radio" />
-                    {hoveredCard === value && (
-                      <Button className="view" radius="md">
-                        View
-                      </Button>
-                    )}
-                    <div className="values">{value === 'default' ? 'Default' : value}</div>
-                  </div>
-                ))}
+    <>{
+      window.localStorage.getItem("loginStatus") === "user_validated" ? (
+        <div className="parent">
+          <div className="child1">
+            <Card shadow="sm" padding="lg" radius="md" withBorder>
+              <div className="logo">
+                <Image maw={40} radius="md" src={logo} alt="Endoscopy Logo" />
+                <h2>Endoscopy</h2>
               </div>
-            </Radio.Group>
-            <Button loading={loader} type="submit" variant="filled" color="violet" mt="md" radius="md" fullWidth>
-              Create Account
-            </Button>
-          </form>
-        </Card>
-      </div>
-    </div>
+              <h3>Create Your Account</h3>
+              <div className="imglogo">
+                <div className="circle">
+                  <Dropzone
+                    onDrop={(files) => console.log('Accepted files:', files)}
+                    onReject={(files) => console.log('Rejected files:', files)}
+                    maxSize={3 * 1024 ** 2}
+                    accept={IMAGE_MIME_TYPE}
+                  >
+                    <Group position="center" spacing="xl" style={{ minHeight: rem(150), pointerEvents: 'none' }}>
+                      <Dropzone.Accept>
+                        <IconUpload
+                          size="3.2rem"
+                          stroke={1.5}
+                          className="upload"
+                          color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
+                        />
+                      </Dropzone.Accept>
+                      <Dropzone.Reject>
+                        <IconX
+                          size="3.2rem"
+                          stroke={1.5}
+                          color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                        />
+                      </Dropzone.Reject>
+                      <Dropzone.Idle>
+                        <IconPhoto size="3.2rem" stroke={1.5} />
+                      </Dropzone.Idle>
+                    </Group>
+                  </Dropzone>
+                </div>
+              </div>
+              <form onSubmit={handleFormSubmit}>
+                <TextInput
+                  label="Your Full Name"
+                  placeholder="Enter your name"
+                  size="md"
+                  radius="md"
+                  {...form.getInputProps('first_name')}
+                />
+                <Select
+                  label="Speciality"
+                  placeholder="Select"
+                  data={[
+                    { value: 'react', label: 'React' },
+                    { value: 'angular', label: 'Angular' },
+                    { value: 'vue', label: 'Vue' },
+                    { value: 'svelte', label: 'Svelte' },
+                  ]}
+                  size="md"
+                  radius="md"
+                  mt="md"
+                  {...form.getInputProps('speciality')}
+                />
+                <TextInput
+                  label="Login UserName"
+                  placeholder="Enter your username"
+                  size="md"
+                  mt="md"
+                  radius="md"
+                  {...form.getInputProps('username')}
+                />
+                <PasswordInput
+                  label="Password"
+                  placeholder="Enter your password"
+                  icon={<MdLockOutline />}
+                  size="md"
+                  radius="md"
+                  mt="md"
+                  {...form.getInputProps('password')}
+                />
+                <PasswordInput
+                  label="Confirm Password"
+                  placeholder="Re-enter your password"
+                  icon={<MdLockOutline />}
+                  size="md"
+                  radius="md"
+                  mt="md"
+                  {...form.getInputProps('cnfpassword')}
+                />
+                <TextInput
+                  label="Mobile Number"
+                  placeholder="Enter your mobile number"
+                  type="text"
+                  size="md"
+                  radius="md"
+                  mt="md"
+                  {...form.getInputProps('mobile_no')}
+                  onChange={handleMobileChange}
+                />
+                <TextInput
+                  label="Email ID"
+                  placeholder="Enter your email"
+                  icon={<MdOutlineEmail style={{ color: 'gray' }} />}
+                  size="md"
+                  radius="md"
+                  mt="md"
+                  {...form.getInputProps('email')}
+                />
+                <h4>Choose Template</h4>
+                <Radio.Group
+                  value={form.values.template}
+                  onChange={(value) => form.setFieldValue('template', value)}
+                >
+                  <div className="container">
+                    {['default', '1', '2', '3', '4'].map((value, index) => (
+                      <div
+                        key={index}
+                        className="card"
+                        onMouseEnter={() => setHoveredCard(value)}
+                        onMouseLeave={() => setHoveredCard(null)}
+                      >
+                        <Radio value={value} className="radio" />
+                        {hoveredCard === value && (
+                          <Button className="view" radius="md">
+                            View
+                          </Button>
+                        )}
+                        <div className="values">{value === 'default' ? 'Default' : value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </Radio.Group>
+                <Button loading={loader} type="submit" variant="filled" color="violet" mt="md" radius="md" fullWidth>
+                  Create Account
+                </Button>
+              </form>
+            </Card>
+          </div>
+        </div>
+      ) : (<Navigate to={"/"} />)
+    }</>
+
   );
 };
 

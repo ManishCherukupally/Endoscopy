@@ -16,20 +16,20 @@
 // const PatientInfo = () => {
 // <<<<<<< HEAD
 //     // const [videoFile, setVideoFile] = useState(null);
-  
+
 //     // const handleUpload = (file) => {
 //     //   if (!file) return;
-  
+
 //     //   const isValidVideo = file.type.startsWith("video/");
 //     //   const isValidSize = file.size <= 50 * 1024 * 1024; // 50 MB limit
-  
+
 //     //   if (isValidVideo && isValidSize) {
 //     //     setVideoFile(URL.createObjectURL(file));
 //     //   } else {
 //     //     alert("Please upload a valid video file under 50 MB.");
 //     //   }
 //     // };
-  
+
 //     const form = useForm({
 //       initialValues: {
 //         patient_name: "",
@@ -103,12 +103,12 @@
 //       }
 //       }
 //     }
-  
+
 //     // const handleSubmit = (values) => {
 //     //   console.log("Form values:", values);
 //     //   console.log("Uploaded video file:", videoFile);
 //     // };
-  
+
 // =======
 //   // const [videoFile, setVideoFile] = useState(null);
 
@@ -316,7 +316,7 @@
 //         styles={{
 //             input: { backgroundColor: "#f7f9fc" },
 //             label: { fontWeight: "bold" },
-    
+
 //         }}
 // /> */}
 
@@ -562,7 +562,7 @@ import { TextInput, Button, Card, Select, NumberInput } from '@mantine/core';
 import { MdOutlineEmail } from "react-icons/md";
 import { FaChevronLeft } from "react-icons/fa6";
 import { FiVideo } from "react-icons/fi";
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import client from '../Api';
 
 const PatientInfo = () => {
@@ -605,7 +605,8 @@ const PatientInfo = () => {
 
     try {
       const response = await client.post('/add-patient/',
-        {withCredentials: true,
+        {
+          withCredentials: true,
           patient_name: form.values.patient_name,
           patient_email: form.values.patient_email,
           age: form.values.age,
@@ -613,7 +614,7 @@ const PatientInfo = () => {
           gender: form.values.gender,
           procedure: form.values.procedure,
           referred: form.values.referred,
-          
+
         },
         {
           headers: { 'Content-Type': 'application/json' }
@@ -636,95 +637,100 @@ const PatientInfo = () => {
   };
 
   return (
-    <div className='patient'>
-      <div className='patientinfo'>
-        <Card shadow="sm" padding="lg" radius="md" withBorder className='patientcard'>
-          <div className='addnewpatient'>
-            <Button variant="light" color="gray" mt='md' mr='md' radius='md' onClick={() => navigate(-1)}>
-              <FaChevronLeft className='left' />
-            </Button>
-            <div className='ADDNEW'>Add New Patient</div>
-          </div>
-          <h4>Patient Information</h4>
-          <form onSubmit={NewPatient}>
-            <TextInput
-              placeholder="Patient Name"
-              label="Enter Patient Name"
-              size='md'
-              radius='md'
-              {...form.getInputProps('patient_name')}
-              withAsterisk
-            />
-            <NumberInput
-              defaultValue={0}
-              placeholder="Patient Age"
-              label="Age"
-              size='md'
-              {...form.getInputProps('age')}
-            />
-            <Select
-              label="Sex"
-              placeholder="Select"
-              data={[
-                { value: 'male', label: 'Male' },
-                { value: 'female', label: 'Female' },
-                { value: 'others', label: 'Others' },
-              ]}
-              size='md'
-              radius='md'
-              mt='md'
-              {...form.getInputProps('gender')}
-            />
-            <Select
-              label="Procedure"
-              placeholder='Select (e.g., "Upper gastrointestinal endoscopy")'
-              data={[
-                { value: 'lazer', label: 'Lazer' },
-                { value: 'pipe', label: 'Pipe' },
-                { value: 'other', label: 'Other' },
-              ]}
-              size='md'
-              radius='md'
-              mt='md'
-              {...form.getInputProps('procedure')}
-            />
-            <TextInput
-              placeholder="Patient Mobile Number"
-              label="Patient Mobile Number"
-              type='number'
-              size="md"
-              radius="md"
-              mt="md"
-              onChange={handleMobileChange}
-              value={form.values.mobile}
-            />
-            <TextInput
-              placeholder="Patient Email"
-              label="Patient Email"
-              size='md'
-              radius='md'
-              mt="md"
-              icon={<MdOutlineEmail style={{ color: 'gray' }} />}
-              {...form.getInputProps('patient_email')}
-            />
-            <TextInput
-              placeholder="Referred By"
-              label="Referred By"
-              size='md'
-              radius='md'
-              mt='md'
-              {...form.getInputProps('referred')}
-            />
-            <Button variant="filled" color="violet" mt='md' radius='md' fullWidth type='submit'>
-              Add Patient
-            </Button>
-          </form>
-          {/* <Button variant="filled" color="violet" mt='md' radius='md' fullWidth>
+    <>{
+      window.localStorage.getItem("loginStatus") === "user_validated" ? (
+        <div className='patient'>
+          <div className='patientinfo'>
+            <Card shadow="sm" padding="lg" radius="md" withBorder className='patientcard'>
+              <div className='addnewpatient'>
+                <Button variant="light" color="gray" mt='md' mr='md' radius='md' onClick={() => navigate(-1)}>
+                  <FaChevronLeft className='left' />
+                </Button>
+                <div className='ADDNEW'>Add New Patient</div>
+              </div>
+              <h4>Patient Information</h4>
+              <form onSubmit={NewPatient}>
+                <TextInput
+                  placeholder="Patient Name"
+                  label="Enter Patient Name"
+                  size='md'
+                  radius='md'
+                  {...form.getInputProps('patient_name')}
+                  withAsterisk
+                />
+                <NumberInput
+                  defaultValue={0}
+                  placeholder="Patient Age"
+                  label="Age"
+                  size='md'
+                  {...form.getInputProps('age')}
+                />
+                <Select
+                  label="Sex"
+                  placeholder="Select"
+                  data={[
+                    { value: 'male', label: 'Male' },
+                    { value: 'female', label: 'Female' },
+                    { value: 'others', label: 'Others' },
+                  ]}
+                  size='md'
+                  radius='md'
+                  mt='md'
+                  {...form.getInputProps('gender')}
+                />
+                <Select
+                  label="Procedure"
+                  placeholder='Select (e.g., "Upper gastrointestinal endoscopy")'
+                  data={[
+                    { value: 'lazer', label: 'Lazer' },
+                    { value: 'pipe', label: 'Pipe' },
+                    { value: 'other', label: 'Other' },
+                  ]}
+                  size='md'
+                  radius='md'
+                  mt='md'
+                  {...form.getInputProps('procedure')}
+                />
+                <TextInput
+                  placeholder="Patient Mobile Number"
+                  label="Patient Mobile Number"
+                  type='number'
+                  size="md"
+                  radius="md"
+                  mt="md"
+                  onChange={handleMobileChange}
+                  value={form.values.mobile}
+                />
+                <TextInput
+                  placeholder="Patient Email"
+                  label="Patient Email"
+                  size='md'
+                  radius='md'
+                  mt="md"
+                  icon={<MdOutlineEmail style={{ color: 'gray' }} />}
+                  {...form.getInputProps('patient_email')}
+                />
+                <TextInput
+                  placeholder="Referred By"
+                  label="Referred By"
+                  size='md'
+                  radius='md'
+                  mt='md'
+                  {...form.getInputProps('referred')}
+                />
+                <Button variant="filled" color="violet" mt='md' radius='md' fullWidth type='submit'>
+                  Add Patient
+                </Button>
+              </form>
+              {/* <Button variant="filled" color="violet" mt='md' radius='md' fullWidth>
             <FiVideo className='capture' /> Start Live Capture
           </Button> */}
-        </Card>
-      </div>
-    </div>
+            </Card>
+          </div>
+        </div>
+      ) : (<Navigate to={"/"} />)
+    }</>
+
   );
 }
 

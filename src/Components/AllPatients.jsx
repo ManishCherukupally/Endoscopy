@@ -886,7 +886,7 @@ import Img3 from "../assets/Component 13.jpg";
 import { FiTrash2 } from "react-icons/fi";
 import client from "../Components/Api";
 import { IoMdSearch } from "react-icons/io";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { IoPersonOutline } from "react-icons/io5";
 import { FaRegFileAlt } from "react-icons/fa";
@@ -915,7 +915,7 @@ const AllPatients = () => {
 
   useEffect(() => {
     fetchPatients();
-    localStorage.clear()
+    // localStorage.clear()
   }, []);
 
   const fetchPatients = async () => {
@@ -926,6 +926,7 @@ const AllPatients = () => {
       console.log(response)
       console.log("API Response:", response.data);
       setData(response.data.reverse());
+
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -1023,242 +1024,249 @@ const AllPatients = () => {
   //   navigate('/cameronwillamson')
   // }
   return (
-    <div style={{ height: "100vh", borderRadius: "48px", padding: "32px", gap: "48px" }}>
-      <div
-        style={{
-          width: "95%",
-          height: "100%",
-          borderRadius: "48px",
-          padding: "32px",
-          gap: "48px",
-          backgroundColor: "#EBEDF4",
-        }}
-      >
-        <Card
-          style={{
-            width: "auto",
-            height: "auto",
-            borderRadius: "24px",
-            // border: "1px solid #ccc",
-            padding: "32px 15px",
-            gap: "48px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-            <Image src={Vector} maw={40} />
-            <h1 style={{ marginLeft: "0.10rem", fontFamily: "inter" }}>Endoscopy</h1>
-            <div style={{ flexGrow: "1" }}>
-              <TextInput
-                icon={<IoMdSearch />}
-                placeholder="Search by name, phone, or email"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ marginLeft: "2rem", height: "44px", marginTop: "1rem" }}
-                styles={{
-                  input: {
-                    backgroundColor: "#EBEDF4",
-                  },
-                }}
-              />
-            </div>
+    <>
+      {
+        window.localStorage.getItem("loginStatus") === "user_validated" ? (
+          <div style={{ height: "100vh", borderRadius: "48px", padding: "32px", gap: "48px" }}>
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "50px",
-                height: "35px",
-                borderRadius: "4px",
+                width: "95%",
+                height: "100%",
+                borderRadius: "48px",
+                padding: "32px",
+                gap: "48px",
                 backgroundColor: "#EBEDF4",
-                marginLeft: "1rem",
-                marginTop: "3px",
               }}
             >
-              <Image src={setting} maw={18} alt="Notification Icon" style={{ backgroundColor: "#EBEDF4" }} />
-            </div>
-            <div style={{ marginLeft: "1rem" }}>
-              <Button color="violet" onClick={() => { navigate('/patientinfo') }} > Add new patient
-              </Button>
-            </div>
-            <div style={{ marginLeft: "0.5rem" }}>
-              {/* <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} /> */}
-              <Menu shadow="md" width={250} offset={8} withArrow arrowPosition="center"
-                radius={10} position="bottom-end">
-                <Menu.Target >
-                  <Button variant="white" style={{ marginRight: '-1rem' }}>
-                    <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} />
-                  </Button>
-                </Menu.Target>
-
-                <Menu.Dropdown p='md'>
-                  <Menu.Item icon={<IoPersonOutline size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
-                  // onClick={() => navigate("/register")}
-                  >Edit Profile</Menu.Item>
-
-                  <Menu.Divider />
-
-                  <Menu.Item icon={< FaRegFileAlt size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '45%', padding: '5px' }} />}
-                    onClick={() => navigate("/headersetting")}
-                  >Header Setting</Menu.Item>
-                  <Button variant="light" color="red" fullWidth mt={'1rem'} mb={'1rem'}
-                    type="submit"
-                    onClick={Logout}
-                  > <BiLogOut style={{ marginRight: '0.5rem', fontSize: 'large' }} />Logout</Button>
-                </Menu.Dropdown>
-              </Menu>
-
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: "20px",
-            }}
-          >
-            <h2 style={{ fontFamily: "inter" }}>
-              All Patients <small style={{ fontWeight: "200", fontSize: "18px" }}>{data.length}</small>
-            </h2>
-            <div style={{ display: "flex", alignItems: "center" }}>
-
-              <div
+              <Card
                 style={{
-                  backgroundColor: "#EBEDF4",
-                  borderRadius: "28px",
-                  padding: "10px",
-                  fontSize: "20px",
-                  display: "inline-block",
-                  marginRight: "1rem",
+                  width: "auto",
+                  height: "auto",
+                  borderRadius: "24px",
+                  // border: "1px solid #ccc",
+                  padding: "32px 15px",
+                  gap: "48px",
                 }}
               >
-                <Text style={{ fontSize: "18px", fontFamily: "inter" }}>
-                  <input
-                    type="checkbox"
-                    checked={selectAll}
-                    onChange={handleSelectAll}
+                <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+                  <Image src={Vector} maw={40} />
+                  <h1 style={{ marginLeft: "0.10rem", fontFamily: "inter" }}>Endoscopy</h1>
+                  <div style={{ flexGrow: "1" }}>
+                    <TextInput
+                      icon={<IoMdSearch />}
+                      placeholder="Search by name, phone, or email"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      style={{ marginLeft: "2rem", height: "44px", marginTop: "1rem" }}
+                      styles={{
+                        input: {
+                          backgroundColor: "#EBEDF4",
+                        },
+                      }}
+                    />
+                  </div>
+                  <div
                     style={{
-                      cursor: "pointer",
-                      marginRight: "10px",
-                      borderRadius: "3px",
-                      width: "12px",
-                      height: "12px",
-                      transform: "scale(1.5)",
-
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "50px",
+                      height: "35px",
+                      borderRadius: "4px",
+                      backgroundColor: "#EBEDF4",
+                      marginLeft: "1rem",
+                      marginTop: "3px",
                     }}
-                  />
-                  {selectedCount} Selected
-                </Text>
-              </div>
-              <div
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  backgroundColor: "#EBEDF4",
-                  borderRadius: "50%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <FiTrash2
-                  size={20}
-                  color="#FF6B6B"
-                  style={{ cursor: "pointer" }}
-                  onClick={handleDelete}
-                  type="submit"
-                />
-              </div>
-            </div>
-          </div>
+                  >
+                    <Image src={setting} maw={18} alt="Notification Icon" style={{ backgroundColor: "#EBEDF4" }} />
+                  </div>
+                  <div style={{ marginLeft: "1rem" }}>
+                    <Button color="violet" onClick={() => { navigate('/patientinfo') }} > Add new patient
+                    </Button>
+                  </div>
+                  <div style={{ marginLeft: "0.5rem" }}>
+                    {/* <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} /> */}
+                    <Menu shadow="md" width={250} offset={8} withArrow arrowPosition="center"
+                      radius={10} position="bottom-end">
+                      <Menu.Target >
+                        <Button variant="white" style={{ marginRight: '-1rem' }}>
+                          <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} />
+                        </Button>
+                      </Menu.Target>
 
-          <Table striped highlightOnHover withBorder withColumnBorders mb={"xs"}>
-            <thead>
-              <tr style={{ backgroundColor: "#EBEDF4" }}>
-                <th>Name</th>
-                <th>Patient ID</th>
-                <th>Age</th>
-                <th>Gender</th>
-                <th>Procedure</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Referred By</th>
-                <th>Date & Time</th>
-                {/* <th>Select</th> */}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.map((item) => (
-                <tr
-                  key={item.id}
+                      <Menu.Dropdown p='md'>
+                        <Menu.Item icon={<IoPersonOutline size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
+                        // onClick={() => navigate("/register")}
+                        >Edit Profile</Menu.Item>
+
+                        <Menu.Divider />
+
+                        <Menu.Item icon={< FaRegFileAlt size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '45%', padding: '5px' }} />}
+                          onClick={() => navigate("/headersetting")}
+                        >Header Setting</Menu.Item>
+                        <Button variant="light" color="red" fullWidth mt={'1rem'} mb={'1rem'}
+                          type="submit"
+                          onClick={Logout}
+                        > <BiLogOut style={{ marginRight: '0.5rem', fontSize: 'large' }} />Logout</Button>
+                      </Menu.Dropdown>
+                    </Menu>
+
+                  </div>
+                </div>
+                <div
                   style={{
-                    cursor: 'pointer',
-                    backgroundColor: selectedRows[item.id] ? "#8158F529" : "transparent",
-                    borderRadius: "16px",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onClick={(e) => {
-
-                    // Prevent navigation if a checkbox is clicked
-                    if (e.target.type !== "checkbox") {
-                      localStorage.setItem("patientid", item.id);
-                      const patientData = JSON.stringify(item)
-                      localStorage.setItem('selectedpatient', patientData)
-                      navigate("/cameronwillamson");
-                    }
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: "20px",
                   }}
                 >
-                  <td>{item.patient_name}</td>
-                  <td>{item.id}</td>
-                  <td>{item.age}</td>
-                  <td>{item.gender}</td>
-                  <td>{item.procedure}</td>
-                  <td>{item.mobile}</td>
-                  <td>{item.patient_email}</td>
-                  <td>{item.referred}</td>
-                  <td>
-                    <div className="accent"
+                  <h2 style={{ fontFamily: "inter" }}>
+                    All Patients <small style={{ fontWeight: "200", fontSize: "18px" }}>{data.length}</small>
+                  </h2>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+
+                    <div
                       style={{
+                        backgroundColor: "#EBEDF4",
+                        borderRadius: "28px",
+                        padding: "10px",
+                        fontSize: "20px",
+                        display: "inline-block",
+                        marginRight: "1rem",
+                      }}
+                    >
+                      <Text style={{ fontSize: "18px", fontFamily: "inter" }}>
+                        <input
+                          type="checkbox"
+                          checked={selectAll}
+                          onChange={handleSelectAll}
+                          style={{
+                            cursor: "pointer",
+                            marginRight: "10px",
+                            borderRadius: "3px",
+                            width: "12px",
+                            height: "12px",
+                            transform: "scale(1.5)",
+
+                          }}
+                        />
+                        {selectedCount} Selected
+                      </Text>
+                    </div>
+                    <div
+                      style={{
+                        width: "44px",
+                        height: "44px",
+                        backgroundColor: "#EBEDF4",
+                        borderRadius: "50%",
                         display: "flex",
-                        justifyContent: "space-between",
+                        justifyContent: "center",
                         alignItems: "center",
                       }}
                     >
-                      <span>{formatDateTime(item.updated_at)}</span>
-                      <span
-                        style={{
-                          cursor: "pointer",
-                          fontSize: "18px",
-                          marginLeft: "10px",
-                          color: "#999",
-                        }}
-                      >
-                        ⋮
-                      </span>
-
-                      <input
-                        type="checkbox"
-                        id={`checkbox-${item.id}`}
-                        checked={!!selectedRows[item.id]}
-                        onChange={() => handleCheckboxChange(item.id)}
-                        style={{
-                          cursor: "pointer",
-                          marginLeft: "10px",
-                          borderRadius: "3px",
-                          width: "10px",
-                          height: "10px",
-                          transform: "scale(1.5)",
-                        }}
+                      <FiTrash2
+                        size={20}
+                        color="#FF6B6B"
+                        style={{ cursor: "pointer" }}
+                        onClick={handleDelete}
+                        type="submit"
                       />
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Card>
-      </div>
-    </div>
+                  </div>
+                </div>
+
+                <Table striped highlightOnHover withBorder withColumnBorders mb={"xs"}>
+                  <thead>
+                    <tr style={{ backgroundColor: "#EBEDF4" }}>
+                      <th>Name</th>
+                      <th>Patient ID</th>
+                      <th>Age</th>
+                      <th>Gender</th>
+                      <th>Procedure</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th>Referred By</th>
+                      <th>Date & Time</th>
+                      {/* <th>Select</th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredData.map((item) => (
+                      <tr
+                        key={item.id}
+                        style={{
+                          cursor: 'pointer',
+                          backgroundColor: selectedRows[item.id] ? "#8158F529" : "transparent",
+                          borderRadius: "16px",
+                          transition: "background-color 0.3s ease",
+                        }}
+                        onClick={(e) => {
+
+                          // Prevent navigation if a checkbox is clicked
+                          if (e.target.type !== "checkbox") {
+                            localStorage.setItem("patientid", item.id);
+                            const patientData = JSON.stringify(item)
+                            localStorage.setItem('selectedpatient', patientData)
+                            navigate("/cameronwillamson");
+                          }
+                        }}
+                      >
+                        <td>{item.patient_name}</td>
+                        <td>{item.id}</td>
+                        <td>{item.age}</td>
+                        <td>{item.gender}</td>
+                        <td>{item.procedure}</td>
+                        <td>{item.mobile}</td>
+                        <td>{item.patient_email}</td>
+                        <td>{item.referred}</td>
+                        <td>
+                          <div className="accent"
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <span>{formatDateTime(item.updated_at)}</span>
+                            <span
+                              style={{
+                                cursor: "pointer",
+                                fontSize: "18px",
+                                marginLeft: "10px",
+                                color: "#999",
+                              }}
+                            >
+                              ⋮
+                            </span>
+
+                            <input
+                              type="checkbox"
+                              id={`checkbox-${item.id}`}
+                              checked={!!selectedRows[item.id]}
+                              onChange={() => handleCheckboxChange(item.id)}
+                              style={{
+                                cursor: "pointer",
+                                marginLeft: "10px",
+                                borderRadius: "3px",
+                                width: "10px",
+                                height: "10px",
+                                transform: "scale(1.5)",
+                              }}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </Card>
+            </div>
+          </div>
+        ) : (<Navigate to={("/")} />)
+      }
+    </>
+
   );
 };
 

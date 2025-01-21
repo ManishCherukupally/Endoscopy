@@ -5,7 +5,7 @@ import React from 'react'
 
 import "./style.css"
 
-import { BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate} from "react-router-dom";
 import AccountRecover from './Components/LoginForm/AccountRecover';
 import ForgotPwd from './Components/LoginForm/ForgotPwd';
 import Login from './Components/LoginForm/Login';
@@ -36,12 +36,16 @@ import EditImagePage from "./pages/EditImagePage"
 
 
 const App = () => {
+
+  // const loginStatus = window.localStorage.getItem("loginStatus")
   return (
     <div>
       
       <Router>
         <Routes>
-          <Route path="/" element={<Login />}/>
+        <Route exact path='/' element={ window.localStorage.getItem("loginStatus") === "user_validated" ? <Navigate to={'/allpatients'}/> : <Navigate to='/login'/>} /> 
+
+          <Route path="/login" element={<Login />}/>
 
           <Route path="register" element={<Registeration />}/>
           <Route path="forgot" element={<ForgotPwd />}/>
