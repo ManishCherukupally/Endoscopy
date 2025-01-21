@@ -108,6 +108,7 @@ const CameronWilliamson = () => {
 
     if (selectedValues[id] === 'mail') {
       client.post("/send-email/", {
+        withCredentials: true,
         email: selectedPatient.patient_email,
         name: selectedPatient.patient_name,
         report_id: id

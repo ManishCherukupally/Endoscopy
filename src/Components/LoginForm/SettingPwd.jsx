@@ -44,6 +44,7 @@ const SettingPwd = () => {
 
     try {
       const response = await client.post('/update/', {
+        withCredentials: true,
         password: form.values.password,
         confirm_password: form.values.confirm_password,
         email,

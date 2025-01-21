@@ -985,6 +985,7 @@ const AllPatients = () => {
   const Logout = async () => {
     try {
       let logoutdata = await client.post('/logout/', {
+        withCredentials: true
       })
       console.log(logoutdata)
       console.log(logoutdata.data)

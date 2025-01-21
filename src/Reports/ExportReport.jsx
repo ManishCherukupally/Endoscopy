@@ -203,6 +203,7 @@ const ExportReport = () => {
     const handleExportReport = () => {
         if (value === 'mail') {
             client.post("/send-email/", {
+                withCredentials: true,
                 email: selectedPatient.patient_email,
                 name: selectedPatient.patient_name,
                 report_id: reportId

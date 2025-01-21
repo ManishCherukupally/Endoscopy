@@ -445,6 +445,7 @@ const Registration = () => {
       const result = await client.post(
         '/register/',
         {
+          withCredentials: true,
           first_name: form.values.first_name,
           username: form.values.username,
           email: form.values.email,

@@ -35,10 +35,12 @@ const ForgotPwd = () => {
     try {
       const response = await client.post('/forgot/',
         {
+          withCredentials: true,
           email: form.values.email,
 
         },
-        { headers: { "Content-Type": "application/json" } }
+        { headers: { "Content-Type": "application/json" } },
+
       );
 
       console.log('API Response:', response.data);
