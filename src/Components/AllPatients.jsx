@@ -879,7 +879,7 @@
 
 
 import React, { useState, useEffect } from "react";
-import { Card, Table, Image, Text, Group, TextInput, Button, Menu, ActionIcon } from "@mantine/core";
+import { Card, Table, Image, Text, Group, TextInput, Button, Menu, ActionIcon, Avatar, Modal, Select, Flex, Space } from "@mantine/core";
 import Vector from "../assets/Vector.jpg";
 import Img2 from "../assets/Img2.jpg";
 import Img3 from "../assets/Component 13.jpg";
@@ -894,17 +894,25 @@ import { BiLogOut } from "react-icons/bi";
 import { useCookies } from "react-cookie";
 import { format } from "date-fns";
 import setting from "../assets/settings.png"
+import { FaWifi } from "react-icons/fa6";
+import { useForm } from "@mantine/form";
+import { MdOutlineEmail } from "react-icons/md";
 // axios.defaults.withCredentials = true;
 // axios.defaults.xsrfCookieName='csrftoken';
 // axios.defaults.xsrfHeaderName='x-csrftoken'
 
 
 const AllPatients = () => {
+
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState({});
   const [selectAll, setSelectAll] = useState(false);
   const [token, setToken, removeToken] = useCookies(['sessionid']);
+  const [uploadedImage, setUploadedImage] = useState(null); // State for uploaded image preview
+  // const [editModal, setEditModal] = useState(false)
+  console.log(uploadedImage);
+
 
   const selectedCount = Object.values(selectedRows).filter((isSelected) => isSelected).length;
 
@@ -913,9 +921,21 @@ const AllPatients = () => {
     return format(dateString, "dd MMMM yyyy | h:mm a");
   };
 
+
+
+
   useEffect(() => {
     fetchPatients();
     // localStorage.clear()
+    localStorage.removeItem('capturedImages');
+    localStorage.removeItem('capturedVideos');
+    localStorage.removeItem('selectedImages');
+    localStorage.removeItem('selectedVideos');
+    localStorage.removeItem('selectedpatient');
+    localStorage.removeItem('time');
+    const imageFromStorage = localStorage.getItem("userdp");
+    setUploadedImage(imageFromStorage);
+
   }, []);
 
   const fetchPatients = async () => {
@@ -994,7 +1014,7 @@ const AllPatients = () => {
         localStorage.clear()
         removeToken(['sessionid']);
         console.log("All localStorage items cleared.");
-        navigate('/')
+        navigate('/login')
       }
       else {
         console.log('Error while logout')
@@ -1023,11 +1043,13 @@ const AllPatients = () => {
   //   localStorage.setItem('patientId',patientId)
   //   navigate('/cameronwillamson')
   // }
+
   return (
     <>
       {
         window.localStorage.getItem("loginStatus") === "user_validated" ? (
           <div style={{ height: "100vh", borderRadius: "48px", padding: "32px", gap: "48px" }}>
+
             <div
               style={{
                 width: "95%",
@@ -1048,7 +1070,7 @@ const AllPatients = () => {
                   gap: "48px",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+                <div style={{ display: "flex", alignItems: "center", width: "100%", gap: 5 }}>
                   <Image src={Vector} maw={40} />
                   <h1 style={{ marginLeft: "0.10rem", fontFamily: "inter" }}>Endoscopy</h1>
                   <div style={{ flexGrow: "1" }}>
@@ -1089,21 +1111,27 @@ const AllPatients = () => {
                     <Menu shadow="md" width={250} offset={8} withArrow arrowPosition="center"
                       radius={10} position="bottom-end">
                       <Menu.Target >
-                        <Button variant="white" style={{ marginRight: '-1rem' }}>
-                          <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} />
-                        </Button>
+                        {/* <Button variant="white" style={{ marginRight: '-1rem' }}> */}
+                        {/* <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} /> */}
+                        <Avatar src={uploadedImage} radius={"lg"} />
+                        {/* </Button> */}
                       </Menu.Target>
 
                       <Menu.Dropdown p='md'>
-                        <Menu.Item icon={<IoPersonOutline size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
-                        // onClick={() => navigate("/register")}
+                        <Menu.Item icon={<FaWifi size={20} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
+                          onClick={() => navigate("/wifi")}
+                        >Wifi</Menu.Item>
+
+                        <Menu.Item icon={<IoPersonOutline size={20} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
+                          onClick={() => navigate("/edituser")}
                         >Edit Profile</Menu.Item>
 
-                        <Menu.Divider />
 
-                        <Menu.Item icon={< FaRegFileAlt size={24} style={{ backgroundColor: '#EBEDF4', borderRadius: '45%', padding: '5px' }} />}
+
+                        <Menu.Item icon={< FaRegFileAlt size={20} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
                           onClick={() => navigate("/headersetting")}
                         >Header Setting</Menu.Item>
+                        <Menu.Divider />
                         <Button variant="light" color="red" fullWidth mt={'1rem'} mb={'1rem'}
                           type="submit"
                           onClick={Logout}
@@ -1201,25 +1229,79 @@ const AllPatients = () => {
                           borderRadius: "16px",
                           transition: "background-color 0.3s ease",
                         }}
-                        onClick={(e) => {
 
-                          // Prevent navigation if a checkbox is clicked
+                      >
+                        <td onClick={(e) => {
                           if (e.target.type !== "checkbox") {
                             localStorage.setItem("patientid", item.id);
                             const patientData = JSON.stringify(item)
                             localStorage.setItem('selectedpatient', patientData)
                             navigate("/cameronwillamson");
                           }
-                        }}
-                      >
-                        <td>{item.patient_name}</td>
-                        <td>{item.id}</td>
-                        <td>{item.age}</td>
-                        <td>{item.gender}</td>
-                        <td>{item.procedure}</td>
-                        <td>{item.mobile}</td>
-                        <td>{item.patient_email}</td>
-                        <td>{item.referred}</td>
+                        }}>{item.patient_name}</td>
+                        <td
+                          onClick={(e) => {
+                            if (e.target.type !== "checkbox") {
+                              localStorage.setItem("patientid", item.id);
+                              const patientData = JSON.stringify(item)
+                              localStorage.setItem('selectedpatient', patientData)
+                              navigate("/cameronwillamson");
+                            }
+                          }}>{item.id}</td>
+                        <td
+                          onClick={(e) => {
+                            if (e.target.type !== "checkbox") {
+                              localStorage.setItem("patientid", item.id);
+                              const patientData = JSON.stringify(item)
+                              localStorage.setItem('selectedpatient', patientData)
+                              navigate("/cameronwillamson");
+                            }
+                          }}>{item.age}</td>
+                        <td
+                          onClick={(e) => {
+                            if (e.target.type !== "checkbox") {
+                              localStorage.setItem("patientid", item.id);
+                              const patientData = JSON.stringify(item)
+                              localStorage.setItem('selectedpatient', patientData)
+                              navigate("/cameronwillamson");
+                            }
+                          }}>{item.gender}</td>
+                        <td
+                          onClick={(e) => {
+                            if (e.target.type !== "checkbox") {
+                              localStorage.setItem("patientid", item.id);
+                              const patientData = JSON.stringify(item)
+                              localStorage.setItem('selectedpatient', patientData)
+                              navigate("/cameronwillamson");
+                            }
+                          }}>{item.procedure}</td>
+                        <td
+                          onClick={(e) => {
+                            if (e.target.type !== "checkbox") {
+                              localStorage.setItem("patientid", item.id);
+                              const patientData = JSON.stringify(item)
+                              localStorage.setItem('selectedpatient', patientData)
+                              navigate("/cameronwillamson");
+                            }
+                          }}>{item.mobile}</td>
+                        <td
+                          onClick={(e) => {
+                            if (e.target.type !== "checkbox") {
+                              localStorage.setItem("patientid", item.id);
+                              const patientData = JSON.stringify(item)
+                              localStorage.setItem('selectedpatient', patientData)
+                              navigate("/cameronwillamson");
+                            }
+                          }}>{item.patient_email}</td>
+                        <td
+                          onClick={(e) => {
+                            if (e.target.type !== "checkbox") {
+                              localStorage.setItem("patientid", item.id);
+                              const patientData = JSON.stringify(item)
+                              localStorage.setItem('selectedpatient', patientData)
+                              navigate("/cameronwillamson");
+                            }
+                          }}>{item.referred}</td>
                         <td>
                           <div className="accent"
                             style={{
@@ -1228,17 +1310,38 @@ const AllPatients = () => {
                               alignItems: "center",
                             }}
                           >
-                            <span>{formatDateTime(item.updated_at)}</span>
-                            <span
-                              style={{
-                                cursor: "pointer",
-                                fontSize: "18px",
-                                marginLeft: "10px",
-                                color: "#999",
-                              }}
-                            >
-                              ⋮
-                            </span>
+                            <span onClick={(e) => {
+                              if (e.target.type !== "checkbox") {
+                                localStorage.setItem("patientid", item.id);
+                                const patientData = JSON.stringify(item)
+                                localStorage.setItem('selectedpatient', patientData)
+                                navigate("/cameronwillamson");
+                              }
+                            }}>{formatDateTime(item.updated_at)}</span>
+
+                            <Menu shadow="md" width={250} offset={8} withArrow arrowPosition="center"
+                              radius={10} position="bottom-end">
+                              <Menu.Target>
+                                <span
+                                  style={{
+                                    cursor: "pointer",
+                                    fontSize: "18px",
+                                    marginLeft: "10px",
+                                    color: "#999",
+                                  }}
+                                >
+                                  ⋮
+                                </span>
+                              </Menu.Target>
+                              <Menu.Item onClick={() => {
+                                const patientData = JSON.stringify(item)
+                                localStorage.setItem('selectedpatient', patientData)
+                                navigate("/editpatient")
+                              }}>
+                                Edit
+                              </Menu.Item>
+                            </Menu>
+
 
                             <input
                               type="checkbox"

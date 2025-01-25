@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, Image, Text, SimpleGrid, Flex, Divider, Space } from '@mantine/core';
 import logo1 from '../../assets/Component 13.jpg';
 import logo from '../../assets/Vector.jpg';
@@ -9,7 +9,14 @@ const HospitalCard = (props) => {
   const { selectedImages, remarks, medication, comments } = props;
   const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'));
   const headerSettings = JSON.parse(localStorage.getItem('headerSettings'));
+  const [uploadedImage, setUploadedImage] = useState(null); // State for uploaded image preview
 
+  useEffect(() => {
+    // localStorage.clear()
+    const imageFromStorage = localStorage.getItem("dp");
+    setUploadedImage(imageFromStorage);
+
+  }, []);
   const printRef = useRef(null);
 
   const formatDateTime = (date) => {
@@ -51,9 +58,15 @@ const HospitalCard = (props) => {
   };
 
   const Header = () => (
-    <Card shadow="sm" padding="lg" radius="md" withBorder bg="black" mb={0}>
+    <Card shadow="sm" padding="lg" radius="md" withBorder bg="black" h={150}>
       <Flex align="center" gap="lg">
-        <Image maw={90} radius="50%" src={logo1} alt="Hospital Logo" />
+
+        <Image
+          src={uploadedImage ? uploadedImage : logo1}
+          alt="Hospital Logo"
+          radius="50%"
+          width="6rem"
+          height="6rem" />
         <div>
           <Text weight={700} color="white" size="xl" mb="xs">
             {headerSettings?.hospitalname || 'THE INSTITUTE FOR SPECIAL SURGERY JOY HOSPITAL'}
@@ -104,54 +117,57 @@ const HospitalCard = (props) => {
                       <SimpleGrid cols={6} spacing="sm">
                         <Flex direction="column">
                           <Text fw={600}>Name</Text>
-                          <Text>{selectedPatient.patient_name}</Text>
+                          <Text fz={12} fw={500}>{selectedPatient.patient_name}</Text>
                         </Flex>
                         <Flex direction="column">
                           <Text fw={600}>Patient ID</Text>
-                          <Text>{selectedPatient.id}</Text>
+                          <Text fz={12} fw={500}>{selectedPatient.id}</Text>
                         </Flex>
                         <Flex direction="column">
                           <Text fw={600}>Age</Text>
-                          <Text>{selectedPatient.age}</Text>
+                          <Text fz={12} fw={500}>{selectedPatient.age}</Text>
                         </Flex>
                         <Flex direction="column">
                           <Text fw={600}>Sex</Text>
-                          <Text>{selectedPatient.gender}</Text>
+                          <Text fz={12} fw={500}>{selectedPatient.gender}</Text>
                         </Flex>
                         <Flex direction="column">
                           <Text fw={600}>Referred by</Text>
-                          <Text>{selectedPatient.referred}</Text>
+                          <Text fz={12} fw={500}>{selectedPatient.referred}</Text>
                         </Flex>
                         <Flex direction="column">
                           <Text fw={600}>Date & Time</Text>
-                          <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
+                          <Text fz={12} fw={500}>{formatDateTime(selectedPatient.updated_at)}</Text>
                         </Flex>
                       </SimpleGrid>
                       <Space h={12} />
                       <SimpleGrid cols={2} spacing="sm">
                         <Flex direction="column">
                           <Text fw={600}>Phone Number</Text>
-                          <Text>{selectedPatient.mobile}</Text>
+                          <Text fz={12} fw={500}>{selectedPatient.mobile}</Text>
                         </Flex>
                         <Flex direction="column">
                           <Text fw={600}>Email</Text>
-                          <Text>{selectedPatient.patient_email}</Text>
+                          <Text fz={12} fw={500}>{selectedPatient.patient_email}</Text>
                         </Flex>
                       </SimpleGrid>
                     </Card>
 
                     <SimpleGrid cols={2} spacing="lg">
-                      <Card shadow="sm" padding="sm" radius="md" withBorder style={{ backgroundColor: '#EBEDF4' }} mah={170}>
-                        <Text weight={600} size="md" mb="xs">
+                      <Card shadow="sm" padding="sm" radius="md" withBorder style={{ backgroundColor: '#EBEDF4' }} h={140}>
+                        <Text weight={600} mb={5}>
                           Remarks
                         </Text>
-                        <Text size="sm">{remarks}</Text>
+
+                        <Text style={{ whiteSpace: 'normal', wordWrap: 'break-word' }} >
+                          {remarks}
+                        </Text>
                       </Card>
-                      <Card shadow="sm" padding="sm" radius="md" withBorder style={{ backgroundColor: '#EBEDF4' }} mah={170}>
-                        <Text weight={600} size="md" mb="xs">
+                      <Card shadow="sm" padding="sm" radius="md" withBorder style={{ backgroundColor: '#EBEDF2' }} h={140}>
+                        <Text weight={600} mb={5}>
                           Medication
                         </Text>
-                        <Text size="sm">{medication}</Text>
+                        <Text lineClamp={2}>{medication}</Text>
                       </Card>
                     </SimpleGrid>
                     <Space h={15} />
@@ -178,8 +194,8 @@ const HospitalCard = (props) => {
 
                       return (
                         <Flex direction="column" key={actualIndex} style={{ alignItems: 'center' }}>
-                          <Card shadow="sm" padding="sm" radius="md" style={{ width: '100%' }}>
-                            <Card.Section h={250}>
+                          <Card shadow="sm" padding="sm" radius="md" h={230} style={{ width: '100%' }}>
+                            <Card.Section >
                               <Image
                                 src={image}
                                 alt={`Image ${actualIndex}`}
@@ -215,9 +231,9 @@ const HospitalCard = (props) => {
                       <Image maw={40} radius="md" src={logo} alt="Software Logo" />
                       <div>
                         <Text weight={600} size="sm">
-                          Name of Software or Company
+                          Endoscopy
                         </Text>
-                        <Text size="xs">www.xyzsoftware.com</Text>
+                        <Text size="xs">www.endoscopy.com</Text>
                       </div>
                     </Flex>
                     <Text size="sm">Consulted By ______________</Text>
@@ -225,10 +241,10 @@ const HospitalCard = (props) => {
                 </div>
               </Flex>
             </Card>
-          </div>
+          </div >
         ))}
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

@@ -71,7 +71,7 @@ const SettingPwd = () => {
 
   return (
     <div className='parent'>
-      <div className='child3'>
+      <div className='child3' style={{ marginTop: 0 }}>
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <div className='logo'>
             <Image maw={40} radius="md" src={logo} alt="Random image" />

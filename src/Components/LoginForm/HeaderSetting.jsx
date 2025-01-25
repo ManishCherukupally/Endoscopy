@@ -26,10 +26,23 @@ const HeaderSetting = () => {
   const [loader, setLoader] = useState(false);
   const [modalOpened, setModalOpened] = useState(false); // Modal visibility state
   const [selectedImage, setSelectedImage] = useState(null); // Selected image index or src
+  const [uploadedImage, setUploadedImage] = useState(null); // State for uploaded image preview
+  console.log(uploadedImage);
+
   const navigate = useNavigate();
+  const templates = ["default"];
+
+  // Initialize form with the default template selected
   const form = useForm({
-    initialValues: { hospitalname: '', hospitaladdress: '', hospitalemail: '', hospitalnumber: '' },
+    initialValues: {
+      hospitalname: '',
+      hospitaladdress: '',
+      hospitalemail: '',
+      hospitalnumber: '',
+      template: templates[0], // Set the initial value to the first template in the array
+    },
   });
+
   const theme = useMantineTheme();
 
   const handleSave = () => {
@@ -41,15 +54,24 @@ const HeaderSetting = () => {
     setTimeout(() => {
       setLoader(false);
       navigate("/allpatients");
+      // window.localStorage.setItem("dp", uploadedImage);
+
     }, 1000);
   };
-
-  const templates = ["default", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
   const handleViewClick = (value) => {
     setSelectedImage(value); // Set the selected image
     setModalOpened(true); // Open the modal
   };
+
+  const handleDrop = (files) => {
+    const file = files[0];
+    const fileURL = URL.createObjectURL(file); // Create a URL for the uploaded file
+    setUploadedImage(fileURL); // Update the state with the image URL
+    window.localStorage.setItem("dp", fileURL);
+
+  };
+
   return (
     <>{
       window.localStorage.getItem("loginStatus") === "user_validated" ? (
@@ -76,43 +98,54 @@ const HeaderSetting = () => {
               </div>
 
               <Flex justify={"center"}>
-                <div className="dropzone1">
-                  <Dropzone
-                    onDrop={(files) => {
-                      console.log('accepted files', files)
-                      window.localStorage.setItem("dp", JSON.stringify(files))
-                    }}
-                    onReject={(files) => console.log('rejected files', files)}
-                    maxSize={3 * 1024 ** 2}
-                    accept={IMAGE_MIME_TYPE}
-                  >
-                    <Group
-                      position="center"
-                      spacing="xl"
-                      m={0}
-                      style={{ minHeight: rem(150), pointerEvents: 'none' }}
+                {uploadedImage ? (
+                  <div className="dropzone1">
+                    <Image
+                      src={uploadedImage}
+                      alt="Uploaded Preview"
+                      radius={"50%"}
+                      width={"13rem"}
+                      height={"13rem"}
+                    />
+                  </div>
+
+                ) : (
+                  <div className="dropzone1">
+                    <Dropzone
+                      w={"13rem"}
+                      radius={"50%"}
+                      onDrop={handleDrop}
+                      onReject={(files) => console.log('rejected files', files)}
+                      accept={IMAGE_MIME_TYPE}
                     >
-                      <Dropzone.Accept>
-                        <IconUpload
-                          size="3.2rem"
-                          stroke={1.5}
-                          className="upload"
-                          color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
-                        />
-                      </Dropzone.Accept>
-                      <Dropzone.Reject>
-                        <IconX
-                          size="3.2rem"
-                          stroke={1.5}
-                          color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                        />
-                      </Dropzone.Reject>
-                      <Dropzone.Idle>
-                        <IconPhoto size="3.2rem" stroke={1.5} />
-                      </Dropzone.Idle>
-                    </Group>
-                  </Dropzone>
-                </div>
+                      <Group
+                        position="center"
+                        spacing="xl"
+                        m={0}
+                        style={{ minHeight: rem(170), pointerEvents: 'none' }}
+                      >
+                        <Dropzone.Accept>
+                          <IconUpload
+                            size="3.2rem"
+                            stroke={1.5}
+                            className="upload"
+                            color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
+                          />
+                        </Dropzone.Accept>
+                        <Dropzone.Reject>
+                          <IconX
+                            size="3.2rem"
+                            stroke={1.5}
+                            color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                          />
+                        </Dropzone.Reject>
+                        <Dropzone.Idle>
+                          <IconPhoto size="3.2rem" stroke={1.5} />
+                        </Dropzone.Idle>
+                      </Group>
+                    </Dropzone>
+                  </div>
+                )}
               </Flex>
 
               <SimpleGrid cols={3} mt="lg">
@@ -188,7 +221,10 @@ const HeaderSetting = () => {
                       {hoveredCard === value && (
                         <>
                           <Radio
+                            color="violet"
+                            checked={true}
                             value={value}
+                            size='lg'
                             style={{
                               position: "absolute",
                               top: "5px",
@@ -239,8 +275,8 @@ const HeaderSetting = () => {
       ) : (<Navigate to={"/"} />)
     }
     </>
-
   );
 };
 
 export default HeaderSetting;
+

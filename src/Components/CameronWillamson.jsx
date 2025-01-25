@@ -199,7 +199,7 @@ const CameronWilliamson = () => {
                 </Modal>
 
                 <Group position="center">
-                  <Button
+                  {/* <Button
                     variant='light'
                     color='violet'
                     disabled={noRecords ? true : false}
@@ -210,7 +210,7 @@ const CameronWilliamson = () => {
                     }}
                   >
                     Last Visit Report
-                  </Button>
+                  </Button> */}
                 </Group>
 
                 {/* <Button style={{ backgroundColor: '#EDE9FE', color: 'black',textDecoration:"underline",textUnderlineOffset:"3px",textDecorationThickness:"1.30px" }}

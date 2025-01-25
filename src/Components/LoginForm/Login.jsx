@@ -278,6 +278,7 @@ const Login = () => {
         setLoader(false)
         navigate('/allpatients');
         window.localStorage.setItem("loginStatus", response.data.status)
+        window.localStorage.setItem("userData", response.data.user_details_data)
         console.log(response.data.accessToken);
 
       } else if (response.data.status === 'unauthorized_user') {

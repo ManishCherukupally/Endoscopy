@@ -639,8 +639,8 @@ const PatientInfo = () => {
   return (
     <>{
       window.localStorage.getItem("loginStatus") === "user_validated" ? (
-        <div className='patient'>
-          <div className='patientinfo'>
+        <div className='parent'>
+          <div className='child2' style={{ marginTop: 0 }}>
             <Card shadow="sm" padding="lg" radius="md" withBorder className='patientcard'>
               <div className='addnewpatient'>
                 <Button variant="light" color="gray" mt='md' mr='md' radius='md' onClick={() => navigate(-1)}>

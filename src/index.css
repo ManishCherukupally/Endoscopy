@@ -101,13 +101,14 @@ background-color:transparent;
   display: flex;
   justify-content: center;
   align-items: center;
-   margin-top: 3rem; 
+   margin-top: 0.2rem; 
    font-family: 'inter';
+   /* background-color: #EBEDF4; */
 }
 .child{
   width: 25rem;
   height: auto;
-  border: 1px solid gray;
+  /* border: 1px solid gray; */
   border-radius: 0.8rem;
   padding: 2rem;
   background-color:#EBEDF4;
@@ -377,11 +378,11 @@ background-color:#EBEDF4
 .child1{
 width: 25rem;
 height: auto;
-border: 1px solid gray;
 border-radius: 0.8rem;
 padding: 2rem;
 background-color:#EBEDF4;
 cursor: pointer;
+padding-bottom: 2rem;
 
 }
  
@@ -395,7 +396,7 @@ cursor: pointer;
   scroll-behavior: smooth;
   scrollbar-width: none;
   height: 15rem;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
 }
 
 /* Hide default scrollbar for Webkit browsers */
@@ -434,9 +435,9 @@ cursor: pointer;
 }
 
 /* Radio button inside card */
-.radio {
+/* .radio {
   margin-bottom: 10px;
-}
+} */
 
 /* Hovered view button */
 .view {
@@ -493,10 +494,11 @@ cursor: pointer;
 .child2{
   width: 25rem;
   height: auto;
-  border: 1px solid gray;
+  /* border: 1px solid gray; */
   border-radius: 0.8rem;
   padding: 2rem;
   background-color:#EBEDF4;
+  margin-top: 3% ;
 }
 
 
@@ -504,10 +506,11 @@ cursor: pointer;
 .child3{
   width: 30rem;
   height: auto;
-  border: 1px solid gray;
+  /* border: 1px solid gray; */
   border-radius: 0.8rem;
   padding: 2rem;
   background-color:#EBEDF4;
+  margin-top: 0.8%;
 }
 
 .OTP{
@@ -900,4 +903,8 @@ padding-bottom: 0.1rem;
 }
 .mantine-Radio-icon{
   display: none;
+}
+
+.mantine-j3jbtx{
+  padding-left: 0;
 }

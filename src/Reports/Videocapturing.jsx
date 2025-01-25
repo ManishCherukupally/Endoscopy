@@ -36,6 +36,8 @@ const Videocapturing = () => {
     const [seconds, setSeconds] = useState(0);
     const [showTimer, setShowTimer] = useState(false);
 
+    const [overallseconds, setoverallSeconds] = useState(0);
+
     const webcamRef = useRef(null);
     const mediaRecorderRef = useRef(null);
     const timerRef = useRef(null); // Timer reference to control the interval
@@ -43,12 +45,21 @@ const Videocapturing = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setSeconds((prevSeconds) => prevSeconds + 1);
+            setoverallSeconds((prevSeconds) => prevSeconds + 1);
+
+
         }, 1000);
 
         return () => clearInterval(interval);
     }, []);
 
+    const overallhours = Math.floor(overallseconds / 3600);
+    const overallminutes = Math.floor((overallseconds % 3600) / 60);
+    const overalldisplaySeconds = overallseconds % 60;
 
+    // Format time to always show two digits
+    const formattedTime = `${String(overallhours).padStart(2, '0')}:${String(overallminutes).padStart(2, '0')}:${String(overalldisplaySeconds).padStart(2, '0')}`;
+    localStorage.setItem('time', formattedTime)
 
     const selectedPatient = JSON.parse(localStorage.getItem("selectedpatient"));
 
@@ -185,253 +196,273 @@ const Videocapturing = () => {
     const displaySeconds = seconds % 60;
 
     // Format time to always show two digits
-    const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
-    localStorage.setItem('time', formattedTime)
+    const videoformattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
+    // localStorage.setItem('time', formattedTime)
 
 
     return (
         <div>
-            <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} mt={"lg"} style={{ borderRadius: "1rem" }}>
-                <Flex justify={"space-between"} align={"center"}>
-                    <Group spacing={"sm"}>
-                        <Image src={Vector} maw={40} mah={40} />
-                        <Text fz={32} fw={600}>
-                            Endoscopy
-                        </Text>
-                    </Group>
+            <Card withBorder m={"xl"} bg={"#EBEDF4"} radius={"1rem"}>
+                <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} m={"lg"} style={{ borderRadius: "1rem" }}>
+                    <Flex justify={"space-between"} align={"center"}>
+                        <Group spacing={"sm"}>
+                            <Image src={Vector} maw={40} mah={40} />
+                            <Text fz={32} fw={600}>
+                                Endoscopy
+                            </Text>
+                        </Group>
 
-                    <Flex gap={"sm"} align={"center"}>
-                        <div
-                            className="recording-indicator"
-                            title="Recording..."
-                            style={{ visibility: isRecording ? "visible" : "hidden" }}
-                        ></div>
-                        {showTimer && (
+                        <Flex gap={"sm"} align={"center"}>
+                            <div
+                                className="recording-indicator"
+                                title="Recording..."
+                                style={{ visibility: isRecording ? "visible" : "hidden" }}
+                            ></div>
+
                             <Text c={"#D94444"} fz={24} fw={600}>
                                 {formattedTime}
                             </Text>
-                        )}
+
+                        </Flex>
+
+                        <Group>
+                            <Button
+                                variant="light"
+                                color="red"
+                                radius={8}
+                                onClick={() => navigate("/allpatients")}
+                            >
+                                Cancel capture
+                            </Button>
+                            <Button bg="#8158F5" radius={8} onClick={() => navigate("/selectpicture")}>
+                                Save & Continue
+                            </Button>
+                        </Group>
                     </Flex>
 
-                    <Group>
-                        <Button
-                            variant="light"
-                            color="red"
-                            radius={8}
-                            onClick={() => navigate("/allpatients")}
-                        >
-                            Cancel capture
-                        </Button>
-                        <Button bg="#8158F5" radius={8} onClick={() => navigate("/selectpicture")}>
-                            Save & Continue
-                        </Button>
-                    </Group>
-                </Flex>
+                    <Space h={20} />
 
-                <Space h={20} />
+                    {/* Patient Details Section */}
+                    <Card bg={"#EBEDF4"} radius={12}>
+                        <SimpleGrid cols={6}>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Name</Text>
+                                <Text>{selectedPatient.patient_name}</Text>
+                            </Flex>
 
-                {/* Patient Details Section */}
-                <Card bg={"#EBEDF4"} radius={12}>
-                    <SimpleGrid cols={6}>
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Name</Text>
-                            <Text>{selectedPatient.patient_name}</Text>
-                        </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Patient ID</Text>
+                                <Text>{selectedPatient.id}</Text>
+                            </Flex>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Patient ID</Text>
-                            <Text>{selectedPatient.id}</Text>
-                        </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Age</Text>
+                                <Text>{selectedPatient.age}</Text>
+                            </Flex>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Age</Text>
-                            <Text>{selectedPatient.age}</Text>
-                        </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Sex</Text>
+                                <Text>{selectedPatient.gender}</Text>
+                            </Flex>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Sex</Text>
-                            <Text>{selectedPatient.gender}</Text>
-                        </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Reffered by</Text>
+                                <Text>{selectedPatient.referred}</Text>
+                            </Flex>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Reffered by</Text>
-                            <Text>{selectedPatient.referred}</Text>
-                        </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Date & Time</Text>
+                                <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Date & Time</Text>
-                            <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
+                            </Flex>
+                        </SimpleGrid>
+                        <Space h={12} />
+                        <SimpleGrid cols={2}>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Phone Number</Text>
+                                <Text>{selectedPatient.mobile}</Text>
+                            </Flex>
 
-                        </Flex>
-                    </SimpleGrid>
-                    <Space h={12} />
-                    <SimpleGrid cols={2}>
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Phone Number</Text>
-                            <Text>{selectedPatient.mobile}</Text>
-                        </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Email</Text>
+                                <Text>{selectedPatient.patient_email}</Text>
+                            </Flex>
+                        </SimpleGrid>
+                    </Card>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Email</Text>
-                            <Text>{selectedPatient.patient_email}</Text>
-                        </Flex>
-                    </SimpleGrid>
-                </Card>
+                    <Space h={"1rem"} />
 
-                <Space h={"1rem"} />
-
-                {/* Video and Images Section */}
-                <Grid>
-                    <Grid.Col span={9}>
-                        <div style={{ position: "relative", width: "750px", height: "100%" }}>
-                            {externalDeviceId ? (
-                                <>
-                                    <Webcam
-                                        ref={webcamRef}
-                                        audio={false}
-                                        videoConstraints={videoConstraints}
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            borderRadius: "15px",
-                                        }}
-                                    />
-                                    <MdFullscreen
-                                        onClick={handleFullscreen}
-                                        style={{
-                                            position: "absolute",
-                                            top: "10px",
-                                            right: "10px",
-                                            color: "white",
-                                            padding: "5px",
-                                            cursor: "pointer",
-                                        }}
-                                        size={40}
-                                    />
-                                    <Flex
-                                        gap={"md"}
-                                        style={{
-                                            position: "absolute",
-                                            bottom: "20px",
-                                            left: "50%",
-                                            transform: "translateX(-50%)",
-                                            zIndex: 2,
-                                        }}
-                                    >
-                                        <ActionIcon
-                                            onClick={handleCapture}
-                                            style={{
-                                                backgroundColor: "#8158F5",
-                                                color: "#fff",
-                                            }}
-                                            radius={"50%"}
-                                            size={"4rem"}
-                                        >
-                                            <BsCameraFill size={"2.2rem"} />
-                                        </ActionIcon>
-
-                                        <ActionIcon
-                                            onClick={handleStartCaptureClick}
-                                            style={{
-                                                backgroundColor: "#8158F5",
-                                                color: "#fff",
-                                            }}
-                                            radius={"50%"}
-                                            size={"4rem"}
-                                        >
-                                            <IoPlay size={"2.2rem"} />
-                                        </ActionIcon>
-
-                                        <ActionIcon
-                                            onClick={handleStopCaptureClick}
-                                            style={{
-                                                backgroundColor: "#8158F5",
-                                                color: "#fff",
-                                            }}
-                                            radius={"50%"}
-                                            size={"4rem"}
-                                        >
-                                            <FaPause size={"2.2rem"} />
-                                        </ActionIcon>
-                                    </Flex>
-                                </>
-                            ) : (
-                                <p>Loading external camera...</p>
-                            )}
-                        </div>
-                    </Grid.Col>
-
-                    <Grid.Col span={3}>
-                        <Card bg={"#EBEDF4"} radius={12} h={676}>
-                            <SimpleGrid cols={2}>
-                                {recordedChunks.map((video, index) => (
-                                    <div key={index} style={{ position: "relative" }}>
-                                        <video
-                                            src={video.videoUrl}
-                                            controls
-                                            style={{ width: "100%", borderRadius: "12px" }}
-                                        />
-                                        <Overlay position="absolute" top={0} left={0} opacity={0} zIndex={1}>
-                                            <div
+                    {/* Video and Images Section */}
+                    <Grid>
+                        <Grid.Col span={9}>
+                            <Flex justify="center" align="center" style={{ height: "100%" }} >
+                                <div style={{ position: "relative", width: "750px", height: "auto", display: "flex", justifyContent: "center" }}>
+                                    {externalDeviceId ? (
+                                        <Flex justify={"center"}>
+                                            <Webcam
+                                                ref={webcamRef}
+                                                audio={false}
+                                                videoConstraints={videoConstraints}
                                                 style={{
-                                                    display: "flex",
-                                                    justifyContent: "flex-end",
-                                                    alignItems: "center",
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    borderRadius: "15px",
+                                                }}
+                                            />
+                                            <MdFullscreen
+                                                onClick={handleFullscreen}
+                                                style={{
+                                                    position: "absolute",
+                                                    top: "10px",
+                                                    right: "10px",
+                                                    color: "white",
                                                     padding: "5px",
+                                                    cursor: "pointer",
+                                                }}
+                                                size={40}
+                                            />
+                                            <div
+
+                                                style={{
+                                                    position: "absolute",
+                                                    bottom: "20px",
+                                                    left: "50%",
+                                                    transform: "translateX(-50%)",
+                                                    zIndex: 2,
                                                 }}
                                             >
-                                                <ActionIcon
-                                                    size={30}
-                                                    variant="transparent"
-                                                    bg={"white"}
-                                                    radius={"50%"}
-                                                    onClick={() => handleDeleteVideo(index)}
-                                                >
-                                                    <RxCross2 color="red" />
-                                                </ActionIcon>
-                                            </div>
-                                        </Overlay>
-                                    </div>
-                                ))}
+                                                <Flex direction={"column"} align={"center"}>
+                                                    {showTimer && (
+                                                        <Text c={"#ffffff"} fz={18} fw={500}>
+                                                            {videoformattedTime}
+                                                        </Text>
+                                                    )}
+                                                    <Flex gap={"md"}>
 
-                                {capturedImages.map((image, index) => (
-                                    <div key={index} style={{ position: "relative" }}>
-                                        <Image
-                                            src={image}
-                                            alt={`Captured ${index + 1}`}
-                                            radius={12}
-                                            style={{ width: "100%", height: "100%" }}
-                                        />
-                                        <Overlay position="absolute" top={0} left={0} opacity={0} zIndex={1}>
-                                            <div
-                                                style={{
-                                                    display: "flex",
-                                                    justifyContent: "space-between",
-                                                    alignItems: "center",
-                                                    padding: "5px",
-                                                }}
-                                            >
-                                                <ActionIcon size={30} variant="transparent" bg={"white"} radius={"50%"}>
-                                                    <MdOutlineEdit color="black" />
-                                                </ActionIcon>
-                                                <ActionIcon
-                                                    size={30}
-                                                    variant="transparent"
-                                                    bg={"white"}
-                                                    radius={"50%"}
-                                                    onClick={() => handleDeleteImage(index)}
-                                                >
-                                                    <RxCross2 color="red" />
-                                                </ActionIcon>
+                                                        <ActionIcon
+                                                            onClick={handleCapture}
+                                                            style={{
+                                                                backgroundColor: "#8158F5",
+                                                                color: "#fff",
+                                                            }}
+                                                            radius={"50%"}
+                                                            size={"4rem"}
+                                                        >
+                                                            <BsCameraFill size={"2.2rem"} />
+                                                        </ActionIcon>
+
+
+
+                                                        <ActionIcon
+                                                            onClick={handleStartCaptureClick}
+                                                            style={{
+                                                                backgroundColor: "#8158F5",
+                                                                color: "#fff",
+                                                            }}
+                                                            radius={"50%"}
+                                                            size={"4rem"}
+                                                        >
+                                                            <IoPlay size={"2.2rem"} />
+                                                        </ActionIcon>
+
+                                                        <ActionIcon
+                                                            onClick={handleStopCaptureClick}
+                                                            style={{
+                                                                backgroundColor: "#8158F5",
+                                                                color: "#fff",
+                                                            }}
+                                                            radius={"50%"}
+                                                            size={"4rem"}
+                                                        >
+                                                            <FaPause size={"2.2rem"} />
+                                                        </ActionIcon>
+
+                                                    </Flex>
+                                                </Flex>
+
                                             </div>
-                                        </Overlay>
-                                    </div>
-                                ))}
-                            </SimpleGrid>
-                        </Card>
-                    </Grid.Col>
-                </Grid>
-            </Container>
+                                        </Flex>
+                                    ) : (
+                                        <p>Loading external camera...</p>
+                                    )}
+                                </div>
+                            </Flex>
+                        </Grid.Col>
+
+
+                        <Grid.Col span={3}>
+                            <Card bg={"#EBEDF4"} radius={12} h={676}>
+                                <SimpleGrid cols={2}>
+                                    {recordedChunks.map((video, index) => (
+                                        <div key={index} style={{ position: "relative" }}>
+                                            <video
+                                                src={video.videoUrl}
+                                                controls
+                                                style={{ width: "100%", borderRadius: "12px" }}
+                                            />
+                                            <Overlay position="absolute" top={0} left={0} opacity={0} zIndex={1}>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        justifyContent: "flex-end",
+                                                        alignItems: "center",
+                                                        padding: "5px",
+                                                    }}
+                                                >
+                                                    <ActionIcon
+                                                        size={30}
+                                                        variant="transparent"
+                                                        bg={"white"}
+                                                        radius={"50%"}
+                                                        onClick={() => handleDeleteVideo(index)}
+                                                    >
+                                                        <RxCross2 color="red" />
+                                                    </ActionIcon>
+                                                </div>
+                                            </Overlay>
+                                        </div>
+                                    ))}
+
+                                    {capturedImages.map((image, index) => (
+                                        <div key={index} style={{ position: "relative" }}>
+                                            <Image
+                                                src={image}
+                                                alt={`Captured ${index + 1}`}
+                                                radius={12}
+                                                style={{ width: "100%", height: "100%" }}
+                                            />
+                                            <Overlay position="absolute" top={0} left={0} opacity={0} zIndex={1}>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                        alignItems: "center",
+                                                        padding: "5px",
+                                                    }}
+                                                >
+                                                    <ActionIcon size={30} variant="transparent" bg={"white"} radius={"50%"}>
+                                                        <MdOutlineEdit color="black" />
+                                                    </ActionIcon>
+                                                    <ActionIcon
+                                                        size={30}
+                                                        variant="transparent"
+                                                        bg={"white"}
+                                                        radius={"50%"}
+                                                        onClick={() => handleDeleteImage(index)}
+                                                    >
+                                                        <RxCross2 color="red" />
+                                                    </ActionIcon>
+                                                </div>
+                                            </Overlay>
+                                        </div>
+                                    ))}
+                                </SimpleGrid>
+                            </Card>
+                        </Grid.Col>
+                    </Grid>
+                </Container>
+            </Card>
+
         </div>
     );
 };

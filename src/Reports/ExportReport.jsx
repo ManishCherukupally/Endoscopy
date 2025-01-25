@@ -48,6 +48,8 @@ const ExportReport = () => {
     const [fileName, setFileName] = useState(null)
     const [reportId, setReportId] = useState(null)
     const [comments, setComments] = useState([]);
+
+    const [exportbutton, setExportbutton] = useState(true)
     // console.log(value);
 
     // const [fileModal, setfileModal] = useState(false)
@@ -179,6 +181,8 @@ const ExportReport = () => {
             }).then((resp) => {
                 setReportId(resp.data.report_id);
                 console.log(reportId);
+                setExportbutton(false)
+
             });
         }
     };
@@ -264,216 +268,218 @@ const ExportReport = () => {
                     {/* {printReport && window.print()} */}
                 </div>
             </Modal>
-            <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} mt={"lg"} style={{ borderRadius: "1rem" }} >
+            <Card withBorder m={"xl"} bg={"#EBEDF4"} radius={"1rem"}>
+                <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} m={"lg"} style={{ borderRadius: "1rem" }} >
 
-                <Group>
-                    <ActionIcon variant='light' size={"lg"} onClick={() => navigate("/selectpicture")}><MdOutlineChevronLeft size={20} /></ActionIcon>
-                    <Text fz={20} fw={600}>Export Report</Text>
-                </Group>
-                <Space h={15} />
-                <Flex justify={"space-between"} align={"center"}>
-                    <Group spacing={"sm"}>
-                        <Image src={Vector} maw={40} mah={40} />
-                        <Text fz={32} fw={600}>Endoscopy</Text>
+                    <Group>
+                        <ActionIcon variant='light' size={"lg"} onClick={() => navigate("/selectpicture")}><MdOutlineChevronLeft size={20} /></ActionIcon>
+                        <Text fz={20} fw={600}>Export Report</Text>
                     </Group>
+                    <Space h={15} />
+                    <Flex justify={"space-between"} align={"center"}>
+                        <Group spacing={"sm"}>
+                            <Image src={Vector} maw={40} mah={40} />
+                            <Text fz={32} fw={600}>Endoscopy</Text>
+                        </Group>
 
 
-                    <Group spacing={"sm"}>
-                        {/* <div style={{ border: "1px solid black", borderRadius: 8, padding: "1rem" }}>
+                        <Group spacing={"sm"}>
+                            {/* <div style={{ border: "1px solid black", borderRadius: 8, padding: "1rem" }}>
 
                         </div> */}
-                        <Button leftIcon={<IoPlayCircleOutline size={"1.2rem"} />} variant='light' color="violet" radius={8} h={44}
-                            onClick={() => setReportModal(true)}
-                        >Preview</Button>
-                        <ActionIcon radius={8} h={44} w={50} size={"lg"} style={{ border: "1px solid black" }} c={"black"}
-                            onClick={handlePrint}
-                        ><TbPrinter /></ActionIcon>
+                            <Button leftIcon={<IoPlayCircleOutline size={"1.2rem"} />} variant='light' color="violet" radius={8} h={44}
+                                onClick={() => setReportModal(true)}
+                            >Preview</Button>
+                            <ActionIcon variant='outline' disabled={exportbutton} radius={8} h={44} w={50} size={"lg"} c={"black"}
+                                onClick={handlePrint}
+                            ><TbPrinter /></ActionIcon>
 
-                        <Button color='violet' radius={8} h={44} onClick={handleSave}>Save</Button>
+                            <Button color='violet' radius={8} h={44} onClick={handleSave}>Save</Button>
 
-                        <Card withBorder p={'0.3rem'} radius={8} pl={"1rem"} style={{ overflow: "visible", position: "relative" }}>
-                            <Flex gap={15} align={"center"}>
-                                <Text fz={14}>Export Report as</Text>
-                                <Select w={100} variant='filled'
-                                    placeholder='Select a method'
-                                    // value={"Pdf"}
-                                    data={[{ value: 'mail', label: 'Mail' },
-                                    { value: 'whatsapp', label: 'WhatsApp' }
-                                    ]}
-                                    value={value}
-                                    onChange={setValue}
-                                // dropdownPosition='bottom'
-                                // dropdownComponent={props => (
-                                //     <div
-                                //         {...props}
-                                //         style={{
-                                //             zIndex: 1000, // Ensures dropdown appears on top
-                                //             ...props.style,
-                                //         }}
-                                //     />
-                                // )}
-                                />
+                            <Card withBorder p={'0.3rem'} radius={8} pl={"1rem"} style={{ overflow: "visible", position: "relative" }}>
+                                <Flex gap={15} align={"center"}>
+                                    <Text fz={14}>Export Report as</Text>
+                                    <Select w={100} variant='filled'
+                                        placeholder='Select a method'
+                                        // value={"Pdf"}
+                                        data={[{ value: 'mail', label: 'Mail' },
+                                        { value: 'whatsapp', label: 'WhatsApp' }
+                                        ]}
+                                        value={value}
+                                        onChange={setValue}
+                                    // dropdownPosition='bottom'
+                                    // dropdownComponent={props => (
+                                    //     <div
+                                    //         {...props}
+                                    //         style={{
+                                    //             zIndex: 1000, // Ensures dropdown appears on top
+                                    //             ...props.style,
+                                    //         }}
+                                    //     />
+                                    // )}
+                                    />
+                                </Flex>
+                            </Card>
+
+                            <Button disabled={exportbutton} color='violet' radius={8} h={44} onClick={() => { handleExportReport() }}>Export</Button>
+                        </Group>
+                    </Flex>
+
+                    <Space h={20} />
+                    <Card bg={"#EBEDF4"} radius={12}>
+                        <SimpleGrid cols={6}>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Name</Text>
+                                <Text>{selectedPatient.patient_name}</Text>
                             </Flex>
-                        </Card>
 
-                        <Button color='violet' radius={8} h={44} onClick={() => { handleExportReport() }}>Export</Button>
-                    </Group>
-                </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Patient ID</Text>
+                                <Text>{selectedPatient.id}</Text>
+                            </Flex>
 
-                <Space h={20} />
-                <Card bg={"#EBEDF4"} radius={12}>
-                    <SimpleGrid cols={6}>
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Name</Text>
-                            <Text>{selectedPatient.patient_name}</Text>
-                        </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Age</Text>
+                                <Text>{selectedPatient.age}</Text>
+                            </Flex>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Patient ID</Text>
-                            <Text>{selectedPatient.id}</Text>
-                        </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Sex</Text>
+                                <Text>{selectedPatient.gender}</Text>
+                            </Flex>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Age</Text>
-                            <Text>{selectedPatient.age}</Text>
-                        </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Reffered by</Text>
+                                <Text>{selectedPatient.referred}</Text>
+                            </Flex>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Sex</Text>
-                            <Text>{selectedPatient.gender}</Text>
-                        </Flex>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Date & Time</Text>
+                                <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Reffered by</Text>
-                            <Text>{selectedPatient.referred}</Text>
-                        </Flex>
+                            </Flex>
+                        </SimpleGrid>
+                        <Space h={12} />
+                        <SimpleGrid cols={2}>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Phone Number</Text>
+                                <Text>{selectedPatient.mobile}</Text>
+                            </Flex>
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Date & Time</Text>
-                            <Text>{formatDateTime(selectedPatient.updated_at)}</Text>
+                            <Flex direction={"column"}>
+                                <Text fw={600}>Email</Text>
+                                <Text>{selectedPatient.patient_email}</Text>
+                            </Flex>
+                        </SimpleGrid>
+                    </Card>
+                    <Space h={"1rem"} />
 
-                        </Flex>
-                    </SimpleGrid>
-                    <Space h={12} />
-                    <SimpleGrid cols={2}>
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Phone Number</Text>
-                            <Text>{selectedPatient.mobile}</Text>
-                        </Flex>
+                    <Textarea placeholder='Write your remarks'
+                        label="Diagnostic Details (Optional)"
+                        minRows={3}
+                        radius={8}
+                        value={remarksText}
+                        onChange={(event) => setRemarksText(event.currentTarget.value)}
+                    />
+                    <Space h={"1rem"} />
 
-                        <Flex direction={"column"}>
-                            <Text fw={600}>Email</Text>
-                            <Text>{selectedPatient.patient_email}</Text>
-                        </Flex>
-                    </SimpleGrid>
-                </Card>
-                <Space h={"1rem"} />
-
-                <Textarea placeholder='Write your remarks'
-                    label="Diagnostic Details (Optional)"
-                    minRows={3}
-                    radius={8}
-                    value={remarksText}
-                    onChange={(event) => setRemarksText(event.currentTarget.value)}
-                />
-                <Space h={"1rem"} />
-
-                <Textarea placeholder='Write medication'
-                    label="Medication (Optional)"
-                    minRows={3}
-                    radius={8}
-                    value={medicationText}
-                    onChange={(event) => setMedicationText(event.currentTarget.value)}
-                />
+                    <Textarea placeholder='Write medication'
+                        label="Medication (Optional)"
+                        minRows={3}
+                        radius={8}
+                        value={medicationText}
+                        onChange={(event) => setMedicationText(event.currentTarget.value)}
+                    />
 
 
-                <Space h={"1rem"} />
+                    <Space h={"1rem"} />
 
-                <Flex align={"center"} justify={selectImage ? "space-between" : "flex-end"}>
-                    {selectImage && <Text fz={20} fw={600}>Selected images : {selectedImages.length} </Text>}
-                    <Group>
-                        <Button color='gray' variant='light' radius={"lg"} onClick={() => {
-                            toggleVideoSelectMode()
-                            toggleSelectMode()
-                        }}>{selectImage ? 'Cancel' : 'Select images to export'}</Button>
-                        <ActionIcon variant='light' size={"lg"} radius={12}><MdAdd size={25} /></ActionIcon>
-                    </Group>
-                </Flex>
-                <Space h={"1rem"} />
-                <SimpleGrid cols={3}>
-                    {
-                        capturedVideos.map((video, index) => (
+                    <Flex align={"center"} justify={selectImage ? "space-between" : "flex-end"}>
+                        {selectImage && <Text fz={20} fw={600}>Selected images : {selectedImages.length} </Text>}
+                        <Group>
+                            <Button color='gray' variant='light' radius={"lg"} onClick={() => {
+                                toggleVideoSelectMode()
+                                toggleSelectMode()
+                            }}>{selectImage ? 'Cancel' : 'Select images to export'}</Button>
+                            <ActionIcon variant='light' size={"lg"} radius={12}><MdAdd size={25} /></ActionIcon>
+                        </Group>
+                    </Flex>
+                    <Space h={"1rem"} />
+                    <SimpleGrid cols={3}>
+                        {
+                            capturedVideos.map((video, index) => (
+                                <div
+                                    key={index}
+                                    style={{ position: 'relative' }}
+
+                                >
+                                    <video
+                                        src={video.videoUrl}
+                                        controls
+                                        style={{ width: "100%", height: "auto", borderRadius: "12px" }}
+                                    />
+                                    {selectVideo && (
+                                        <Overlay radius={12} top={0} left={0} opacity={0}>
+                                            <Flex justify="flex-end" p={10}>
+                                                <Checkbox
+                                                    size="lg"
+                                                    color="violet"
+                                                    checked={selectedVideos.includes(video)} // Check if the image is already selected
+                                                    onChange={(e) =>
+                                                        handleVideoCheckboxChange(video, e.target.checked)
+                                                    }
+                                                />
+                                            </Flex>
+                                        </Overlay>
+                                    )}
+
+                                </div>
+                            ))
+                        }
+
+                        {capturedImages.map((image, index) => (
                             <div
                                 key={index}
                                 style={{ position: 'relative' }}
-
                             >
-                                <video
-                                    src={video.videoUrl}
-                                    controls
-                                    style={{ width: "100%", height: "auto", borderRadius: "12px" }}
+                                <Image
+                                    ref={(el) => (imageRefs.current[index] = el)}
+                                    src={image}
+                                    width={'100%'} height={"100%"}
+                                    radius={12}
                                 />
-                                {selectVideo && (
+
+                                <Flex>
+                                    {comments[index] ? <Text ml={"sm"}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
+                                </Flex>
+
+                                {selectImage && (
                                     <Overlay radius={12} top={0} left={0} opacity={0}>
                                         <Flex justify="flex-end" p={10}>
                                             <Checkbox
                                                 size="lg"
                                                 color="violet"
-                                                checked={selectedVideos.includes(video)} // Check if the image is already selected
+                                                checked={selectedImages.includes(image)} // Check if the image is already selected
                                                 onChange={(e) =>
-                                                    handleVideoCheckboxChange(video, e.target.checked)
+                                                    handleCheckboxChange(image, e.target.checked)
                                                 }
                                             />
                                         </Flex>
                                     </Overlay>
                                 )}
-
+                                {!selectImage && (
+                                    <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0}>
+                                        <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
+                                            <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
+                                            <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
+                                        </div>
+                                    </Overlay>
+                                )}
                             </div>
-                        ))
-                    }
-
-                    {capturedImages.map((image, index) => (
-                        <div
-                            key={index}
-                            style={{ position: 'relative' }}
-                        >
-                            <Image
-                                ref={(el) => (imageRefs.current[index] = el)}
-                                src={image}
-                                width={'100%'} height={"100%"}
-                                radius={12}
-                            />
-
-                            <Flex>
-                                {comments[index] ? <Text ml={"sm"}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
-                            </Flex>
-
-                            {selectImage && (
-                                <Overlay radius={12} top={0} left={0} opacity={0}>
-                                    <Flex justify="flex-end" p={10}>
-                                        <Checkbox
-                                            size="lg"
-                                            color="violet"
-                                            checked={selectedImages.includes(image)} // Check if the image is already selected
-                                            onChange={(e) =>
-                                                handleCheckboxChange(image, e.target.checked)
-                                            }
-                                        />
-                                    </Flex>
-                                </Overlay>
-                            )}
-                            {!selectImage && (
-                                <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0}>
-                                    <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-                                        <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                        <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
-                                    </div>
-                                </Overlay>
-                            )}
-                        </div>
-                    ))}
-                </SimpleGrid>
-            </Container>
+                        ))}
+                    </SimpleGrid>
+                </Container>
+            </Card>
         </div >
     )
 }

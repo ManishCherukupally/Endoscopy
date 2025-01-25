@@ -27,6 +27,9 @@ import VideocapturingPage from "./pages/VideocapturingPage";
 import SelectPicturePage from "./pages/SelectPicturePage";
 import ExportReportPage from "./pages/ExportReportPage";
 import EditImagePage from "./pages/EditImagePage"
+import EditUser from './Components/LoginForm/EditUser';
+import WifiPage from './Components/LoginForm/WifiPage';
+import EditPatient from './Components/LoginForm/EditPatient';
 
 // import Hills from './7hills';
 
@@ -62,6 +65,9 @@ const App = () => {
           <Route path="/selectpicture" element={<SelectPicturePage/>} />
           <Route path="/exportreport" element={<ExportReportPage/>} />
           <Route path="/editreport" element={<EditImagePage/>} />
+          <Route path="/edituser" element={<EditUser/>}/>
+          <Route path='/wifi' element={<WifiPage />}/>
+          <Route path='/editpatient' element={<EditPatient />}/> 
           {/* <Route path="/register" element={<Registeration />}/>
           <Route path="/forgot" element={<ForgotPwd />}/>
           <Route path="/otpnumber" element={<OtpNumber/>}/>
