@@ -79,9 +79,11 @@ const ExportReport = () => {
     }
 
     useEffect(() => {
-        setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || [])
-        setCapturedVideos(JSON.parse(localStorage.getItem('capturedVideos')) || [])
+        const savedImages = JSON.parse(localStorage.getItem('capturedImages')) || [];
+        setCapturedImages(savedImages);
 
+        const savedVideos = JSON.parse(localStorage.getItem('capturedVideos')) || [];
+        setCapturedVideos(savedVideos);
         setComments(JSON.parse(localStorage.getItem('imageComments')) || []);
 
     }, [])
@@ -290,7 +292,7 @@ const ExportReport = () => {
                             <Button leftIcon={<IoPlayCircleOutline size={"1.2rem"} />} variant='light' color="violet" radius={8} h={44}
                                 onClick={() => setReportModal(true)}
                             >Preview</Button>
-                            <ActionIcon variant='outline' disabled={exportbutton} radius={8} h={44} w={50} size={"lg"} c={"black"}
+                            <ActionIcon variant='outline' radius={8} h={44} w={50} size={"lg"} c={"black"}
                                 onClick={handlePrint}
                             ><TbPrinter /></ActionIcon>
 
@@ -321,7 +323,7 @@ const ExportReport = () => {
                                 </Flex>
                             </Card>
 
-                            <Button disabled={exportbutton} color='violet' radius={8} h={44} onClick={() => { handleExportReport() }}>Export</Button>
+                            <Button color='violet' radius={8} h={44} onClick={() => { handleExportReport() }}>Export</Button>
                         </Group>
                     </Flex>
 
@@ -418,6 +420,28 @@ const ExportReport = () => {
                                         controls
                                         style={{ width: "100%", height: "auto", borderRadius: "12px" }}
                                     />
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: 0,
+                                            right: 0,
+                                            zIndex: 1,
+                                            display: "flex",
+                                            justifyContent: "flex-end",
+                                            alignItems: "center",
+                                            padding: "5px",
+                                        }}
+                                    >
+                                        <ActionIcon
+                                            size={30}
+                                            variant="transparent"
+                                            bg={"white"}
+                                            radius={"50%"}
+                                            onClick={() => handleDeleteVideo(index)}
+                                        >
+                                            <RxCross2 color="red" />
+                                        </ActionIcon>
+                                    </div>
                                     {selectVideo && (
                                         <Overlay radius={12} top={0} left={0} opacity={0}>
                                             <Flex justify="flex-end" p={10}>

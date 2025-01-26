@@ -26,8 +26,11 @@ const SelectPictureReport = () => {
     const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'));
 
     useEffect(() => {
-        setCapturedImages(JSON.parse(localStorage.getItem('capturedImages')) || []);
-        setCapturedVideos(JSON.parse(localStorage.getItem('capturedVideos')) || []);
+        const savedImages = JSON.parse(localStorage.getItem('capturedImages')) || [];
+        setCapturedImages(savedImages);
+
+        const savedVideos = JSON.parse(localStorage.getItem('capturedVideos')) || [];
+        setCapturedVideos(savedVideos);
 
         setComments(JSON.parse(localStorage.getItem('imageComments')) || []);
     }, []);
@@ -180,6 +183,30 @@ const SelectPictureReport = () => {
                                         controls
                                         style={{ width: "100%", height: "auto", borderRadius: "12px" }}
                                     />
+                                    {/* <Overlay position="absolute" top={0} left={0} opacity={0} zIndex={1}> */}
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: 0,
+                                            right: 0,
+                                            zIndex: 1,
+                                            display: "flex",
+                                            justifyContent: "flex-end",
+                                            alignItems: "center",
+                                            padding: "5px",
+                                        }}
+                                    >
+                                        <ActionIcon
+                                            size={30}
+                                            variant="transparent"
+                                            bg={"white"}
+                                            radius={"50%"}
+                                            onClick={() => handleDeleteVideo(index)}
+                                        >
+                                            <RxCross2 color="red" />
+                                        </ActionIcon>
+                                    </div>
+                                    {/* </Overlay> */}
 
                                 </div>
                             ))

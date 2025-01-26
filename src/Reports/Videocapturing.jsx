@@ -124,7 +124,7 @@ const Videocapturing = () => {
             setShowTimer(true); // Show timer
             setSeconds(0); // Reset timer to 00:00:00
 
-            mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, { mimeType: "video/webm" });
+            mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, { mimeType: "video/mp4" });
             mediaRecorderRef.current.addEventListener("dataavailable", handleDataAvailable);
             mediaRecorderRef.current.start();
 
@@ -139,7 +139,7 @@ const Videocapturing = () => {
 
     const handleDataAvailable = ({ data }) => {
         if (data.size > 0) {
-            const blob = new Blob([data], { type: 'video/webm' });
+            const blob = new Blob([data], { type: 'video/mp4' });
             const videoUrl = URL.createObjectURL(blob);
 
             var date = new Date()

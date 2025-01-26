@@ -278,7 +278,7 @@ const Login = () => {
         setLoader(false)
         navigate('/allpatients');
         window.localStorage.setItem("loginStatus", response.data.status)
-        window.localStorage.setItem("userData", response.data.user_details_data)
+        window.localStorage.setItem("userData", JSON.stringify(response.data.user_details_data))
         console.log(response.data.accessToken);
 
       } else if (response.data.status === 'unauthorized_user') {
@@ -338,7 +338,7 @@ const Login = () => {
             <Button type="submit" mt="sm" fullWidth color="violet" radius="md" loading={loader}>
               Login
             </Button>
-            <Button variant="light" color="violet" mt="md" radius="md" fullWidth onClick={() => { navigate('/register') }}>
+            <Button variant="light" color="violet" mt="md" radius="md" fullWidth onClick={() => navigate('/register')}>
               Create Account
             </Button>
             <Divider my="xs" size="md" label="Or Continue With" labelPosition="center" />

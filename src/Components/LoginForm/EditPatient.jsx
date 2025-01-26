@@ -10,11 +10,14 @@ const EditPatient = () => {
     const navigate = useNavigate()
     const [loader, setLoader] = useState(false);
 
-    const [editPatient, setEditPatient] = useState([])
-    useEffect(() => {
-        const selectedPatient = JSON.parse(localStorage.getItem("selectedpatient"));
-        setEditPatient(selectedPatient)
-    }, [])
+    // const [editPatient, setEditPatient] = useState([])
+    // useEffect(() => {
+    //     const selectedPatient = JSON.parse(localStorage.getItem("selectedpatient"));
+    //     setEditPatient(selectedPatient)
+    // }, [])
+
+    const editPatient = JSON.parse(localStorage.getItem("selectedpatient"));
+    console.log(editPatient);
 
     // const editPatient = {
     //     id: 9,

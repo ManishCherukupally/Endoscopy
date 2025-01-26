@@ -4,12 +4,44 @@ import { Link, useNavigate } from 'react-router-dom'
 import logo from '../../assets/Vector.jpg';
 import { FaChevronLeft } from 'react-icons/fa';
 import { MdWifiTethering } from 'react-icons/md';
+import client from '../Api';
 
 const WifiPage = () => {
     const navigate = useNavigate()
     const [loader, setLoader] = useState(false)
     const [wifiloader, setwifiLoader] = useState(false)
     const [connection, setConnection] = useState(false)
+    const [showmsg, setShowmsg] = useState(false)
+
+    const testConnection = () => {
+        setwifiLoader(true)
+        setTimeout(() => {
+            setwifiLoader(false)
+        }, 2000)
+
+        client.get('/internet_test/', {
+            withCredentials: true
+        })
+            .then((resp => {
+                if (resp.data.message === 'connected') {
+                    setShowmsg(true)
+                    setConnection(true)
+                    setTimeout(() => {
+                        setShowmsg(false)
+                        setwifiLoader(false)
+                    }, 2000)
+
+                }
+                else if (resp.data.message === 'disconnected') {
+                    setShowmsg(true)
+                    setConnection(false)
+                    setTimeout(() => {
+                        setShowmsg(false)
+                        setwifiLoader(false)
+                    }, 2000)
+                }
+            }))
+    }
 
     return (
         <div>
@@ -28,16 +60,17 @@ const WifiPage = () => {
 
                                 <Text fz={20} fw={600} ff='inter'>Wifi</Text>
                             </Flex>
-                            {connection && <Text fz={15} fw={600} ff='inter' c={"green"}>Connected !</Text>}
+                            {
+                                showmsg ? (
+                                    connection ? <Text fz={15} fw={600} ff='inter' c={"green"}>Connected !</Text> :
+                                        <Text fz={15} fw={600} ff='inter' c={"red"}>Disconnected !</Text>
+                                ) : (null)
+                            }
 
                         </Flex>
                         <Space h={"1.5rem"} />
-                        <Button loading={wifiloader} color='violet' fullWidth leftIcon={<MdWifiTethering size={"1rem"} />} variant='outline' onClick={() => {
-                            setwifiLoader(true)
-                            setTimeout(() => {
-                                setwifiLoader(false)
-                            }, 2000)
-                        }}>Test Connection</Button>
+                        <Button loading={wifiloader} color='violet' fullWidth leftIcon={<MdWifiTethering size={"1rem"} />} variant='outline'
+                            onClick={testConnection}>Test Connection</Button>
                         <Space h={"1.5rem"} />
                         <Text fz={20} fw={500} ff={"inter"}>Enter Wifi Credentials</Text>
                         <Space h={"1rem"} />

@@ -11,15 +11,14 @@ import client from '../Api';
 const EditUser = () => {
     const [loader, setLoader] = useState(false);
     const navigate = useNavigate();
-    const [userName, setUserName] = useState('')
-    const [userEmail, setUserEmail] = useState('')
-    const [userMobile, setUserMobile] = useState('')
-    const [userSpeciality, setUserSpeciality] = useState('')
+
 
 
     // const[userData, setUserData] = useState({})
 
-    const userData = JSON.parse(window.localStorage.getItem('userData'))
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    console.log(userData);
+
 
     // const userData = {
     //     user_id: 23,
