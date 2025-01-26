@@ -292,7 +292,7 @@ const ExportReport = () => {
                             <Button leftIcon={<IoPlayCircleOutline size={"1.2rem"} />} variant='light' color="violet" radius={8} h={44}
                                 onClick={() => setReportModal(true)}
                             >Preview</Button>
-                            <ActionIcon variant='outline' radius={8} h={44} w={50} size={"lg"} c={"black"}
+                            <ActionIcon variant='outline' disabled={exportbutton} radius={8} h={44} w={50} size={"lg"} c={"black"}
                                 onClick={handlePrint}
                             ><TbPrinter /></ActionIcon>
 
@@ -323,8 +323,7 @@ const ExportReport = () => {
                                 </Flex>
                             </Card>
 
-                            <Button color='violet' radius={8} h={44} onClick={() => { handleExportReport() }}>Export</Button>
-                        </Group>
+                            <Button disabled={exportbutton} color='violet' radius={8} h={44} onClick={() => { handleExportReport() }}>Export</Button>                        </Group>
                     </Flex>
 
                     <Space h={20} />

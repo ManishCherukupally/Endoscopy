@@ -400,26 +400,28 @@ const Videocapturing = () => {
                                                 controls
                                                 style={{ width: "100%", borderRadius: "12px" }}
                                             />
-                                            <Overlay position="absolute" top={0} left={0} opacity={0} zIndex={1}>
-                                                <div
-                                                    style={{
-                                                        display: "flex",
-                                                        justifyContent: "flex-end",
-                                                        alignItems: "center",
-                                                        padding: "5px",
-                                                    }}
+                                            <div
+                                                style={{
+                                                    position: "absolute",
+                                                    top: 0,
+                                                    right: 0,
+                                                    zIndex: 1,
+                                                    display: "flex",
+                                                    justifyContent: "flex-end",
+                                                    alignItems: "center",
+                                                    padding: "5px",
+                                                }}
+                                            >
+                                                <ActionIcon
+                                                    size={30}
+                                                    variant="transparent"
+                                                    bg={"white"}
+                                                    radius={"50%"}
+                                                    onClick={() => handleDeleteVideo(index)}
                                                 >
-                                                    <ActionIcon
-                                                        size={30}
-                                                        variant="transparent"
-                                                        bg={"white"}
-                                                        radius={"50%"}
-                                                        onClick={() => handleDeleteVideo(index)}
-                                                    >
-                                                        <RxCross2 color="red" />
-                                                    </ActionIcon>
-                                                </div>
-                                            </Overlay>
+                                                    <RxCross2 color="red" />
+                                                </ActionIcon>
+                                            </div>
                                         </div>
                                     ))}
 

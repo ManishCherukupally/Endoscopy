@@ -54,8 +54,7 @@ const HeaderSetting = () => {
     setTimeout(() => {
       setLoader(false);
       navigate("/allpatients");
-      // window.localStorage.setItem("dp", uploadedImage);
-
+      window.localStorage.setItem("dp", uploadedImage);
     }, 1000);
   };
 
@@ -68,7 +67,7 @@ const HeaderSetting = () => {
     const file = files[0];
     const fileURL = URL.createObjectURL(file); // Create a URL for the uploaded file
     setUploadedImage(fileURL); // Update the state with the image URL
-    window.localStorage.setItem("dp", fileURL);
+    // window.localStorage.setItem("dp", fileURL);
 
   };
 
