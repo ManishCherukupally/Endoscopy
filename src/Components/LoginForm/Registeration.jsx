@@ -96,7 +96,7 @@ const Registration = () => {
         window.localStorage.setItem("userdp", uploadedImage);
 
         setLoader(false);
-        navigate('/');
+        navigate('/login');
       }
     } catch (error) {
       setLoader(false);
