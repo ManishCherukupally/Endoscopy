@@ -95,7 +95,8 @@ const AllPatients = () => {
     const imageFromStorage = localStorage.getItem("userdp");
     setUploadedImage(imageFromStorage);
 
-  }, []);
+  }, [data]);
+
 
   const fetchPatients = async () => {
     try {
@@ -155,7 +156,7 @@ const AllPatients = () => {
       console.log("Delete Response:", response.data);
       const updatedData = data.filter((item) => !selectedIds.includes(String(item.id)));
       setSelectedRows({});
-      // setData(updatedData);
+      setData(updatedData);
       setdeleteModal(false)
     } catch (error) {
       console.error("Error deleting patients:", error);

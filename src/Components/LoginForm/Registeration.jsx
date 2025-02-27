@@ -65,7 +65,16 @@ const Registration = () => {
 
 
   useEffect(() => {
-    form.reset()
+    form.setValues({
+      first_name: '',
+      username: '',
+      email: '',
+      password: '',
+      cnfpassword: '',
+      mobile_no: '',
+      speciality: '',
+      template: '',
+    })
   }, [])
 
   const handleMobileChange = (e) => {
@@ -76,47 +85,50 @@ const Registration = () => {
   };
 
   const handleFormSubmit = async (e) => {
-    // e.preventDefault();
-    // setLoader(true);
+    e.preventDefault();
+    setLoader(true);
 
-    // const isValid = !form.validate().hasErrors;
-    // if (!isValid) return;
+    const isValid = !form.validate().hasErrors;
+    if (!isValid) return;
 
-    // try {
-    //   const result = await client.post(
-    //     '/register/',
-    //     {
-    //       withCredentials: true,
-    //       first_name: form.values.first_name,
-    //       username: form.values.username,
-    //       email: form.values.email,
-    //       password: form.values.password,
-    //       mobile_no: form.values.mobile_no,
-    //       speciality: form.values.speciality,
-    //     },
-    //     {
-    //       headers: { 'Content-Type': 'application/json' },
-    //     }
-    //   );
+    try {
+      const result = await client.post(
+        '/register/',
+        {
+          withCredentials: true,
+          first_name: form.values.first_name,
+          username: form.values.username,
+          email: form.values.email,
+          password: form.values.password,
+          mobile_no: form.values.mobile_no,
+          speciality: form.values.speciality,
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
 
-    //   if (result.data && result.data.status === 'User_created_successfully!') {
-    //     window.localStorage.setItem("userdp", uploadedImage);
-
-    //     setLoader(false);
-    //     navigate('/login');
-    //   }
-    // } catch (error) {
-    //   setLoader(false);
-    //   if (error.response?.data) {
-    //     const backendErrors = error.response.data;
-    //     Object.keys(backendErrors).forEach((field) => {
-    //       form.setFieldError(field, backendErrors[field]);
-    //     });
-    //   } else {
-    //     console.error('Unexpected error:', error.message);
-    //   }
-    // }
-    setconfirmModal(true)
+      if (result.data && result.data.status === 'User_created_successfully!') {
+        window.localStorage.setItem("userdp", uploadedImage);
+        setconfirmModal(true)
+        setLoader(false);
+        navigate('/login');
+      }
+    } catch (error) {
+      setLoader(false);
+      if (error.response?.data) {
+        const backendErrors = error.response.data;
+        Object.keys(backendErrors).forEach((field) => {
+          form.setFieldError(field, backendErrors[field]);
+        });
+      } else {
+        console.error('Unexpected error:', error.message);
+      }
+    }
+    setTimeout(() => {
+      setconfirmModal(false)
+      navigate("/login")
+    }, 3000)
   };
 
   const handleDrop = (files) => {
