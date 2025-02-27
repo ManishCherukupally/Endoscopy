@@ -7,7 +7,9 @@ import {
     Flex,
     Grid,
     Group,
-    Image,
+    Image as MantineImage,
+    Loader,
+    Modal,
     Notification,
     Overlay,
     SimpleGrid,
@@ -26,6 +28,71 @@ import { IoPlay } from "react-icons/io5";
 import { FaPause } from "react-icons/fa6";
 import { format } from "date-fns";
 
+const ImageEditor = ({ imageSrc, onSave }) => {
+    const canvasRef = useRef(null);
+    const ctxRef = useRef(null);
+    const [isDrawing, setIsDrawing] = useState(false);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+        ctxRef.current = ctx;
+
+        const image = new Image();
+        image.src = imageSrc;
+        image.onload = () => {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0);
+        };
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 3;
+    }, [imageSrc]);
+
+    const startDrawing = (e) => {
+        ctxRef.current.beginPath();
+        ctxRef.current.moveTo(
+            e.nativeEvent.offsetX,
+            e.nativeEvent.offsetY
+        );
+        setIsDrawing(true);
+    };
+
+    const draw = (e) => {
+        if (!isDrawing) return;
+        ctxRef.current.lineTo(
+            e.nativeEvent.offsetX,
+            e.nativeEvent.offsetY
+        );
+        ctxRef.current.stroke();
+    };
+
+    const stopDrawing = () => {
+        ctxRef.current.closePath();
+        setIsDrawing(false);
+    };
+
+    const handleSave = () => {
+        const editedImage = canvasRef.current.toDataURL("image/png");
+        onSave(editedImage);
+    };
+
+    return (
+        <div style={{ position: "relative", display: "inline-block" }}>
+            <canvas
+                ref={canvasRef}
+                style={{ border: "1px solid black", cursor: "crosshair" }}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+            />
+            <div style={{ marginTop: "10px" }}>
+                <Button onClick={handleSave} color="violet" fullWidth>Save</Button>
+            </div>
+        </div>
+    );
+};
 const Videocapturing = () => {
     const [notify, setNotify] = useState(false);
     const navigate = useNavigate();
@@ -36,12 +103,31 @@ const Videocapturing = () => {
     const [seconds, setSeconds] = useState(0);
     const [showTimer, setShowTimer] = useState(false);
 
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [editImageModal, seteditImageModal] = useState(false)
     const [overallseconds, setoverallSeconds] = useState(0);
 
     const webcamRef = useRef(null);
     const mediaRecorderRef = useRef(null);
     const timerRef = useRef(null); // Timer reference to control the interval
 
+    const gridRef = useRef(null);
+    const [gridWidth, setGridWidth] = useState(750); // Default width
+
+    useEffect(() => {
+        if (gridRef.current) {
+            setGridWidth(gridRef.current.offsetWidth);
+        }
+
+        const handleResize = () => {
+            if (gridRef.current) {
+                setGridWidth(gridRef.current.offsetWidth);
+            }
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
     useEffect(() => {
         const interval = setInterval(() => {
             setSeconds((prevSeconds) => prevSeconds + 1);
@@ -86,7 +172,7 @@ const Videocapturing = () => {
     }, []);
 
     const videoConstraints = {
-        width: 750,
+        width: gridWidth,
         height: 676,
         facingMode: "user",
         deviceId: externalDeviceId,
@@ -184,7 +270,9 @@ const Videocapturing = () => {
             const element = webcamRef.current.video;
             element.requestFullscreen?.();
         }
+
     };
+
 
     const formatDateTime = (date) => {
         const dateString = new Date(date);
@@ -199,14 +287,42 @@ const Videocapturing = () => {
     const videoformattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
     // localStorage.setItem('time', formattedTime)
 
+    const handleToggleRecording = () => {
+        if (isRecording) {
+            handleStopCaptureClick();
+        } else {
+            handleStartCaptureClick();
+        }
+    }
+
+    const handleSaveImage = (editedImage) => {
+        const updatedImages = [...capturedImages];
+        updatedImages[editingIndex] = editedImage;
+        setCapturedImages(updatedImages);
+        localStorage.setItem("capturedImages", JSON.stringify(updatedImages));
+        setEditingIndex(null);
+    };
 
     return (
         <div>
+            <Modal opened={editImageModal} onClose={seteditImageModal} centered withCloseButton={false} size={"55%"}>
+                {editingIndex !== null && (
+                    <>
+                        <ImageEditor
+                            imageSrc={capturedImages[editingIndex]}
+                            onSave={(editedImage) => {
+                                handleSaveImage(editedImage);
+                                seteditImageModal(false); // Close modal after saving
+                            }}
+                        />
+                    </>
+                )}
+            </Modal>
             <Card withBorder m={"xl"} bg={"#EBEDF4"} radius={"1rem"}>
-                <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} m={"lg"} style={{ borderRadius: "1rem" }}>
+                <Container fluid bg={"#FFFFFF"} p={"1rem"} m={"lg"} style={{ borderRadius: "1rem" }}>
                     <Flex justify={"space-between"} align={"center"}>
                         <Group spacing={"sm"}>
-                            <Image src={Vector} maw={40} mah={40} />
+                            <MantineImage src={Vector} maw={40} mah={40} />
                             <Text fz={32} fw={600}>
                                 Endoscopy
                             </Text>
@@ -266,7 +382,7 @@ const Videocapturing = () => {
                             </Flex>
 
                             <Flex direction={"column"}>
-                                <Text fw={600}>Reffered by</Text>
+                                <Text fw={600}>Referred by</Text>
                                 <Text>{selectedPatient.referred}</Text>
                             </Flex>
 
@@ -294,9 +410,9 @@ const Videocapturing = () => {
 
                     {/* Video and Images Section */}
                     <Grid>
-                        <Grid.Col span={9}>
+                        <Grid.Col span={9} ref={gridRef}>
                             <Flex justify="center" align="center" style={{ height: "100%" }} >
-                                <div style={{ position: "relative", width: "750px", height: "auto", display: "flex", justifyContent: "center" }}>
+                                <div style={{ position: "relative", width: "100%", height: "auto", display: "flex", justifyContent: "center" }}>
                                     {externalDeviceId ? (
                                         <Flex justify={"center"}>
                                             <Webcam
@@ -314,7 +430,7 @@ const Videocapturing = () => {
                                                 style={{
                                                     position: "absolute",
                                                     top: "10px",
-                                                    right: "10px",
+                                                    right: "30px",
                                                     color: "white",
                                                     padding: "5px",
                                                     cursor: "pointer",
@@ -354,7 +470,7 @@ const Videocapturing = () => {
 
 
                                                         <ActionIcon
-                                                            onClick={handleStartCaptureClick}
+                                                            onClick={handleToggleRecording}
                                                             style={{
                                                                 backgroundColor: "#8158F5",
                                                                 color: "#fff",
@@ -362,28 +478,18 @@ const Videocapturing = () => {
                                                             radius={"50%"}
                                                             size={"4rem"}
                                                         >
-                                                            <IoPlay size={"2.2rem"} />
+                                                            {isRecording ? <FaPause size={"2.2rem"} /> : <IoPlay size={"2.2rem"} />}
                                                         </ActionIcon>
-
-                                                        <ActionIcon
-                                                            onClick={handleStopCaptureClick}
-                                                            style={{
-                                                                backgroundColor: "#8158F5",
-                                                                color: "#fff",
-                                                            }}
-                                                            radius={"50%"}
-                                                            size={"4rem"}
-                                                        >
-                                                            <FaPause size={"2.2rem"} />
-                                                        </ActionIcon>
-
                                                     </Flex>
                                                 </Flex>
 
                                             </div>
                                         </Flex>
                                     ) : (
-                                        <p>Loading external camera...</p>
+                                        <Flex align={"center"} gap={10}>
+                                            <Loader color="violet" />
+                                            <Text fz={20}>Loading external camera...</Text>
+                                        </Flex>
                                     )}
                                 </div>
                             </Flex>
@@ -427,7 +533,7 @@ const Videocapturing = () => {
 
                                     {capturedImages.map((image, index) => (
                                         <div key={index} style={{ position: "relative" }}>
-                                            <Image
+                                            <MantineImage
                                                 src={image}
                                                 alt={`Captured ${index + 1}`}
                                                 radius={12}
@@ -442,7 +548,11 @@ const Videocapturing = () => {
                                                         padding: "5px",
                                                     }}
                                                 >
-                                                    <ActionIcon size={30} variant="transparent" bg={"white"} radius={"50%"}>
+                                                    <ActionIcon size={30} variant="transparent" bg={"white"} radius={"50%"}
+                                                        onClick={() => {
+                                                            setEditingIndex(index)
+                                                            seteditImageModal(true)
+                                                        }}>
                                                         <MdOutlineEdit color="black" />
                                                     </ActionIcon>
                                                     <ActionIcon

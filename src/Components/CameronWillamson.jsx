@@ -4,7 +4,7 @@ import { IoChevronBackSharp } from 'react-icons/io5';
 import { IconFile, IconPencil } from '@tabler/icons-react';
 import { BiMessageDetail } from 'react-icons/bi';
 import { BsCameraVideo } from 'react-icons/bs';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import client from './Api';
 import { useDisclosure } from '@mantine/hooks';
 import { Group } from '@mantine/core';
@@ -12,7 +12,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { format } from 'date-fns';
 
 const CameronWilliamson = () => {
-
+  const { patientname } = useParams();
   const [records, setRecords] = useState([]);
   // console.log(records);
   const [opend, { open, close }] = useDisclosure(false);
@@ -128,9 +128,9 @@ const CameronWilliamson = () => {
   };
 
   return (
-    <>{
-      window.localStorage.getItem("loginStatus") === "user_validated" ? (
-        <div
+    <>
+      {
+        window.localStorage.getItem("loginStatus") === "user_validated" ? (<div
           style={{
             height: '100vh',
             borderRadius: '16px',
@@ -184,8 +184,8 @@ const CameronWilliamson = () => {
               </div>
               <div style={{ display: 'flex', gap: '12px' }}>
                 {/* <Button disabled style={{ backgroundColor: '#EDE9FE', color: 'black' }} onClick={handleModalOpen} leftIcon={<BiMessageDetail style={{ fontSize: "large" }} />}>
-              View All Comments
-            </Button> */}
+                        View All Comments
+                      </Button> */}
 
                 <Modal opened={opend} onClose={close} title="Preview" fullScreen closeButtonProps={{ size: "lg" }}>
                   <Card>
@@ -200,23 +200,23 @@ const CameronWilliamson = () => {
 
                 <Group position="center">
                   {/* <Button
-                    variant='light'
-                    color='violet'
-                    disabled={noRecords ? true : false}
-                    onClick={() => {
-                      open(); // Call the function to open the modal
-                      const lastRecord = LatestRecord(records); // Call LatestRecord to get the last record
-                      pdfResult(lastRecord.report_file); // Pass the last record to pdfResult
-                    }}
-                  >
-                    Last Visit Report
-                  </Button> */}
+                              variant='light'
+                              color='violet'
+                              disabled={noRecords ? true : false}
+                              onClick={() => {
+                                open(); // Call the function to open the modal
+                                const lastRecord = LatestRecord(records); // Call LatestRecord to get the last record
+                                pdfResult(lastRecord.report_file); // Pass the last record to pdfResult
+                              }}
+                            >
+                              Last Visit Report
+                            </Button> */}
                 </Group>
 
                 {/* <Button style={{ backgroundColor: '#EDE9FE', color: 'black',textDecoration:"underline",textUnderlineOffset:"3px",textDecorationThickness:"1.30px" }}
-            onClick={LatestRecord}>
-              Last Visit Report
-            </Button> */}
+                      onClick={LatestRecord}>
+                        Last Visit Report
+                      </Button> */}
                 <Button
                   onClick={() => navigate("/videocapturing")}
                   variant="gradient"
@@ -325,8 +325,8 @@ const CameronWilliamson = () => {
                 <div style={{ fontWeight: '700', color: '#374151' }}>Phone Number</div>
                 <div style={{ fontWeight: "700", color: "#374151", marginLeft: "40%" }}>Email</div>
                 {/* <div >+91-8837372732</div>
-
-    <div style={{marginLeft:"30%"}}>georgia.young@example.com</div> */}
+          
+              <div style={{marginLeft:"30%"}}>georgia.young@example.com</div> */}
                 <div>{selectedPatient.mobile}</div>
                 <div style={{ marginLeft: "40%" }}>{selectedPatient.patient_email}</div>
               </div>
@@ -412,9 +412,9 @@ const CameronWilliamson = () => {
 
                         <Card>
                           {/* {fileContent}
-        <Document file={item.report_file}>
-  
-        </Document> */}
+                  <Document file={item.report_file}>
+            
+                  </Document> */}
                           <iframe
                             src={`${client.defaults.baseURL}/media${url}`}
                             width="100%"
@@ -451,7 +451,7 @@ const CameronWilliamson = () => {
                             // handlePdfConvert(item.report_file)
                           }}
                         >
-                          Preview
+                          Report Preview
                         </Button>
                       </Group>
 
@@ -493,26 +493,26 @@ const CameronWilliamson = () => {
                       >
                         Export
                       </Button>
-                      <div style={{
-                        width: "44px", // Circle diameter
-                        height: "44px", // Circle diameter
-                        backgroundColor: "#EBEDF4", // Background color
-                        borderRadius: "50%", // Makes it a perfect circle
-                        display: "flex", // Flexbox to center content
-                        justifyContent: "center", // Horizontally center the icon
-                        alignItems: "center", // Vertically center the icon
-                        marginLeft: "2rem"
-                      }}>
-                        <IconPencil
-                          size={16}
-                          color="#4B5563"
-                          style={{
-                            flex: 0.5,
-                            cursor: 'pointer',
-                            textAlign: 'center',
-                          }}
-                        />
-                      </div>
+                      {/* <div style={{
+                                width: "44px", // Circle diameter
+                                height: "44px", // Circle diameter
+                                backgroundColor: "#EBEDF4", // Background color
+                                borderRadius: "50%", // Makes it a perfect circle
+                                display: "flex", // Flexbox to center content
+                                justifyContent: "center", // Horizontally center the icon
+                                alignItems: "center", // Vertically center the icon
+                                marginLeft: "2rem"
+                              }}>
+                                <IconPencil
+                                  size={16}
+                                  color="#4B5563"
+                                  style={{
+                                    flex: 0.5,
+                                    cursor: 'pointer',
+                                    textAlign: 'center',
+                                  }}
+                                />
+                              </div> */}
 
                       {/* Edit Icon */}
 
@@ -553,9 +553,9 @@ const CameronWilliamson = () => {
 
                       <Card>
                         {/* {fileContent}
-        <Document file={item.report_file}>
-  
-        </Document> */}
+                  <Document file={item.report_file}>
+            
+                  </Document> */}
                         <iframe
                           src={`${client.defaults.baseURL}/media${url}`}
                           width="100%"
@@ -592,7 +592,7 @@ const CameronWilliamson = () => {
                           // handlePdfConvert(item.report_file)
                         }}
                       >
-                        Preview
+                        Report Preview
                       </Button>
                     </Group>
 
@@ -634,26 +634,26 @@ const CameronWilliamson = () => {
                     >
                       Export
                     </Button>
-                    <div style={{
-                      width: "44px", // Circle diameter
-                      height: "44px", // Circle diameter
-                      backgroundColor: "#EBEDF4", // Background color
-                      borderRadius: "50%", // Makes it a perfect circle
-                      display: "flex", // Flexbox to center content
-                      justifyContent: "center", // Horizontally center the icon
-                      alignItems: "center", // Vertically center the icon
-                      marginLeft: "2rem"
-                    }}>
-                      <IconPencil
-                        size={16}
-                        color="#4B5563"
-                        style={{
-                          flex: 0.5,
-                          cursor: 'pointer',
-                          textAlign: 'center',
-                        }}
-                      />
-                    </div>
+                    {/* <div style={{
+                              width: "44px", // Circle diameter
+                              height: "44px", // Circle diameter
+                              backgroundColor: "#EBEDF4", // Background color
+                              borderRadius: "50%", // Makes it a perfect circle
+                              display: "flex", // Flexbox to center content
+                              justifyContent: "center", // Horizontally center the icon
+                              alignItems: "center", // Vertically center the icon
+                              marginLeft: "2rem"
+                            }}>
+                              <IconPencil
+                                size={16}
+                                color="#4B5563"
+                                style={{
+                                  flex: 0.5,
+                                  cursor: 'pointer',
+                                  textAlign: 'center',
+                                }}
+                              />
+                            </div> */}
 
                     {/* Edit Icon */}
 
@@ -681,9 +681,10 @@ const CameronWilliamson = () => {
               </div>
             )}
           </Card>
-        </div>
-      ) : (<Navigate to={"/"} />)
-    }</>
+        </div>) : (<Navigate to={"/"} />)
+      }
+
+    </>
 
   );
 };

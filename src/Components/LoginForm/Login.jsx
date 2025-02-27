@@ -255,7 +255,7 @@ const Login = () => {
     },
     validate: {
       username: (value) =>
-        value.length < 3 ? 'Username must be at least 3 characters' : null,
+        value.length < 3 ? 'Enter valid email' : null,
       password: (value) =>
         value.length < 8 ? 'Password must be at least 8 characters' : null,
     },
@@ -263,10 +263,13 @@ const Login = () => {
 
   const submithandler = async (e) => {
     setLoader(true)
+
     e.preventDefault();
     const isValid = !form.validate().hasErrors;
-    if (!isValid) return;
-
+    if (!isValid) {
+      setLoader(false)
+      return
+    }
     try {
       const response = await client.post('/login/', {
         username: form.values.username,
@@ -284,17 +287,24 @@ const Login = () => {
       } else if (response.data.status === 'unauthorized_user') {
         setLoader(false)
         navigate("/")
-        form.setFieldError('username', 'Invalid username or password');
+        form.setFieldError('username', 'Invalid email or password');
+        form.setFieldError('password', 'Invalid email or password');
       } else {
         setLoader(false)
         navigate("/")
         console.error('Unexpected response:', response);
         form.setFieldError('username', 'Invalid credentials');
+        form.setFieldError('password', 'Invalid credentials');
+
+
       }
+
     } catch (error) {
       setLoader(false)
       console.error('Login failed:', error.response?.data || error.message);
-      form.setFieldError('username', error.response?.data?.detail || 'Invalid username/email or password');
+      // form.setFieldError('username', error.response?.data?.detail || 'Invalid credentials');
+      // form.setFieldError('password', error.response?.data?.detail || 'Invalid credentials');
+
     }
   };
 
@@ -310,16 +320,16 @@ const Login = () => {
           <div className="h">Only authorized accounts can login.</div>
           <form onSubmit={submithandler}>
             <div className="userpass">
-              <TextInput
-                label="Email OR Username"
-                placeholder="Email or Username"
+              <TextInput required
+                label="Email"
+                placeholder="Email"
                 {...form.getInputProps('username')}
                 size="md"
                 radius="md"
                 icon={<MdOutlineEmail style={{ color: 'gray' }} />}
               />
             </div>
-            <PasswordInput
+            <PasswordInput required
               placeholder="Password"
               label="Password"
               size="md"

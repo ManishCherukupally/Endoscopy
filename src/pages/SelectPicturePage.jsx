@@ -8,7 +8,7 @@ const SelectPicturePage = () => {
             {
                 window.localStorage.getItem("loginStatus") === "user_validated" ? (<SelectPictureReport />) : (<Navigate to={"/"} />)
             }
-
+            {/* <SelectPictureReport /> */}
 
         </div>
     )

@@ -637,9 +637,9 @@ const PatientInfo = () => {
   };
 
   return (
-    <>{
-      window.localStorage.getItem("loginStatus") === "user_validated" ? (
-        <div className='parent'>
+    <>
+      {
+        window.localStorage.getItem("loginStatus") === "user_validated" ? (<div className='parent'>
           <div className='child2' style={{ marginTop: 0 }}>
             <Card shadow="sm" padding="lg" radius="md" withBorder className='patientcard'>
               <div className='addnewpatient'>
@@ -723,13 +723,15 @@ const PatientInfo = () => {
                 </Button>
               </form>
               {/* <Button variant="filled" color="violet" mt='md' radius='md' fullWidth>
-            <FiVideo className='capture' /> Start Live Capture
-          </Button> */}
+                            <FiVideo className='capture' /> Start Live Capture
+                          </Button> */}
             </Card>
           </div>
-        </div>
-      ) : (<Navigate to={"/"} />)
-    }</>
+        </div>) : (<Navigate to={"/"} />)
+
+      }
+
+    </>
 
   );
 }

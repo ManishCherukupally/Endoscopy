@@ -60,7 +60,7 @@ const App = () => {
           <Route path="headersetting" element={<HeaderSetting/>} />
           <Route path="hospital" element={<HospitalCard/>} />
           <Route path="/allpatients" element={<AllPatients/>} />
-          <Route path="/cameronwillamson" element={<CameronWilliamson/>} />
+          <Route path="/:patientname" element={<CameronWilliamson/>} />
           <Route path="/videocapturing" element={<VideocapturingPage/>} />
           <Route path="/selectpicture" element={<SelectPicturePage/>} />
           <Route path="/exportreport" element={<ExportReportPage/>} />

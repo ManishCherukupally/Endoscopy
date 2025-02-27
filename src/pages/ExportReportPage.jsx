@@ -8,7 +8,7 @@ const ExportReportPage = () => {
             {
                 window.localStorage.getItem("loginStatus") === "user_validated" ? (<ExportReport />) : (<Navigate to={"/"} />)
             }
-
+            {/* <ExportReport /> */}
         </div>
     )
 }

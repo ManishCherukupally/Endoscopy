@@ -9,7 +9,7 @@ const VideocapturingPage = () => {
                 window.localStorage.getItem("loginStatus") === "user_validated" ? (<Videocapturing />) : (<Navigate to={"/"} />)
             }
 
-
+            {/* <Videocapturing /> */}
         </div>
     )
 }

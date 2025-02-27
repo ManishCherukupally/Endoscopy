@@ -194,13 +194,14 @@ const HospitalCard = (props) => {
 
                       return (
                         <Flex direction="column" key={actualIndex} style={{ alignItems: 'center' }}>
-                          <Card shadow="sm" padding="sm" radius="md" h={230} style={{ width: '100%' }}>
+                          <Card shadow="sm" padding="sm" radius="md" style={{ width: '100%' }}>
                             <Card.Section >
                               <Image
                                 src={image}
                                 alt={`Image ${actualIndex}`}
                                 style={{
                                   width: '100%',
+                                  height: "100%",
                                   objectFit: 'cover',
                                 }}
                               />

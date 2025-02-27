@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ActionIcon, Button, Card, Center, Checkbox, Container, Flex, Group, Image, Modal, Overlay, Radio, Select, SimpleGrid, Space, Stack, Text, Textarea, TextInput } from '@mantine/core'
+import { ActionIcon, Button, Card, Center, Checkbox, Container, Flex, Group, Image as MantineImage, Modal, Overlay, Radio, Select, SimpleGrid, Space, Stack, Text, Textarea, TextInput } from '@mantine/core'
 import Vector from "../assets/Vector.png"
 import Pic from "../assets/intestine.png"
 import { MdOutlineEdit, MdOutlineChevronLeft, MdArrowDownward, MdAdd } from 'react-icons/md'
@@ -19,6 +19,71 @@ import ReactDOM from 'react-dom/client';
 import axios from 'axios'
 import client from '../Components/Api'
 
+const ImageEditor = ({ imageSrc, onSave }) => {
+    const canvasRef = useRef(null);
+    const ctxRef = useRef(null);
+    const [isDrawing, setIsDrawing] = useState(false);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+        ctxRef.current = ctx;
+
+        const image = new Image();
+        image.src = imageSrc;
+        image.onload = () => {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0);
+        };
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 3;
+    }, [imageSrc]);
+
+    const startDrawing = (e) => {
+        ctxRef.current.beginPath();
+        ctxRef.current.moveTo(
+            e.nativeEvent.offsetX,
+            e.nativeEvent.offsetY
+        );
+        setIsDrawing(true);
+    };
+
+    const draw = (e) => {
+        if (!isDrawing) return;
+        ctxRef.current.lineTo(
+            e.nativeEvent.offsetX,
+            e.nativeEvent.offsetY
+        );
+        ctxRef.current.stroke();
+    };
+
+    const stopDrawing = () => {
+        ctxRef.current.closePath();
+        setIsDrawing(false);
+    };
+
+    const handleSave = () => {
+        const editedImage = canvasRef.current.toDataURL("image/png");
+        onSave(editedImage);
+    };
+
+    return (
+        <div style={{ position: "relative", display: "inline-block" }}>
+            <canvas
+                ref={canvasRef}
+                style={{ border: "1px solid black", cursor: "crosshair" }}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+            />
+            <div style={{ marginTop: "10px" }}>
+                <Button onClick={handleSave} color="violet" fullWidth>Save</Button>
+            </div>
+        </div>
+    );
+};
 const ExportReport = () => {
     const navigate = useNavigate()
     // const [hoverCard, setHoverCard] = useState(null)
@@ -50,6 +115,8 @@ const ExportReport = () => {
     const [comments, setComments] = useState([]);
 
     const [exportbutton, setExportbutton] = useState(true)
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [editImageModal, seteditImageModal] = useState(false)
     // console.log(value);
 
     // const [fileModal, setfileModal] = useState(false)
@@ -87,6 +154,14 @@ const ExportReport = () => {
         setComments(JSON.parse(localStorage.getItem('imageComments')) || []);
 
     }, [])
+
+    const handleSaveImage = (editedImage) => {
+        const updatedImages = [...capturedImages];
+        updatedImages[editingIndex] = editedImage;
+        setCapturedImages(updatedImages);
+        localStorage.setItem("capturedImages", JSON.stringify(updatedImages));
+        setEditingIndex(null);
+    };
 
     const handleCheckboxChange = (image, checked) => {
         setSelectedImages((prev) =>
@@ -263,6 +338,20 @@ const ExportReport = () => {
 
     return (
         <div>
+            <Modal opened={editImageModal} onClose={seteditImageModal} centered withCloseButton={false} size={"55%"}>
+                {editingIndex !== null && (
+                    <>
+                        <ImageEditor
+                            imageSrc={capturedImages[editingIndex]}
+                            onSave={(editedImage) => {
+                                handleSaveImage(editedImage);
+                                seteditImageModal(false); // Close modal after saving
+                            }}
+                        />
+                    </>
+                )}
+            </Modal>
+
             <div id="printContainer" style={{ display: "none" }}></div>
             <Modal fullScreen opened={reportModal} onClose={() => setReportModal(false)} closeButtonProps={{ size: "lg" }}>
                 <div ref={targetRef}>
@@ -270,8 +359,9 @@ const ExportReport = () => {
                     {/* {printReport && window.print()} */}
                 </div>
             </Modal>
+
             <Card withBorder m={"xl"} bg={"#EBEDF4"} radius={"1rem"}>
-                <Container maw={"90rem"} bg={"#FFFFFF"} p={"1rem"} m={"lg"} style={{ borderRadius: "1rem" }} >
+                <Container fluid bg={"#FFFFFF"} p={"1rem"} m={"lg"} style={{ borderRadius: "1rem" }} >
 
                     <Group>
                         <ActionIcon variant='light' size={"lg"} onClick={() => navigate("/selectpicture")}><MdOutlineChevronLeft size={20} /></ActionIcon>
@@ -280,7 +370,7 @@ const ExportReport = () => {
                     <Space h={15} />
                     <Flex justify={"space-between"} align={"center"}>
                         <Group spacing={"sm"}>
-                            <Image src={Vector} maw={40} mah={40} />
+                            <MantineImage src={Vector} maw={40} mah={40} />
                             <Text fz={32} fw={600}>Endoscopy</Text>
                         </Group>
 
@@ -350,7 +440,7 @@ const ExportReport = () => {
                             </Flex>
 
                             <Flex direction={"column"}>
-                                <Text fw={600}>Reffered by</Text>
+                                <Text fw={600}>Referred by</Text>
                                 <Text>{selectedPatient.referred}</Text>
                             </Flex>
 
@@ -407,7 +497,7 @@ const ExportReport = () => {
                     </Flex>
                     <Space h={"1rem"} />
                     <SimpleGrid cols={3}>
-                        {
+                        {/* {
                             capturedVideos.map((video, index) => (
                                 <div
                                     key={index}
@@ -458,14 +548,14 @@ const ExportReport = () => {
 
                                 </div>
                             ))
-                        }
+                        } */}
 
                         {capturedImages.map((image, index) => (
                             <div
                                 key={index}
                                 style={{ position: 'relative' }}
                             >
-                                <Image
+                                <MantineImage
                                     ref={(el) => (imageRefs.current[index] = el)}
                                     src={image}
                                     width={'100%'} height={"100%"}
@@ -493,7 +583,10 @@ const ExportReport = () => {
                                 {!selectImage && (
                                     <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0}>
                                         <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-                                            <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"}><MdOutlineEdit color='black' size={23} /></ActionIcon>
+                                            <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} onClick={() => {
+                                                setEditingIndex(index)
+                                                seteditImageModal(true)
+                                            }}><MdOutlineEdit color='black' size={23} /></ActionIcon>
                                             <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
                                         </div>
                                     </Overlay>

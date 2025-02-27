@@ -15,7 +15,7 @@ const AccountRecover = () => {
 
   return (
     <div className='parent'>
-      <div className='last'>
+      <div className='child'>
         <Card shadow="sm" padding="lg" radius="md" >
           <div className='logo'>
             <Image maw={40} radius="md" src={logo} alt="Random image" />
@@ -26,7 +26,7 @@ const AccountRecover = () => {
             <div ><h3>Account successfully recovered!</h3></div>
           </div>
           <div className='SETTINGS'>
-            <Image maw={100} radius="md" src={success} alt="success" />
+            <Image maw={110} radius="md" src={success} alt="success" />
             <div className='acc'><strong>Account Recoverd</strong></div>
             <div className='acc_suc' style={{ fontSize: '1.5rem' }}><strong>Successfully!</strong></div>
 

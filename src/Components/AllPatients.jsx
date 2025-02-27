@@ -16,15 +16,53 @@ import { format } from "date-fns";
 import setting from "../assets/settings.png"
 import { FaWifi } from "react-icons/fa6";
 import { useForm } from "@mantine/form";
-import { MdOutlineEmail } from "react-icons/md";
+import { MdModeEdit, MdOutlineEmail } from "react-icons/md";
 // axios.defaults.withCredentials = true;
 // axios.defaults.xsrfCookieName='csrftoken';
 // axios.defaults.xsrfHeaderName='x-csrftoken'
 
 
 const AllPatients = () => {
-
+  const [deleteModal, setdeleteModal] = useState(false)
   const [data, setData] = useState([]);
+  // const data = [
+  //   {
+  //     "id": 9,
+  //     "patient_name": "neha1",
+  //     "age": 20,
+  //     "gender": "female",
+  //     "procedure": "lazer",
+  //     "mobile": "9786543210",
+  //     "patient_email": "setavakavya2000@gmail.com",
+  //     "referred": "self",
+  //     "updated_at": "2024-12-17T15:20:34.917306Z"
+  //   },
+  //   {
+  //     "id": 10,
+  //     "patient_name": "Vivek",
+  //     "age": 29,
+  //     "gender": "male",
+  //     "procedure": "lazer",
+  //     "mobile": "9999999999",
+  //     "patient_email": "viveknani2@gmail.com",
+  //     "referred": "Vivek",
+  //     "updated_at": "2024-12-18T11:11:49.935237Z"
+  //   },
+  //   {
+  //     "id": 11,
+  //     "patient_name": "Kumar",
+  //     "age": 29,
+  //     "gender": "male",
+  //     "procedure": "lazer",
+  //     "mobile": "9999999999",
+  //     "patient_email": "viveknani2@gmail.com",
+  //     "referred": "Vivek",
+  //     "updated_at": "2024-12-18T11:11:49.935237Z"
+  //   },
+
+  // ]
+  // const data = []
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState({});
   const [selectAll, setSelectAll] = useState(false);
@@ -117,7 +155,8 @@ const AllPatients = () => {
       console.log("Delete Response:", response.data);
       const updatedData = data.filter((item) => !selectedIds.includes(String(item.id)));
       setSelectedRows({});
-      setData(updatedData);
+      // setData(updatedData);
+      setdeleteModal(false)
     } catch (error) {
       console.error("Error deleting patients:", error);
     }
@@ -171,328 +210,345 @@ const AllPatients = () => {
     <>
       {
         window.localStorage.getItem("loginStatus") === "user_validated" ? (
-          <div style={{ height: "100vh", borderRadius: "48px", padding: "32px", gap: "48px" }}>
+          <>
+            <Modal opened={deleteModal} onClose={() => setdeleteModal(false)} centered title={'Are you sure!?'}>
+              You want to delete the selected patient(s)
+              <Flex justify={"end"} mt={"1rem"}>
+                <Group>
+                  <Button variant="outline" color={"violet"} onClick={() => setdeleteModal(false)}>No</Button>
+                  <Button variant="filled" color={"violet"} onClick={handleDelete}>Yes</Button>
+                </Group>
 
-            <div
-              style={{
-                width: "95%",
-                height: "100%",
-                borderRadius: "48px",
-                padding: "32px",
-                gap: "48px",
-                backgroundColor: "#EBEDF4",
-              }}
-            >
-              <Card
+              </Flex>
+            </Modal>
+            <div style={{ height: "100vh", borderRadius: "48px", padding: "32px", gap: "48px" }}>
+
+              <div
                 style={{
-                  width: "auto",
-                  height: "auto",
-                  borderRadius: "24px",
-                  // border: "1px solid #ccc",
-                  padding: "32px 15px",
+                  width: "95%",
+                  height: "100%",
+                  borderRadius: "48px",
+                  padding: "32px",
                   gap: "48px",
+                  backgroundColor: "#EBEDF4",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", width: "100%", gap: 5 }}>
-                  <Image src={Vector} maw={40} />
-                  <h1 style={{ marginLeft: "0.10rem", fontFamily: "inter" }}>Endoscopy</h1>
-                  <div style={{ flexGrow: "1" }}>
-                    <TextInput
-                      icon={<IoMdSearch />}
-                      placeholder="Search by name, phone, or email"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      style={{ marginLeft: "2rem", height: "44px", marginTop: "1rem" }}
-                      styles={{
-                        input: {
-                          backgroundColor: "#EBEDF4",
-                        },
-                      }}
-                    />
-                  </div>
+                <Card
+                  mih={"35vh"}
+                  style={{
+                    width: "auto",
+                    height: "auto",
+                    borderRadius: "24px",
+                    // border: "1px solid #ccc",
+                    padding: "32px 15px",
+                    gap: "48px",
+                  }}
+                >
+                  <Flex align={"center"}>
+                    <div style={{ display: "flex", alignItems: "center", width: "100%", gap: 5 }}>
+                      <Image src={Vector} maw={40} />
+                      <h1 style={{ marginLeft: "0.10rem", fontFamily: "inter" }}>Endoscopy</h1>
+                      <div style={{ flexGrow: "1" }}>
+                        <TextInput
+                          icon={<IoMdSearch />}
+                          placeholder="Search by name, phone, or email"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          style={{ marginLeft: "2rem" }}
+                          styles={{
+                            input: {
+                              backgroundColor: "#EBEDF4",
+                            },
+                          }}
+                        />
+                      </div>
+                      {/* <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "50px",
+                height: "35px",
+                borderRadius: "4px",
+                backgroundColor: "#EBEDF4",
+                marginLeft: "1rem",
+                marginTop: "3px",
+              }}
+            >
+              <Image src={setting} maw={18} alt="Notification Icon" style={{ backgroundColor: "#EBEDF4" }} />
+            </div> */}
+                      <div style={{ marginLeft: "1rem" }}>
+                        <Button color="violet" onClick={() => { navigate('/patientinfo') }} > Add new patient
+                        </Button>
+                      </div>
+                      <div style={{ marginLeft: "0.5rem" }}>
+                        {/* <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} /> */}
+                        <Menu shadow="md" width={250} offset={8} withArrow arrowPosition="center"
+                          radius={10} position="bottom-end" >
+                          <Menu.Target >
+                            {/* <Button variant="white" style={{ marginRight: '-1rem' }}> */}
+                            {/* <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} /> */}
+                            <Avatar src={uploadedImage} radius={"lg"} />
+                            {/* </Button> */}
+                          </Menu.Target>
+
+                          <Menu.Dropdown p='md' style={{ zIndex: 100 }}>
+                            <Menu.Item icon={<FaWifi size={20} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
+                              onClick={() => navigate("/wifi")}
+                            >Wifi</Menu.Item>
+
+                            <Menu.Item icon={<IoPersonOutline size={20} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
+                              onClick={() => navigate('/edituser')}
+                            >Edit Profile</Menu.Item>
+
+
+
+                            <Menu.Item icon={< FaRegFileAlt size={20} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
+                              onClick={() => navigate("/headersetting")}
+                            >Header Setting</Menu.Item>
+                            <Menu.Divider />
+                            <Button variant="light" color="red" fullWidth mt={'1rem'} mb={'1rem'}
+                              type="submit"
+                              onClick={Logout}
+                            > <BiLogOut style={{ marginRight: '0.5rem', fontSize: 'large' }} />Logout</Button>
+                          </Menu.Dropdown>
+                        </Menu>
+
+                      </div>
+                    </div>
+                  </Flex>
                   <div
                     style={{
                       display: "flex",
+                      justifyContent: "space-between",
                       alignItems: "center",
-                      justifyContent: "center",
-                      width: "50px",
-                      height: "35px",
-                      borderRadius: "4px",
-                      backgroundColor: "#EBEDF4",
-                      marginLeft: "1rem",
-                      marginTop: "3px",
+                      marginTop: "20px",
                     }}
                   >
-                    <Image src={setting} maw={18} alt="Notification Icon" style={{ backgroundColor: "#EBEDF4" }} />
-                  </div>
-                  <div style={{ marginLeft: "1rem" }}>
-                    <Button color="violet" onClick={() => { navigate('/patientinfo') }} > Add new patient
-                    </Button>
-                  </div>
-                  <div style={{ marginLeft: "0.5rem" }}>
-                    {/* <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} /> */}
-                    <Menu shadow="md" width={250} offset={8} withArrow arrowPosition="center"
-                      radius={10} position="bottom-end">
-                      <Menu.Target >
-                        {/* <Button variant="white" style={{ marginRight: '-1rem' }}> */}
-                        {/* <Image src={Img3} maw={36} style={{ backgroundColor: "#EBEDF4" }} /> */}
-                        <Avatar src={uploadedImage} radius={"lg"} />
-                        {/* </Button> */}
-                      </Menu.Target>
+                    <h2 style={{ fontFamily: "inter" }}>
+                      All Patients <small style={{ fontWeight: "200", fontSize: "18px" }}>{data.length}</small>
+                    </h2>
+                    <div style={{ display: "flex", alignItems: "center" }}>
 
-                      <Menu.Dropdown p='md'>
-                        <Menu.Item icon={<FaWifi size={20} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
-                          onClick={() => navigate("/wifi")}
-                        >Wifi</Menu.Item>
-
-                        <Menu.Item icon={<IoPersonOutline size={20} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
-                          onClick={() => navigate('/edituser')}
-                        >Edit Profile</Menu.Item>
-
-
-
-                        <Menu.Item icon={< FaRegFileAlt size={20} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
-                          onClick={() => navigate("/headersetting")}
-                        >Header Setting</Menu.Item>
-                        <Menu.Divider />
-                        <Button variant="light" color="red" fullWidth mt={'1rem'} mb={'1rem'}
-                          type="submit"
-                          onClick={Logout}
-                        > <BiLogOut style={{ marginRight: '0.5rem', fontSize: 'large' }} />Logout</Button>
-                      </Menu.Dropdown>
-                    </Menu>
-
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginTop: "20px",
-                  }}
-                >
-                  <h2 style={{ fontFamily: "inter" }}>
-                    All Patients <small style={{ fontWeight: "200", fontSize: "18px" }}>{data.length}</small>
-                  </h2>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-
-                    <div
-                      style={{
-                        backgroundColor: "#EBEDF4",
-                        borderRadius: "28px",
-                        padding: "10px",
-                        fontSize: "20px",
-                        display: "inline-block",
-                        marginRight: "1rem",
-                      }}
-                    >
-                      <Text style={{ fontSize: "18px", fontFamily: "inter" }}>
-                        <input
-                          type="checkbox"
-                          checked={selectAll}
-                          onChange={handleSelectAll}
-                          style={{
-                            cursor: "pointer",
-                            marginRight: "10px",
-                            borderRadius: "3px",
-                            width: "12px",
-                            height: "12px",
-                            transform: "scale(1.5)",
-
-                          }}
-                        />
-                        {selectedCount} Selected
-                      </Text>
-                    </div>
-                    <div
-                      style={{
-                        width: "44px",
-                        height: "44px",
-                        backgroundColor: "#EBEDF4",
-                        borderRadius: "50%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <FiTrash2
-                        size={20}
-                        color="#FF6B6B"
-                        style={{ cursor: "pointer" }}
-                        onClick={handleDelete}
-                        type="submit"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <Table striped highlightOnHover withBorder withColumnBorders mb={"xs"}>
-                  <thead>
-                    <tr style={{ backgroundColor: "#EBEDF4" }}>
-                      <th>Name</th>
-                      <th>Patient ID</th>
-                      <th>Age</th>
-                      <th>Gender</th>
-                      <th>Procedure</th>
-                      <th>Phone</th>
-                      <th>Email</th>
-                      <th>Referred By</th>
-                      <th>Date & Time</th>
-                      {/* <th>Select</th> */}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredData.map((item) => (
-                      <tr
-                        key={item.id}
+                      <div
                         style={{
-                          cursor: 'pointer',
-                          backgroundColor: selectedRows[item.id] ? "#8158F529" : "transparent",
-                          borderRadius: "16px",
-                          transition: "background-color 0.3s ease",
+                          backgroundColor: "#EBEDF4",
+                          borderRadius: "28px",
+                          padding: "10px",
+                          fontSize: "20px",
+                          display: "inline-block",
+                          marginRight: "1rem",
                         }}
-
                       >
-                        <td onClick={(e) => {
-                          if (e.target.type !== "checkbox") {
-                            localStorage.setItem("patientid", item.id);
-                            const patientData = JSON.stringify(item)
-                            localStorage.setItem('selectedpatient', patientData)
-                            navigate("/cameronwillamson");
-                          }
-                        }}>{item.patient_name}</td>
-                        <td
-                          onClick={(e) => {
-                            if (e.target.type !== "checkbox") {
-                              localStorage.setItem("patientid", item.id);
-                              const patientData = JSON.stringify(item)
-                              localStorage.setItem('selectedpatient', patientData)
-                              navigate("/cameronwillamson");
-                            }
-                          }}>{item.id}</td>
-                        <td
-                          onClick={(e) => {
-                            if (e.target.type !== "checkbox") {
-                              localStorage.setItem("patientid", item.id);
-                              const patientData = JSON.stringify(item)
-                              localStorage.setItem('selectedpatient', patientData)
-                              navigate("/cameronwillamson");
-                            }
-                          }}>{item.age}</td>
-                        <td
-                          onClick={(e) => {
-                            if (e.target.type !== "checkbox") {
-                              localStorage.setItem("patientid", item.id);
-                              const patientData = JSON.stringify(item)
-                              localStorage.setItem('selectedpatient', patientData)
-                              navigate("/cameronwillamson");
-                            }
-                          }}>{item.gender}</td>
-                        <td
-                          onClick={(e) => {
-                            if (e.target.type !== "checkbox") {
-                              localStorage.setItem("patientid", item.id);
-                              const patientData = JSON.stringify(item)
-                              localStorage.setItem('selectedpatient', patientData)
-                              navigate("/cameronwillamson");
-                            }
-                          }}>{item.procedure}</td>
-                        <td
-                          onClick={(e) => {
-                            if (e.target.type !== "checkbox") {
-                              localStorage.setItem("patientid", item.id);
-                              const patientData = JSON.stringify(item)
-                              localStorage.setItem('selectedpatient', patientData)
-                              navigate("/cameronwillamson");
-                            }
-                          }}>{item.mobile}</td>
-                        <td
-                          onClick={(e) => {
-                            if (e.target.type !== "checkbox") {
-                              localStorage.setItem("patientid", item.id);
-                              const patientData = JSON.stringify(item)
-                              localStorage.setItem('selectedpatient', patientData)
-                              navigate("/cameronwillamson");
-                            }
-                          }}>{item.patient_email}</td>
-                        <td
-                          onClick={(e) => {
-                            if (e.target.type !== "checkbox") {
-                              localStorage.setItem("patientid", item.id);
-                              const patientData = JSON.stringify(item)
-                              localStorage.setItem('selectedpatient', patientData)
-                              navigate("/cameronwillamson");
-                            }
-                          }}>{item.referred}</td>
-                        <td>
-                          <div className="accent"
+                        <Text style={{ fontSize: "18px", fontFamily: "inter" }}>
+                          <input
+                            type="checkbox"
+                            checked={selectAll}
+                            onChange={handleSelectAll}
                             style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
+                              cursor: "pointer",
+                              marginRight: "10px",
+                              borderRadius: "3px",
+                              width: "12px",
+                              height: "12px",
+                              transform: "scale(1.5)",
+
                             }}
-                          >
-                            <span onClick={(e) => {
+                          />
+                          {selectedCount} Selected
+                        </Text>
+                      </div>
+                      <div
+                        style={{
+                          width: "44px",
+                          height: "44px",
+                          backgroundColor: "#EBEDF4",
+                          borderRadius: "50%",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <FiTrash2
+                          size={20}
+                          color="#FF6B6B"
+                          style={{ cursor: "pointer" }}
+                          // onClick={handleDelete}
+                          onClick={() => { selectedCount > 0 && setdeleteModal(true) }}
+                          type="submit"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Table striped highlightOnHover withBorder withColumnBorders mb={"xs"}>
+                    <thead>
+                      <tr style={{ backgroundColor: "#EBEDF4" }}>
+                        <th>Name</th>
+                        <th>Patient ID</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Procedure</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Referred By</th>
+                        <th>Date & Time</th>
+                        {/* <th>Select</th> */}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredData.map((item) => (
+                        <tr
+                          key={item.id}
+                          style={{
+                            cursor: 'pointer',
+                            backgroundColor: selectedRows[item.id] ? "#8158F529" : "transparent",
+                            borderRadius: "16px",
+                            transition: "background-color 0.3s ease",
+                          }}
+
+                        >
+                          <td onClick={(e) => {
+                            if (e.target.type !== "checkbox") {
+                              localStorage.setItem("patientid", item.id);
+                              const patientData = JSON.stringify(item)
+                              localStorage.setItem('selectedpatient', patientData)
+                              navigate(`/${item.patient_name}`);
+                            }
+                          }}>{item.patient_name}</td>
+                          <td
+                            onClick={(e) => {
                               if (e.target.type !== "checkbox") {
                                 localStorage.setItem("patientid", item.id);
                                 const patientData = JSON.stringify(item)
                                 localStorage.setItem('selectedpatient', patientData)
-                                navigate("/cameronwillamson");
+                                navigate(`/${item.patient_name}`);
                               }
-                            }}>{formatDateTime(item.updated_at)}</span>
-
-                            <Menu shadow="md" width={"auto"} offset={8} withArrow arrowPosition="center"
-                              radius={10} position="bottom-end">
-                              <Menu.Target>
-                                <span
-                                  style={{
-                                    cursor: "pointer",
-                                    fontSize: "18px",
-                                    marginLeft: "10px",
-                                    color: "#999",
-                                  }}
-                                >
-                                  ⋮
-                                </span>
-                              </Menu.Target>
-                              <Menu.Dropdown bg={"#EBEDF4"}>
-                                <Menu.Item onClick={() => {
-                                  const patientData = JSON.stringify(item)
-                                  window.localStorage.setItem('selectedpatient', patientData)
-                                  navigate("/editpatient")
-                                }}>
-                                  Edit
-                                </Menu.Item>
-                              </Menu.Dropdown>
-                            </Menu>
-
-
-                            <input
-                              type="checkbox"
-                              id={`checkbox-${item.id}`}
-                              checked={!!selectedRows[item.id]}
-                              onChange={() => handleCheckboxChange(item.id)}
+                            }}>{item.id}</td>
+                          <td
+                            onClick={(e) => {
+                              if (e.target.type !== "checkbox") {
+                                localStorage.setItem("patientid", item.id);
+                                const patientData = JSON.stringify(item)
+                                localStorage.setItem('selectedpatient', patientData)
+                                navigate(`/${item.patient_name}`);
+                              }
+                            }}>{item.age}</td>
+                          <td
+                            onClick={(e) => {
+                              if (e.target.type !== "checkbox") {
+                                localStorage.setItem("patientid", item.id);
+                                const patientData = JSON.stringify(item)
+                                localStorage.setItem('selectedpatient', patientData)
+                                navigate(`/${item.patient_name}`);
+                              }
+                            }}>{item.gender}</td>
+                          <td
+                            onClick={(e) => {
+                              if (e.target.type !== "checkbox") {
+                                localStorage.setItem("patientid", item.id);
+                                const patientData = JSON.stringify(item)
+                                localStorage.setItem('selectedpatient', patientData)
+                                navigate(`/${item.patient_name}`);
+                              }
+                            }}>{item.procedure}</td>
+                          <td
+                            onClick={(e) => {
+                              if (e.target.type !== "checkbox") {
+                                localStorage.setItem("patientid", item.id);
+                                const patientData = JSON.stringify(item)
+                                localStorage.setItem('selectedpatient', patientData)
+                                navigate(`/${item.patient_name}`);
+                              }
+                            }}>{item.mobile}</td>
+                          <td
+                            onClick={(e) => {
+                              if (e.target.type !== "checkbox") {
+                                localStorage.setItem("patientid", item.id);
+                                const patientData = JSON.stringify(item)
+                                localStorage.setItem('selectedpatient', patientData)
+                                navigate(`/${item.patient_name}`);
+                              }
+                            }}>{item.patient_email}</td>
+                          <td
+                            onClick={(e) => {
+                              if (e.target.type !== "checkbox") {
+                                localStorage.setItem("patientid", item.id);
+                                const patientData = JSON.stringify(item)
+                                localStorage.setItem('selectedpatient', patientData)
+                                navigate(`/${item.patient_name}`);
+                              }
+                            }}>{item.referred}</td>
+                          <td>
+                            <div className="accent"
                               style={{
-                                cursor: "pointer",
-                                marginLeft: "10px",
-                                borderRadius: "3px",
-                                width: "10px",
-                                height: "10px",
-                                transform: "scale(1.5)",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
                               }}
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </Card>
+                            >
+                              <span onClick={(e) => {
+                                if (e.target.type !== "checkbox") {
+                                  localStorage.setItem("patientid", item.id);
+                                  const patientData = JSON.stringify(item)
+                                  localStorage.setItem('selectedpatient', patientData)
+                                  navigate(`/${item.patient_name}`);
+                                }
+                              }}>{formatDateTime(item.updated_at)}</span>
+
+                              <Menu shadow="md" width={"auto"} offset={8} withArrow arrowPosition="center"
+                                radius={10} position="bottom-end">
+                                <Menu.Target>
+                                  {/* <span
+                            style={{
+                              cursor: "pointer",
+                              fontSize: "18px",
+                              marginLeft: "10px",
+                              color: "#999",
+                            }}
+                          >
+                            ⋮
+                          </span> */}
+                                  <ActionIcon variant="light"><MdModeEdit /></ActionIcon>
+                                </Menu.Target>
+                                <Menu.Dropdown bg={"#EBEDF4"}>
+                                  <Menu.Item onClick={() => {
+                                    const patientData = JSON.stringify(item)
+                                    window.localStorage.setItem('selectedpatient', patientData)
+                                    navigate("/editpatient")
+                                  }}>
+                                    Edit
+                                  </Menu.Item>
+                                </Menu.Dropdown>
+                              </Menu>
+
+
+                              <input
+                                type="checkbox"
+                                id={`checkbox-${item.id}`}
+                                checked={!!selectedRows[item.id]}
+                                onChange={() => handleCheckboxChange(item.id)}
+                                style={{
+                                  cursor: "pointer",
+                                  marginLeft: "10px",
+                                  borderRadius: "3px",
+                                  width: "10px",
+                                  height: "10px",
+                                  transform: "scale(1.5)",
+                                }}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </Card>
+              </div>
             </div>
-          </div>
-        ) : (<Navigate to={("/")} />)
+          </>) : (<Navigate to={"/"} />)
       }
+
     </>
 
   );
