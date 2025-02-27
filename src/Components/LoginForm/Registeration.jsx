@@ -65,16 +65,7 @@ const Registration = () => {
 
 
   useEffect(() => {
-    form.setValues({
-      first_name: '',
-      username: '',
-      email: '',
-      password: '',
-      cnfpassword: '',
-      mobile_no: '',
-      speciality: '',
-      template: '',
-    })
+    form.reset();
   }, [])
 
   const handleMobileChange = (e) => {
@@ -89,7 +80,10 @@ const Registration = () => {
     setLoader(true);
 
     const isValid = !form.validate().hasErrors;
-    if (!isValid) return;
+    if (!isValid) {
+      setLoader(false);
+      return;
+    }
 
     try {
       const result = await client.post(
@@ -110,9 +104,13 @@ const Registration = () => {
 
       if (result.data && result.data.status === 'User_created_successfully!') {
         window.localStorage.setItem("userdp", uploadedImage);
-        setconfirmModal(true)
+        setconfirmModal(true);
         setLoader(false);
-        navigate('/login');
+
+        setTimeout(() => {
+          setconfirmModal(false);
+          navigate('/login');
+        }, 3000);
       }
     } catch (error) {
       setLoader(false);
@@ -125,11 +123,8 @@ const Registration = () => {
         console.error('Unexpected error:', error.message);
       }
     }
-    setTimeout(() => {
-      setconfirmModal(false)
-      navigate("/login")
-    }, 3000)
   };
+
 
   const handleDrop = (files) => {
     const file = files[0];
@@ -215,7 +210,7 @@ const Registration = () => {
               )}
             </div>
 
-            <form onSubmit={handleFormSubmit}>
+            <form onSubmit={handleFormSubmit} autoComplete="off">
               <TextInput required
                 label="Your Full Name"
                 placeholder="Enter your name"
