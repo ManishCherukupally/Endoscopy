@@ -362,11 +362,13 @@ const ExportReport = () => {
 
             <Card withBorder m={"xl"} bg={"#EBEDF4"} radius={"1rem"}>
                 <Container fluid bg={"#FFFFFF"} p={"1rem"} m={"lg"} style={{ borderRadius: "1rem" }} >
-
-                    <Group>
-                        <ActionIcon variant='light' size={"lg"} onClick={() => navigate("/selectpicture")}><MdOutlineChevronLeft size={20} /></ActionIcon>
-                        <Text fz={20} fw={600}>Export Report</Text>
-                    </Group>
+                    <Flex justify={"space-between"}>
+                        <Group>
+                            <ActionIcon variant='light' size={"lg"} onClick={() => navigate("/selectpicture")}><MdOutlineChevronLeft size={20} /></ActionIcon>
+                            <Text fz={20} fw={600}>Export Report</Text>
+                        </Group>
+                        <Button variant='light' color='violet' onClick={() => navigate('/allpatients')}>Get back to all patients</Button>
+                    </Flex>
                     <Space h={15} />
                     <Flex justify={"space-between"} align={"center"}>
                         <Group spacing={"sm"}>
@@ -563,7 +565,7 @@ const ExportReport = () => {
                                 />
 
                                 <Flex>
-                                    {comments[index] ? <Text ml={"sm"}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
+                                    {comments[index] ? <Text ml={"sm"} fw={600}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
                                 </Flex>
 
                                 {selectImage && (

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { MdOutlineEmail } from 'react-icons/md';
 import logo from '../../assets/Vector.jpg';
 import { FaChevronLeft } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import client from '../Api';
 
 
@@ -94,95 +94,107 @@ const EditUser = () => {
     }
     return (
         <div>
-            <div className="parent">
-                <div className="child1">
-                    <Card shadow="sm" padding="lg" radius="md" >
-                        <div className="logo">
-                            <Image maw={40} radius="md" src={logo} alt="Endoscopy Logo" />
-                            <h2>Endoscopy</h2>
+            {
+                window.localStorage.getItem("loginStatus") === "user_validated" ? (
+                    <div className="parent">
+                        <div className="child1">
+                            <Card shadow="sm" padding="lg" radius="md" >
+                                <div className="logo">
+                                    <Image maw={40} radius="md" src={logo} alt="Endoscopy Logo" />
+                                    <h2>Endoscopy</h2>
+                                </div>
+                                <Flex align="center">
+                                    <ActionIcon size="xl" onClick={() => navigate("/allpatients")} left={-5}>
+                                        <FaChevronLeft size="1rem" />
+                                    </ActionIcon>
+                                    <Text fz={20} fw={500} ff='inter'>Edit Profile</Text>
+                                </Flex>
+                                <Space h="1rem" />
+                                <form >
+                                    {/* <TextInput
+                                    label="User Id"
+                                    placeholder="Enter user Id"
+                                    size="md"
+                                    radius="md"
+                                    {...form.getInputProps('user_id')}
+                                /> */}
+                                    <TextInput
+                                        label="Login UserName"
+                                        placeholder="Enter your username"
+                                        size="md"
+                                        mt="md"
+                                        radius="md"
+                                        {...form.getInputProps('username')}
+                                    />
+
+                                    {/* <PasswordInput
+                            label="Password"
+                            placeholder="Enter your password"
+                            icon={<MdLockOutline />}
+                            size="md"
+                            radius="md"
+                            mt="md"
+                            {...form.getInputProps('password')}
+                          />
+                          <PasswordInput
+                            label="Confirm Password"
+                            placeholder="Re-enter your password"
+                            icon={<MdLockOutline />}
+                            size="md"
+                            radius="md"
+                            mt="md"
+                            {...form.getInputProps('cnfpassword')}
+                          /> */}
+                                    <TextInput
+                                        label="Mobile Number"
+                                        placeholder="Enter your mobile number"
+                                        type="text"
+                                        size="md"
+                                        radius="md"
+                                        mt="md"
+                                        {...form.getInputProps('mobile_no')}
+                                        onChange={handleMobileChange}
+                                    />
+                                    <TextInput
+                                        label="Email ID"
+                                        placeholder="Enter your email"
+                                        icon={<MdOutlineEmail style={{ color: 'gray' }} />}
+                                        size="md"
+                                        radius="md"
+                                        mt="md"
+                                        {...form.getInputProps('email')}
+                                    />
+
+                                    <Select
+                                        label="Speciality"
+                                        placeholder="Select speciality"
+                                        data={[
+                                            { value: 'Bronchoscopy', label: 'Bronchoscopy' },
+                                            { value: 'Colonoscopy', label: 'Colonoscopy' },
+                                            { value: 'Colposcopy', label: 'Colposcopy' },
+                                            { value: 'Cystocopy', label: 'Cystocopy' },
+                                            { value: 'Endoscopy', label: 'Endoscopy' },
+                                            { value: 'ENT', label: 'ENT' },
+                                            { value: 'ERCP', label: 'ERCP' },
+                                            { value: 'Gastroscopy', label: 'Gastroscopy' },
+                                            { value: 'Laparoscopy', label: 'Laparoscopy' },
+                                            { value: 'Ureteroscopy', label: 'Ureteroscopy' },
+                                            { value: 'Others', label: 'Others' },
+                                        ]}
+                                        size="md"
+                                        radius="md"
+                                        mt="md"
+                                        {...form.getInputProps('Speciality')}
+                                    />
+                                    <Space h={20} />
+                                    <Button loading={loader} fullWidth color="violet" onClick={handleFormSubmit}>Edit</Button>
+                                </form>
+                            </Card>
                         </div>
-                        <Flex align="center">
-                            <ActionIcon size="xl" onClick={() => navigate("/allpatients")} left={-5}>
-                                <FaChevronLeft size="1rem" />
-                            </ActionIcon>
-                            <Text fz={20} fw={500} ff='inter'>Edit Profile</Text>
-                        </Flex>
-                        <Space h="1rem" />
-                        <form >
-                            {/* <TextInput
-                                label="User Id"
-                                placeholder="Enter user Id"
-                                size="md"
-                                radius="md"
-                                {...form.getInputProps('user_id')}
-                            /> */}
-                            <TextInput
-                                label="Login UserName"
-                                placeholder="Enter your username"
-                                size="md"
-                                mt="md"
-                                radius="md"
-                                {...form.getInputProps('username')}
-                            />
+                    </div>) : (<Navigate to={"/"} />)
 
-                            {/* <PasswordInput
-                        label="Password"
-                        placeholder="Enter your password"
-                        icon={<MdLockOutline />}
-                        size="md"
-                        radius="md"
-                        mt="md"
-                        {...form.getInputProps('password')}
-                      />
-                      <PasswordInput
-                        label="Confirm Password"
-                        placeholder="Re-enter your password"
-                        icon={<MdLockOutline />}
-                        size="md"
-                        radius="md"
-                        mt="md"
-                        {...form.getInputProps('cnfpassword')}
-                      /> */}
-                            <TextInput
-                                label="Mobile Number"
-                                placeholder="Enter your mobile number"
-                                type="text"
-                                size="md"
-                                radius="md"
-                                mt="md"
-                                {...form.getInputProps('mobile_no')}
-                                onChange={handleMobileChange}
-                            />
-                            <TextInput
-                                label="Email ID"
-                                placeholder="Enter your email"
-                                icon={<MdOutlineEmail style={{ color: 'gray' }} />}
-                                size="md"
-                                radius="md"
-                                mt="md"
-                                {...form.getInputProps('email')}
-                            />
+            }
 
-                            <Select
-                                label="Speciality"
-                                placeholder="Select speciality"
-                                data={[
-                                    { value: 'react', label: 'React' },
-                                    { value: 'angular', label: 'Angular' },
-                                    { value: 'vue', label: 'Vue' },
-                                    { value: 'svelte', label: 'Svelte' },
-                                ]}
-                                size="md"
-                                radius="md"
-                                mt="md"
-                                {...form.getInputProps('Speciality')}
-                            />
-                            <Space h={20} />
-                            <Button loading={loader} fullWidth color="violet" onClick={handleFormSubmit}>Edit</Button>
-                        </form>
-                    </Card>
-                </div>
-            </div>
 
         </div>
     )

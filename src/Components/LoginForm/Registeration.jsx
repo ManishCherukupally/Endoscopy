@@ -222,10 +222,17 @@ const Registration = () => {
                 label="Speciality"
                 placeholder="Select"
                 data={[
-                  { value: 'react', label: 'React' },
-                  { value: 'angular', label: 'Angular' },
-                  { value: 'vue', label: 'Vue' },
-                  { value: 'svelte', label: 'Svelte' },
+                  { value: 'Bronchoscopy', label: 'Bronchoscopy' },
+                  { value: 'Colonoscopy', label: 'Colonoscopy' },
+                  { value: 'Colposcopy', label: 'Colposcopy' },
+                  { value: 'Cystocopy', label: 'Cystocopy' },
+                  { value: 'Endoscopy', label: 'Endoscopy' },
+                  { value: 'ENT', label: 'ENT' },
+                  { value: 'ERCP', label: 'ERCP' },
+                  { value: 'Gastroscopy', label: 'Gastroscopy' },
+                  { value: 'Laparoscopy', label: 'Laparoscopy' },
+                  { value: 'Ureteroscopy', label: 'Ureteroscopy' },
+                  { value: 'Others', label: 'Others' },
                 ]}
                 size="md"
                 radius="md"

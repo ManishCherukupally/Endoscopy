@@ -680,7 +680,7 @@ const PatientInfo = () => {
                 />
                 <Select
                   label="Procedure"
-                  placeholder='Select (e.g., "Upper gastrointestinal endoscopy")'
+                  placeholder='Select Procedure'
                   data={[
                     { value: 'lazer', label: 'Lazer' },
                     { value: 'pipe', label: 'Pipe' },

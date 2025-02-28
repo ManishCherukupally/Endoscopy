@@ -326,7 +326,7 @@ const SelectPictureReport = () => {
                                                 </ActionIcon>
                                             </div> */}
 
-                                                <Center h={250} mx={"auto"}>
+                                                <Center h={300} mx={"auto"}>
                                                     {videocommentModal && currentVideoIndex === index ? (
                                                         <Card w={"80%"}>
                                                             <Stack>
@@ -399,7 +399,7 @@ const SelectPictureReport = () => {
                                     </div>
                                     <Flex>
 
-                                        {videocomments[index] ? <Text ml={"sm"}>{videocomments[index]}</Text> : <Text ml={"lg"} fw={600}>Video: {index + 1}</Text>}
+                                        {videocomments[index] ? <Text ml={"sm"} fw={600}>{videocomments[index]}</Text> : <Text ml={"lg"} fw={600}>Video: {index + 1}</Text>}
                                     </Flex>
                                 </Flex>
 
@@ -431,7 +431,7 @@ const SelectPictureReport = () => {
                                                 <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
                                             </div>
 
-                                            <Center h={200} mx="auto">
+                                            <Center h={180} mx="auto">
                                                 {commentModal && currentImageIndex === index ? (
                                                     <Card w={"80%"}>
                                                         <Stack>
@@ -480,7 +480,7 @@ const SelectPictureReport = () => {
                                 </div>
                                 <Flex>
 
-                                    {comments[index] ? <Text ml={"sm"}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
+                                    {comments[index] ? <Text ml={"sm"} fw={600}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
                                 </Flex>
                             </Flex>
                         ))}

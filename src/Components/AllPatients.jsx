@@ -547,7 +547,8 @@ const AllPatients = () => {
                 </Card>
               </div>
             </div>
-          </>) : (<Navigate to={"/"} />)
+          </>
+        ) : (<Navigate to={"/"} />)
       }
 
     </>

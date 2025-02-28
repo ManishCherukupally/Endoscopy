@@ -15,6 +15,7 @@ import {
     SimpleGrid,
     Space,
     Text,
+    ScrollArea,
 } from "@mantine/core";
 import Vector from "../assets/Vector.png";
 import Pic from "../assets/intestine.png";
@@ -497,79 +498,87 @@ const Videocapturing = () => {
 
 
                         <Grid.Col span={3}>
-                            <Card bg={"#EBEDF4"} radius={12} h={676}>
-                                <SimpleGrid cols={2}>
-                                    {recordedChunks.map((video, index) => (
-                                        <div key={index} style={{ position: "relative" }}>
-                                            <video
-                                                src={video.videoUrl}
-                                                controls
-                                                style={{ width: "100%", borderRadius: "12px" }}
-                                            />
-                                            <div
-                                                style={{
-                                                    position: "absolute",
-                                                    top: 0,
-                                                    right: 0,
-                                                    zIndex: 1,
-                                                    display: "flex",
-                                                    justifyContent: "flex-end",
-                                                    alignItems: "center",
-                                                    padding: "5px",
-                                                }}
-                                            >
-                                                <ActionIcon
-                                                    size={30}
-                                                    variant="transparent"
-                                                    bg={"white"}
-                                                    radius={"50%"}
-                                                    onClick={() => handleDeleteVideo(index)}
-                                                >
-                                                    <RxCross2 color="red" />
-                                                </ActionIcon>
-                                            </div>
-                                        </div>
-                                    ))}
 
-                                    {capturedImages.map((image, index) => (
-                                        <div key={index} style={{ position: "relative" }}>
-                                            <MantineImage
-                                                src={image}
-                                                alt={`Captured ${index + 1}`}
-                                                radius={12}
-                                                style={{ width: "100%", height: "100%" }}
-                                            />
-                                            <Overlay position="absolute" top={0} left={0} opacity={0} zIndex={1}>
+                            <Card bg={"#EBEDF4"} radius={12} h={676}>
+                                <ScrollArea h={650}>
+                                    {recordedChunks && <Flex justify={"center"} pb={10}><Text fz={18}> Captured Videos</Text></Flex>}
+                                    <SimpleGrid cols={2}>
+
+                                        {recordedChunks.map((video, index) => (
+                                            <div key={index} style={{ position: "relative" }}>
+                                                <video
+                                                    src={video.videoUrl}
+                                                    controls
+                                                    style={{ width: "100%", borderRadius: "12px" }}
+                                                />
                                                 <div
                                                     style={{
+                                                        position: "absolute",
+                                                        top: 0,
+                                                        right: 0,
+                                                        zIndex: 1,
                                                         display: "flex",
-                                                        justifyContent: "space-between",
+                                                        justifyContent: "flex-end",
                                                         alignItems: "center",
                                                         padding: "5px",
                                                     }}
                                                 >
-                                                    <ActionIcon size={30} variant="transparent" bg={"white"} radius={"50%"}
-                                                        onClick={() => {
-                                                            setEditingIndex(index)
-                                                            seteditImageModal(true)
-                                                        }}>
-                                                        <MdOutlineEdit color="black" />
-                                                    </ActionIcon>
                                                     <ActionIcon
                                                         size={30}
                                                         variant="transparent"
                                                         bg={"white"}
                                                         radius={"50%"}
-                                                        onClick={() => handleDeleteImage(index)}
+                                                        onClick={() => handleDeleteVideo(index)}
                                                     >
                                                         <RxCross2 color="red" />
                                                     </ActionIcon>
                                                 </div>
-                                            </Overlay>
-                                        </div>
-                                    ))}
-                                </SimpleGrid>
+                                            </div>
+                                        ))}
+                                    </SimpleGrid>
+                                    {capturedImages && <Flex justify={"center"} py={10}><Text fz={18}> Captured Images</Text></Flex>}
+                                    <SimpleGrid cols={2}>
+                                        {capturedImages.map((image, index) => (
+                                            <div key={index} style={{ position: "relative" }}>
+                                                <MantineImage
+                                                    src={image}
+                                                    alt={`Captured ${index + 1}`}
+                                                    radius={12}
+                                                    style={{ width: "100%", height: "100%" }}
+                                                />
+                                                <Overlay position="absolute" top={0} left={0} opacity={0} zIndex={1}>
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            justifyContent: "space-between",
+                                                            alignItems: "center",
+                                                            padding: "5px",
+                                                        }}
+                                                    >
+                                                        <ActionIcon size={30} variant="transparent" bg={"white"} radius={"50%"}
+                                                            onClick={() => {
+                                                                setEditingIndex(index)
+                                                                seteditImageModal(true)
+                                                            }}>
+                                                            <MdOutlineEdit color="black" />
+                                                        </ActionIcon>
+                                                        <ActionIcon
+                                                            size={30}
+                                                            variant="transparent"
+                                                            bg={"white"}
+                                                            radius={"50%"}
+                                                            onClick={() => handleDeleteImage(index)}
+                                                        >
+                                                            <RxCross2 color="red" />
+                                                        </ActionIcon>
+                                                    </div>
+                                                </Overlay>
+                                            </div>
+                                        ))}
+                                    </SimpleGrid>
+                                </ScrollArea>
                             </Card>
+
                         </Grid.Col>
                     </Grid>
                 </Container>
