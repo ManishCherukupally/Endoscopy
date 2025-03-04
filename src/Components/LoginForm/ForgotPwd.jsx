@@ -79,7 +79,7 @@ const ForgotPwd = () => {
             <h2>Endoscopy</h2>
           </div>
           <div className="arrow_for">
-            <Link to='/' style={{ color: 'black' }}><FaChevronLeft id="fpwd" style={{ cursor: 'pointer' }} /></Link>
+            <Link to='/login' style={{ color: 'black' }}><FaChevronLeft id="fpwd" style={{ cursor: 'pointer' }} /></Link>
             <div>
               <h3>Forgot Password</h3>
             </div>
@@ -88,9 +88,9 @@ const ForgotPwd = () => {
           <form onSubmit={Forgotpassword}>
             <div className="userpass">
               <TextInput onInput={() => setDisabled(false)}
-
-                label="Email or Username"
-                placeholder="Email or Username"
+                required
+                label="Email"
+                placeholder="Enter Email"
                 {...form.getInputProps('email')}
                 icon={<MdOutlineEmail style={{ color: 'gray' }} />}
                 size="md"

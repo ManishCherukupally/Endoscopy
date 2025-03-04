@@ -351,15 +351,15 @@ const Login = () => {
             <Button variant="light" color="violet" mt="md" radius="md" fullWidth onClick={() => navigate('/register')}>
               Create Account
             </Button>
-            <Divider my="xs" size="md" label="Or Continue With" labelPosition="center" />
-            <div className="need">
-              <div>
+            {/* <Divider my="xs" size="md" label="Or Continue With" labelPosition="center" /> */}
+            {/* <div className="need"> */}
+            {/* <div>
                 <span style={{ color: 'gray' }}>Need Help?</span> <span>Contact Us</span>
-              </div>
-              <div className="c">
+              </div> */}
+            {/* <div className="c">
                 <a href="#">Terms</a> & <a href="#">Conditions</a>
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
           </form>
         </Card>
       </div>
