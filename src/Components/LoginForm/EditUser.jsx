@@ -101,6 +101,7 @@ const EditUser = () => {
             if (resp.data.status === 'success' && resp.data.message === "User details updated successfully.") {
                 setLoader(false)
                 setconfirmModal(true);
+                window.localStorage.setItem("userData", JSON.stringify(resp.data.edited_data))
 
 
                 setTimeout(() => {
