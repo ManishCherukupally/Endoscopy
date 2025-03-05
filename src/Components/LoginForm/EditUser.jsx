@@ -30,18 +30,18 @@ const EditUser = () => {
 
     // const[userData, setUserData] = useState({})
 
-    // const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem("userData"));
     // console.log(userData);
 
 
-    const userData = {
-        user_id: 2,
-        username: "kavya",
-        email: "setavakavya3@gmail.com",
-        mobile_no: "6303275603",
-        Speciality: "Bronchoscopy",
-        first_name: "kavya"
-    }
+    // const userData = {
+    //     user_id: 2,
+    //     username: "kavya",
+    //     email: "setavakavya3@gmail.com",
+    //     mobile_no: "6303275603",
+    //     Speciality: "Bronchoscopy",
+    //     first_name: "kavya"
+    // }
 
     const form = useForm({
         initialValues: {

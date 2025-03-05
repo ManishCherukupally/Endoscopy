@@ -24,43 +24,43 @@ import { MdModeEdit, MdOutlineEmail } from "react-icons/md";
 
 const AllPatients = () => {
   const [deleteModal, setdeleteModal] = useState(false)
-  // const [data, setData] = useState([]);
-  const data = [
-    {
-      "id": 9,
-      "patient_name": "neha1",
-      "age": 20,
-      "gender": "female",
-      "procedure": "lazer",
-      "mobile": "9786543210",
-      "patient_email": "setavakavya2000@gmail.com",
-      "referred": "self",
-      "updated_at": "2024-12-17T15:20:34.917306Z"
-    },
-    {
-      "id": 10,
-      "patient_name": "Vivek",
-      "age": 29,
-      "gender": "male",
-      "procedure": "lazer",
-      "mobile": "9999999999",
-      "patient_email": "viveknani2@gmail.com",
-      "referred": "Vivek",
-      "updated_at": "2024-12-18T11:11:49.935237Z"
-    },
-    {
-      "id": 11,
-      "patient_name": "Kumar",
-      "age": 29,
-      "gender": "male",
-      "procedure": "lazer",
-      "mobile": "9999999999",
-      "patient_email": "viveknani2@gmail.com",
-      "referred": "Vivek",
-      "updated_at": "2024-12-18T11:11:49.935237Z"
-    },
+  const [data, setData] = useState([]);
+  // const data = [
+  //   {
+  //     "id": 9,
+  //     "patient_name": "neha1",
+  //     "age": 20,
+  //     "gender": "female",
+  //     "procedure": "lazer",
+  //     "mobile": "9786543210",
+  //     "patient_email": "setavakavya2000@gmail.com",
+  //     "referred": "self",
+  //     "updated_at": "2024-12-17T15:20:34.917306Z"
+  //   },
+  //   {
+  //     "id": 10,
+  //     "patient_name": "Vivek",
+  //     "age": 29,
+  //     "gender": "male",
+  //     "procedure": "lazer",
+  //     "mobile": "9999999999",
+  //     "patient_email": "viveknani2@gmail.com",
+  //     "referred": "Vivek",
+  //     "updated_at": "2024-12-18T11:11:49.935237Z"
+  //   },
+  //   {
+  //     "id": 11,
+  //     "patient_name": "Kumar",
+  //     "age": 29,
+  //     "gender": "male",
+  //     "procedure": "lazer",
+  //     "mobile": "9999999999",
+  //     "patient_email": "viveknani2@gmail.com",
+  //     "referred": "Vivek",
+  //     "updated_at": "2024-12-18T11:11:49.935237Z"
+  //   },
 
-  ]
+  // ]
   // const data = []
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -105,7 +105,7 @@ const AllPatients = () => {
       });
       console.log(response)
       console.log("API Response:", response.data);
-      // setData(response.data.reverse());
+      setData(response.data.reverse());
 
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -156,7 +156,7 @@ const AllPatients = () => {
       console.log("Delete Response:", response.data);
       const updatedData = data.filter((item) => !selectedIds.includes(String(item.id)));
       setSelectedRows({});
-      // setData(updatedData);
+      setData(updatedData);
       setdeleteModal(false)
     } catch (error) {
       console.error("Error deleting patients:", error);
