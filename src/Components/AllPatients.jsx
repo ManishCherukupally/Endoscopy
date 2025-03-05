@@ -24,43 +24,43 @@ import { MdModeEdit, MdOutlineEmail } from "react-icons/md";
 
 const AllPatients = () => {
   const [deleteModal, setdeleteModal] = useState(false)
-  const [data, setData] = useState([]);
-  // const data = [
-  //   {
-  //     "id": 9,
-  //     "patient_name": "neha1",
-  //     "age": 20,
-  //     "gender": "female",
-  //     "procedure": "lazer",
-  //     "mobile": "9786543210",
-  //     "patient_email": "setavakavya2000@gmail.com",
-  //     "referred": "self",
-  //     "updated_at": "2024-12-17T15:20:34.917306Z"
-  //   },
-  //   {
-  //     "id": 10,
-  //     "patient_name": "Vivek",
-  //     "age": 29,
-  //     "gender": "male",
-  //     "procedure": "lazer",
-  //     "mobile": "9999999999",
-  //     "patient_email": "viveknani2@gmail.com",
-  //     "referred": "Vivek",
-  //     "updated_at": "2024-12-18T11:11:49.935237Z"
-  //   },
-  //   {
-  //     "id": 11,
-  //     "patient_name": "Kumar",
-  //     "age": 29,
-  //     "gender": "male",
-  //     "procedure": "lazer",
-  //     "mobile": "9999999999",
-  //     "patient_email": "viveknani2@gmail.com",
-  //     "referred": "Vivek",
-  //     "updated_at": "2024-12-18T11:11:49.935237Z"
-  //   },
+  // const [data, setData] = useState([]);
+  const data = [
+    {
+      "id": 9,
+      "patient_name": "neha1",
+      "age": 20,
+      "gender": "female",
+      "procedure": "lazer",
+      "mobile": "9786543210",
+      "patient_email": "setavakavya2000@gmail.com",
+      "referred": "self",
+      "updated_at": "2024-12-17T15:20:34.917306Z"
+    },
+    {
+      "id": 10,
+      "patient_name": "Vivek",
+      "age": 29,
+      "gender": "male",
+      "procedure": "lazer",
+      "mobile": "9999999999",
+      "patient_email": "viveknani2@gmail.com",
+      "referred": "Vivek",
+      "updated_at": "2024-12-18T11:11:49.935237Z"
+    },
+    {
+      "id": 11,
+      "patient_name": "Kumar",
+      "age": 29,
+      "gender": "male",
+      "procedure": "lazer",
+      "mobile": "9999999999",
+      "patient_email": "viveknani2@gmail.com",
+      "referred": "Vivek",
+      "updated_at": "2024-12-18T11:11:49.935237Z"
+    },
 
-  // ]
+  ]
   // const data = []
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -105,7 +105,7 @@ const AllPatients = () => {
       });
       console.log(response)
       console.log("API Response:", response.data);
-      setData(response.data.reverse());
+      // setData(response.data.reverse());
 
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -156,7 +156,7 @@ const AllPatients = () => {
       console.log("Delete Response:", response.data);
       const updatedData = data.filter((item) => !selectedIds.includes(String(item.id)));
       setSelectedRows({});
-      setData(updatedData);
+      // setData(updatedData);
       setdeleteModal(false)
     } catch (error) {
       console.error("Error deleting patients:", error);
@@ -212,7 +212,7 @@ const AllPatients = () => {
       {
         window.localStorage.getItem("loginStatus") === "user_validated" ? (
           <>
-            <Modal opened={deleteModal} onClose={() => setdeleteModal(false)} centered title={'Are you sure!?'}>
+            <Modal opened={deleteModal} onClose={() => setdeleteModal(false)} centered title={'Are you sure?'}>
               You want to delete the selected patient(s)
               <Flex justify={"end"} mt={"1rem"}>
                 <Group>
@@ -359,26 +359,33 @@ const AllPatients = () => {
                           {selectedCount} Selected
                         </Text>
                       </div>
-                      <div
-                        style={{
-                          width: "44px",
-                          height: "44px",
-                          backgroundColor: "#EBEDF4",
-                          borderRadius: "50%",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
+
+                      <ActionIcon variant="filled" bg={"#EBEDF4"} size={44} radius={"50%"} disabled={selectedCount > 0 ? false : true}
+                        type="submit"
+                        onClick={() => { selectedCount > 0 && setdeleteModal(true) }}
                       >
-                        <FiTrash2
-                          size={20}
-                          color="#FF6B6B"
-                          style={{ cursor: "pointer" }}
-                          // onClick={handleDelete}
-                          onClick={() => { selectedCount > 0 && setdeleteModal(true) }}
-                          type="submit"
-                        />
-                      </div>
+                        <FiTrash2 size={20} color="#FF6B6B" />
+                      </ActionIcon>
+                      {/* <div
+                    style={{
+                      width: "44px",
+                      height: "44px",
+                      backgroundColor: "#EBEDF4",
+                      borderRadius: "50%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <FiTrash2
+                      size={20}
+                      color="#FF6B6B"
+                      style={{ cursor: "pointer" }}
+                      // onClick={handleDelete}
+                      onClick={() => { selectedCount > 0 && setdeleteModal(true) }}
+                      type="submit"
+                    />
+                  </div> */}
                     </div>
                   </div>
 
@@ -548,8 +555,10 @@ const AllPatients = () => {
               </div>
             </div>
           </>
+
         ) : (<Navigate to={"/"} />)
       }
+
 
     </>
 

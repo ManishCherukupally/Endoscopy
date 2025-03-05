@@ -388,7 +388,7 @@ const ExportReport = () => {
                                 onClick={handlePrint}
                             ><TbPrinter /></ActionIcon>
 
-                            <Button color='violet' radius={8} h={44} onClick={handleSave}>Save</Button>
+                            <Button disabled={selectedImages.length > 0 ? false : true} color='violet' radius={8} h={44} onClick={handleSave}>Save</Button>
 
                             <Card withBorder p={'0.3rem'} radius={8} pl={"1rem"} style={{ overflow: "visible", position: "relative" }}>
                                 <Flex gap={15} align={"center"}>

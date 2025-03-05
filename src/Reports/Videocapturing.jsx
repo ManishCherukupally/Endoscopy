@@ -21,7 +21,7 @@ import Vector from "../assets/Vector.png";
 import Pic from "../assets/intestine.png";
 import Webcam from "react-webcam";
 
-import { MdFullscreen, MdOutlineEdit } from "react-icons/md";
+import { MdFullscreen, MdFullscreenExit, MdOutlineEdit } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
 import { BsCameraFill } from "react-icons/bs";
@@ -104,11 +104,14 @@ const Videocapturing = () => {
     const [seconds, setSeconds] = useState(0);
     const [showTimer, setShowTimer] = useState(false);
 
+    const [isFullscreen, setIsFullscreen] = useState(false);
+
     const [editingIndex, setEditingIndex] = useState(null);
     const [editImageModal, seteditImageModal] = useState(false)
     const [overallseconds, setoverallSeconds] = useState(0);
-
+    const [cancelModal, setcancelModal] = useState(false)
     const webcamRef = useRef(null);
+    const webcamContainerRef = useRef(null);
     const mediaRecorderRef = useRef(null);
     const timerRef = useRef(null); // Timer reference to control the interval
 
@@ -267,12 +270,23 @@ const Videocapturing = () => {
     };
 
     const handleFullscreen = () => {
-        if (webcamRef.current) {
-            const element = webcamRef.current.video;
-            element.requestFullscreen?.();
+        if (!isFullscreen) {
+            webcamContainerRef.current.requestFullscreen();
+        } else {
+            document.exitFullscreen();
         }
-
     };
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener("fullscreenchange", handleFullscreenChange);
+        return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    }, []);
+
+
 
 
     const formatDateTime = (date) => {
@@ -304,6 +318,8 @@ const Videocapturing = () => {
         setEditingIndex(null);
     };
 
+
+
     return (
         <div>
             <Modal opened={editImageModal} onClose={seteditImageModal} centered withCloseButton={false} size={"55%"}>
@@ -318,6 +334,16 @@ const Videocapturing = () => {
                         />
                     </>
                 )}
+            </Modal>
+            <Modal opened={cancelModal} onClose={() => setcancelModal(false)} centered title={'Are you sure?'}>
+                You want to cancel capturing
+                <Flex justify={"end"} mt={"1rem"}>
+                    <Group>
+                        <Button variant="outline" color={"violet"} onClick={() => setcancelModal(false)}>No</Button>
+                        <Button variant="filled" color={"violet"} onClick={() => navigate("/allpatients")}>Yes</Button>
+                    </Group>
+
+                </Flex>
             </Modal>
             <Card withBorder m={"xl"} bg={"#EBEDF4"} radius={"1rem"}>
                 <Container fluid bg={"#FFFFFF"} p={"1rem"} m={"lg"} style={{ borderRadius: "1rem" }}>
@@ -347,7 +373,7 @@ const Videocapturing = () => {
                                 variant="light"
                                 color="red"
                                 radius={8}
-                                onClick={() => navigate("/allpatients")}
+                                onClick={() => setcancelModal(true)}
                             >
                                 Cancel capture
                             </Button>
@@ -415,7 +441,18 @@ const Videocapturing = () => {
                             <Flex justify="center" align="center" style={{ height: "100%" }} >
                                 <div style={{ position: "relative", width: "100%", height: "auto", display: "flex", justifyContent: "center" }}>
                                     {externalDeviceId ? (
-                                        <Flex justify={"center"}>
+                                        <Flex
+                                            ref={webcamContainerRef}
+                                            justify={"center"}
+                                            align={"center"}
+                                            style={{
+                                                position: "relative",
+                                                width: "100%",
+                                                height: "100%",
+                                                borderRadius: "15px",
+                                                overflow: "hidden"
+                                            }}
+                                        >
                                             <Webcam
                                                 ref={webcamRef}
                                                 audio={false}
@@ -426,20 +463,28 @@ const Videocapturing = () => {
                                                     borderRadius: "15px",
                                                 }}
                                             />
-                                            <MdFullscreen
+
+                                            {/* Fullscreen Button */}
+
+                                            <ActionIcon variant="transparent"
                                                 onClick={handleFullscreen}
                                                 style={{
                                                     position: "absolute",
                                                     top: "10px",
-                                                    right: "30px",
+                                                    right: "15px",
                                                     color: "white",
                                                     padding: "5px",
                                                     cursor: "pointer",
+                                                    zIndex: 2,
                                                 }}
-                                                size={40}
-                                            />
-                                            <div
+                                                size="xl"
+                                            >
+                                                {isFullscreen ? <MdFullscreenExit size={30} /> : <MdFullscreen size={30} />}
+                                            </ActionIcon>
 
+
+                                            {/* Capture & Play/Pause Buttons */}
+                                            <div
                                                 style={{
                                                     position: "absolute",
                                                     bottom: "20px",
@@ -455,7 +500,6 @@ const Videocapturing = () => {
                                                         </Text>
                                                     )}
                                                     <Flex gap={"md"}>
-
                                                         <ActionIcon
                                                             onClick={handleCapture}
                                                             style={{
@@ -467,8 +511,6 @@ const Videocapturing = () => {
                                                         >
                                                             <BsCameraFill size={"2.2rem"} />
                                                         </ActionIcon>
-
-
 
                                                         <ActionIcon
                                                             onClick={handleToggleRecording}
@@ -483,9 +525,10 @@ const Videocapturing = () => {
                                                         </ActionIcon>
                                                     </Flex>
                                                 </Flex>
-
                                             </div>
                                         </Flex>
+
+
                                     ) : (
                                         <Flex align={"center"} gap={10}>
                                             <Loader color="violet" />
