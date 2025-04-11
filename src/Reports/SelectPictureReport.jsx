@@ -1,5 +1,30 @@
-import { ActionIcon, Button, Card, Center, Container, Flex, Group, Image as MantineImage, Modal, Overlay, SimpleGrid, Space, Stack, Text, Textarea } from '@mantine/core'
 import React, { useEffect, useRef, useState } from 'react'
+import {
+    ActionIcon,
+    Button,
+    Card,
+    Container,
+    Flex,
+    Grid,
+    Group,
+    Image as MantineImage,
+    Loader,
+    Modal,
+    Notification,
+    Overlay,
+    SimpleGrid,
+    Space,
+    Text,
+    ScrollArea,
+    ColorInput,
+    Slider,
+    Menu,
+    Stack,
+    ColorSwatch,
+    useMantineTheme,
+    Center,
+    Textarea,
+} from "@mantine/core";
 import Vector from "../assets/Vector.png"
 import Pic from "../assets/intestine.png"
 import { MdOutlineEdit, MdOutlineChevronLeft } from 'react-icons/md'
@@ -7,11 +32,26 @@ import { useNavigate } from 'react-router-dom'
 import { RxCross2 } from 'react-icons/rx'
 import { TbCircleDashedPlus } from 'react-icons/tb'
 import { format } from 'date-fns'
+import { IconBrush, IconCrop, IconPalette, IconShape, IconSun } from "@tabler/icons-react";
+import { FiSave } from 'react-icons/fi';
+
 
 const ImageEditor = ({ imageSrc, onSave }) => {
     const canvasRef = useRef(null);
     const ctxRef = useRef(null);
+    const imageRef = useRef(null);
+    const [drawMode, setDrawMode] = useState("pen"); // "pen", "circle", "rectangle", "square", "triangle", "arrow"
+    const [shapeStart, setShapeStart] = useState(null);
+
     const [isDrawing, setIsDrawing] = useState(false);
+    const [penColor, setPenColor] = useState("black");
+    const [penSize, setPenSize] = useState(3);
+    const [brightness, setBrightness] = useState(100);
+
+    // Cropping states
+    const [isCropping, setIsCropping] = useState(false);
+    const [cropStart, setCropStart] = useState(null);
+    const [cropEnd, setCropEnd] = useState(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -23,57 +63,370 @@ const ImageEditor = ({ imageSrc, onSave }) => {
         image.onload = () => {
             canvas.width = image.width;
             canvas.height = image.height;
-            ctx.drawImage(image, 0, 0);
+            imageRef.current = image;
+            applyBrightness();
         };
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 3;
     }, [imageSrc]);
 
+    useEffect(() => {
+        if (imageRef.current) {
+            applyBrightness();
+        }
+    }, [brightness]);
+
     const startDrawing = (e) => {
-        ctxRef.current.beginPath();
-        ctxRef.current.moveTo(
-            e.nativeEvent.offsetX,
-            e.nativeEvent.offsetY
-        );
-        setIsDrawing(true);
+        const x = e.nativeEvent.offsetX;
+        const y = e.nativeEvent.offsetY;
+
+        if (isCropping) return;
+
+        if (drawMode === "pen") {
+            const ctx = ctxRef.current;
+            ctx.strokeStyle = penColor;
+            ctx.lineWidth = penSize;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            setIsDrawing(true);
+        } else {
+            setShapeStart({ x, y });
+        }
     };
+
+    function drawArrow(ctx, fromX, fromY, toX, toY) {
+        const headlen = 30;
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        const angle = Math.atan2(dy, dx);
+
+        ctx.beginPath();
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 5), toY - headlen * Math.sin(angle - Math.PI / 5));
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 5), toY - headlen * Math.sin(angle + Math.PI / 5));
+        ctx.stroke();
+    }
+
 
     const draw = (e) => {
-        if (!isDrawing) return;
-        ctxRef.current.lineTo(
-            e.nativeEvent.offsetX,
-            e.nativeEvent.offsetY
-        );
-        ctxRef.current.stroke();
+        if (isCropping || (drawMode !== "pen" && !shapeStart)) return;
+
+        const x = e.nativeEvent.offsetX;
+        const y = e.nativeEvent.offsetY;
+
+        const ctx = ctxRef.current;
+        if (drawMode === "pen" && isDrawing) {
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        } else if (shapeStart) {
+            applyBrightness(); // Redraw image before drawing preview
+            ctx.strokeStyle = penColor;
+            ctx.lineWidth = penSize;
+
+            const { x: startX, y: startY } = shapeStart;
+            const width = x - startX;
+            const height = y - startY;
+
+            ctx.beginPath();
+            switch (drawMode) {
+                case "rectangle":
+                    ctx.strokeRect(startX, startY, width, height);
+                    break;
+                case "square":
+                    const size = Math.min(Math.abs(width), Math.abs(height));
+                    ctx.strokeRect(startX, startY, Math.sign(width) * size + startX, Math.sign(height) * size + startY);
+                    break;
+                case "circle":
+                    ctx.ellipse(startX + width / 2, startY + height / 2, Math.abs(width / 2), Math.abs(height / 2), 0, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    break;
+                case "triangle":
+                    ctx.moveTo(startX + width / 2, startY);
+                    ctx.lineTo(startX, startY + height);
+                    ctx.lineTo(startX + width, startY + height);
+                    ctx.closePath();
+                    ctx.stroke();
+                    break;
+                case "arrow":
+                    drawArrow(ctx, startX, startY, x, y);
+                    break;
+            }
+        }
     };
 
-    const stopDrawing = () => {
-        ctxRef.current.closePath();
-        setIsDrawing(false);
+    const stopDrawing = (e) => {
+        if (drawMode === "pen") {
+            ctxRef.current.closePath();
+            setIsDrawing(false);
+        } else if (shapeStart) {
+            draw(e); // Final draw
+            setShapeStart(null);
+        }
+    };
+
+    const applyBrightness = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(imageRef.current, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] = data[i] * (brightness / 100);
+            data[i + 1] = data[i + 1] * (brightness / 100);
+            data[i + 2] = data[i + 2] * (brightness / 100);
+        }
+
+        ctx.putImageData(imageData, 0, 0);
     };
 
     const handleSave = () => {
-        canvasRef.current.toBlob((blob) => {
-            onSave(blob);
-        }, "image/png");
+        const editedImage = canvasRef.current.toDataURL("image/png");
+        onSave(editedImage);
     };
+
+    // ----------- CROP FUNCTIONALITY ------------
+    const startCrop = (e) => {
+        setIsCropping(true);
+        setCropStart({ x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY });
+    };
+
+    const drawCropRectangle = (e) => {
+        if (!isCropping || !cropStart) return;
+
+        const ctx = ctxRef.current;
+        const x = cropStart.x;
+        const y = cropStart.y;
+        const width = e.nativeEvent.offsetX - x;
+        const height = e.nativeEvent.offsetY - y;
+
+        setCropEnd({ x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY });
+
+        // Redraw the image with the overlay crop box
+        applyBrightness();
+
+        // Set dashed line
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]); // Dashed line (5px dash, 5px gap)
+
+        ctx.strokeRect(x, y, width, height);
+
+        // Reset line dash to solid for future drawings
+        ctx.setLineDash([]);
+    };
+
+
+    const endCrop = () => {
+        setIsCropping(false);
+    };
+
+    const applyCrop = () => {
+        if (!cropStart || !cropEnd) return;
+
+        let x = Math.min(cropStart.x, cropEnd.x);
+        let y = Math.min(cropStart.y, cropEnd.y);
+        let width = Math.abs(cropEnd.x - cropStart.x);
+        let height = Math.abs(cropEnd.y - cropStart.y);
+
+        if (width === 0 || height === 0) {
+            console.error("Invalid crop area. Please select a valid crop region.");
+            return;
+        }
+
+        const originalCanvas = canvasRef.current;
+        const originalCtx = originalCanvas.getContext("2d");
+
+        // Create an offscreen canvas to maintain original resolution
+        const offscreenCanvas = document.createElement("canvas");
+        offscreenCanvas.width = imageRef.current.width;
+        offscreenCanvas.height = imageRef.current.height;
+        const offscreenCtx = offscreenCanvas.getContext("2d");
+
+        // Draw the cropped part at its original resolution
+        offscreenCtx.drawImage(
+            originalCanvas,
+            x, y, width, height, // Source crop area
+            0, 0, imageRef.current.width, imageRef.current.height // Destination (scaling up to original size)
+        );
+
+        // Replace the original canvas content with the resized cropped image
+        originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+        originalCtx.drawImage(offscreenCanvas, 0, 0);
+
+        // Reset crop selection
+        setCropStart(null);
+        setCropEnd(null);
+    };
+
+    const theme = useMantineTheme();
+    const swatches = Object.keys(theme.colors).map((color) => (
+        <ColorSwatch key={color} color={theme.colors[color][6]} />
+    ));
 
 
     return (
         <div style={{ position: "relative", display: "inline-block" }}>
             <canvas
                 ref={canvasRef}
-                style={{ border: "1px solid black", cursor: "crosshair" }}
-                onMouseDown={startDrawing}
-                onMouseMove={draw}
-                onMouseUp={stopDrawing}
+                style={{ cursor: isCropping ? "crosshair" : "default", display: "block" }}
+                onMouseDown={isCropping ? startCrop : startDrawing}
+                onMouseMove={isCropping ? drawCropRectangle : draw}
+                onMouseUp={isCropping ? endCrop : stopDrawing}
                 onMouseLeave={stopDrawing}
             />
-            <div style={{ marginTop: "10px" }}>
-                <Button onClick={handleSave} color="violet" fullWidth>Save</Button>
+            <div style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                background: "rgba(30, 28, 28, 0.9)",
+                padding: "10px",
+                borderRadius: "8px",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                zIndex: 10
+            }}>
+
+                <Menu shadow="md" width={160} position="left-start" transitionProps={{ transition: 'rotate-right', duration: 150 }}>
+                    <Menu.Target>
+                        <ActionIcon variant="transparent" size="lg">
+                            <IconShape size={20} style={{ color: '#ffffff' }} />
+                        </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                        <Menu.Label>Shapes</Menu.Label>
+                        <Stack p="xs" gap="xs">
+                            {["pen", "circle", "rectangle", "triangle", "arrow"].map((mode) => (
+                                <Button color="violet" key={mode} size="xs" variant={drawMode === mode ? "filled" : "light"} onClick={() => setDrawMode(mode)}>
+                                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                                </Button>
+                            ))}
+                        </Stack>
+                    </Menu.Dropdown>
+                </Menu>
+
+                <Menu shadow="md" width={200} position="left-start" transitionProps={{ transition: 'rotate-right', duration: 150 }}>
+                    <Menu.Target>
+                        <ActionIcon variant="transparent" size="lg">
+                            <IconPalette size={20} style={{ color: '#ffffff' }} />
+                        </ActionIcon>
+                    </Menu.Target>
+
+                    <Menu.Dropdown>
+                        <Menu.Label>Pen Color</Menu.Label>
+                        <div style={{ padding: '10px' }}>
+                            {/* <ColorInput
+                                value={penColor}
+                                onChange={setPenColor}
+
+                                format="hex"
+                                swatches={[
+                                    '#25262b', '#868e96', '#fa5252', '#e64980',
+                                    '#be4bdb', '#7950f2', '#4c6ef5', '#228be6',
+                                    '#15aabf', '#12b886', '#40c057', '#82c91e',
+                                    '#fab005', '#fd7e14'
+                                ]}
+                            /> */}
+                            <Group position="center" spacing="xs">
+                                {Object.keys(theme.colors).map((color) => {
+                                    const swatchColor = theme.colors[color][6];
+                                    return (
+                                        <ColorSwatch
+                                            key={color}
+                                            color={swatchColor}
+                                            onClick={() => setPenColor(swatchColor)}
+                                            style={{
+                                                cursor: 'pointer',
+                                                border: penColor === swatchColor ? '2px solid white' : 'none',
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </Group>
+
+                        </div>
+                    </Menu.Dropdown>
+                </Menu>
+                <Menu shadow="md" width={180} position="left-start" transitionProps={{ transition: 'rotate-right', duration: 150 }}>
+                    <Menu.Target>
+                        <ActionIcon variant="transparent" size="lg">
+                            <IconBrush size={20} style={{ color: '#ffffff' }} />
+                        </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                        <Menu.Label>Pen Size</Menu.Label>
+                        <div style={{ padding: '10px' }}>
+                            <Slider
+                                value={penSize}
+                                onChange={setPenSize}
+                                min={1}
+                                max={10}
+                                label="Pen Size"
+                            />
+                        </div>
+                    </Menu.Dropdown>
+                </Menu>
+
+                {/* Brightness Menu */}
+                <Menu shadow="md" width={180} position="left-start" transitionProps={{ transition: 'rotate-right', duration: 150 }}>
+                    <Menu.Target>
+                        <ActionIcon variant="transparent" size="lg">
+                            <IconSun size={20} style={{ color: '#ffffff' }} />
+                        </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                        <Menu.Label>Brightness</Menu.Label>
+                        <div style={{ padding: '10px' }}>
+                            <Slider
+                                value={brightness}
+                                onChange={setBrightness}
+                                min={50}
+                                max={150}
+                                label="Brightness"
+                            />
+                        </div>
+                    </Menu.Dropdown>
+                </Menu>
+
+                {/* Crop Menu */}
+                <Menu shadow="md" width={160} position="left-start" transitionProps={{ transition: 'rotate-right', duration: 150 }}>
+                    <Menu.Target >
+                        <ActionIcon variant="transparent" size="lg">
+                            <IconCrop size={20} style={{ color: '#ffffff' }} />
+                        </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                        {/* <Menu.Label>Application</Menu.Label> */}
+                        <Stack p="xs" gap="xs">
+                            <Button
+                                onClick={() => setIsCropping(!isCropping)}
+                                color="blue"
+                                size="xs"
+                            >
+                                {isCropping ? "Cancel Crop" : "Start Crop"}
+                            </Button>
+                            {cropStart && cropEnd && (
+                                <Button onClick={applyCrop} color="red" size="xs">
+                                    Apply Crop
+                                </Button>
+                            )}
+                        </Stack>
+                    </Menu.Dropdown>
+                </Menu>
+                {/* <Button onClick={handleSave} color="green">
+                    Save
+                </Button> */}
+
+                <ActionIcon variant="transparent" size="lg" onClick={handleSave}><FiSave size={20} style={{ color: '#ffffff' }} /></ActionIcon>
+
             </div>
         </div>
     );
+
 };
 
 const SelectPictureReport = () => {
@@ -109,18 +462,9 @@ const SelectPictureReport = () => {
         setvideoComments(JSON.parse(localStorage.getItem('videocomments')) || []);
     }, []);
 
-    const handleSaveImage = (editedImageBlob) => {
+    const handleSaveImage = (editedImage) => {
         const updatedImages = [...capturedImages];
-
-        // Release old object URL if any
-        if (updatedImages[editingIndex] && updatedImages[editingIndex].startsWith("blob:")) {
-            URL.revokeObjectURL(updatedImages[editingIndex]);
-        }
-
-        // Create a new object URL and store it
-        const editedImageURL = URL.createObjectURL(editedImageBlob);
-        updatedImages[editingIndex] = editedImageURL;
-
+        updatedImages[editingIndex] = editedImage;
         setCapturedImages(updatedImages);
         localStorage.setItem("capturedImages", JSON.stringify(updatedImages));
         setEditingIndex(null);
@@ -208,7 +552,7 @@ const SelectPictureReport = () => {
 
     return (
         <div>
-            <Modal opened={editImageModal} onClose={seteditImageModal} centered withCloseButton={false} size={"55%"}>
+            <Modal opened={editImageModal} onClose={seteditImageModal} centered withCloseButton={false} size={"auto"}>
                 {editingIndex !== null && (
                     <>
                         <ImageEditor
