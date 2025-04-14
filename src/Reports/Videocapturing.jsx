@@ -22,13 +22,14 @@ import {
     Stack,
     ColorSwatch,
     useMantineTheme,
+    Tooltip,
 } from "@mantine/core";
 import Vector from "../assets/Vector.png";
 import Pic from "../assets/intestine.png";
 import Webcam from "react-webcam";
 
 import { MdFullscreen, MdFullscreenExit, MdOutlineEdit } from "react-icons/md";
-import { RxCross2 } from "react-icons/rx";
+import { RxCross2, RxReset } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
 import { BsCameraFill } from "react-icons/bs";
 import { IoPlay } from "react-icons/io5";
@@ -43,6 +44,7 @@ const ImageEditor = ({ imageSrc, onSave }) => {
     const imageRef = useRef(null);
     const [drawMode, setDrawMode] = useState("pen"); // "pen", "circle", "rectangle", "square", "triangle", "arrow"
     const [shapeStart, setShapeStart] = useState(null);
+    const [shapes, setShapes] = useState([]);
 
     const [isDrawing, setIsDrawing] = useState(false);
     const [penColor, setPenColor] = useState("black");
@@ -93,8 +95,45 @@ const ImageEditor = ({ imageSrc, onSave }) => {
         }
     };
 
+
+    const drawShape = (ctx, type, start, end, color, size) => {
+        const { x: startX, y: startY } = start;
+        const { x, y } = end;
+        const width = x - startX;
+        const height = y - startY;
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = size;
+        ctx.beginPath();
+
+        switch (type) {
+            case "rectangle":
+                ctx.strokeRect(startX, startY, width, height);
+                break;
+            case "square":
+                const side = Math.min(Math.abs(width), Math.abs(height));
+                ctx.strokeRect(startX, startY, Math.sign(width) * side + startX, Math.sign(height) * side + startY);
+                break;
+            case "circle":
+                ctx.ellipse(startX + width / 2, startY + height / 2, Math.abs(width / 2), Math.abs(height / 2), 0, 0, 2 * Math.PI);
+                ctx.stroke();
+                break;
+            case "triangle":
+                ctx.moveTo(startX + width / 2, startY);
+                ctx.lineTo(startX, startY + height);
+                ctx.lineTo(startX + width, startY + height);
+                ctx.closePath();
+                ctx.stroke();
+                break;
+            case "arrow":
+                drawArrow(ctx, startX, startY, x, y);
+                break;
+        }
+    };
+
+
     function drawArrow(ctx, fromX, fromY, toX, toY) {
-        const headlen = 30;
+        const headlen = 10 + penSize * 2;
         const dx = toX - fromX;
         const dy = toY - fromY;
         const angle = Math.atan2(dy, dx);
@@ -119,39 +158,11 @@ const ImageEditor = ({ imageSrc, onSave }) => {
         if (drawMode === "pen" && isDrawing) {
             ctx.lineTo(x, y);
             ctx.stroke();
-        } else if (shapeStart) {
-            applyBrightness(); // Redraw image before drawing preview
-            ctx.strokeStyle = penColor;
-            ctx.lineWidth = penSize;
-
-            const { x: startX, y: startY } = shapeStart;
-            const width = x - startX;
-            const height = y - startY;
-
-            ctx.beginPath();
-            switch (drawMode) {
-                case "rectangle":
-                    ctx.strokeRect(startX, startY, width, height);
-                    break;
-                case "square":
-                    const size = Math.min(Math.abs(width), Math.abs(height));
-                    ctx.strokeRect(startX, startY, Math.sign(width) * size + startX, Math.sign(height) * size + startY);
-                    break;
-                case "circle":
-                    ctx.ellipse(startX + width / 2, startY + height / 2, Math.abs(width / 2), Math.abs(height / 2), 0, 0, 2 * Math.PI);
-                    ctx.stroke();
-                    break;
-                case "triangle":
-                    ctx.moveTo(startX + width / 2, startY);
-                    ctx.lineTo(startX, startY + height);
-                    ctx.lineTo(startX + width, startY + height);
-                    ctx.closePath();
-                    ctx.stroke();
-                    break;
-                case "arrow":
-                    drawArrow(ctx, startX, startY, x, y);
-                    break;
-            }
+        }
+        else if (shapeStart) {
+            applyBrightness(); // Redraw image and all stored shapes
+            const previewEnd = { x, y };
+            drawShape(ctx, drawMode, shapeStart, previewEnd, penColor, penSize);
         }
     };
 
@@ -160,10 +171,19 @@ const ImageEditor = ({ imageSrc, onSave }) => {
             ctxRef.current.closePath();
             setIsDrawing(false);
         } else if (shapeStart) {
-            draw(e); // Final draw
+            const x = e.nativeEvent.offsetX;
+            const y = e.nativeEvent.offsetY;
+            setShapes((prev) => [...prev, {
+                type: drawMode,
+                start: shapeStart,
+                end: { x, y },
+                color: penColor,
+                size: penSize,
+            }]);
             setShapeStart(null);
         }
     };
+
 
     const applyBrightness = () => {
         const canvas = canvasRef.current;
@@ -181,7 +201,13 @@ const ImageEditor = ({ imageSrc, onSave }) => {
         }
 
         ctx.putImageData(imageData, 0, 0);
+
+        // After applying brightness, re-draw all saved shapes
+        shapes.forEach(({ type, start, end, color, size }) => {
+            drawShape(ctx, type, start, end, color, size);
+        });
     };
+
 
     const handleSave = () => {
         const editedImage = canvasRef.current.toDataURL("image/png");
@@ -423,7 +449,11 @@ const ImageEditor = ({ imageSrc, onSave }) => {
                 </Button> */}
 
                 <ActionIcon variant="transparent" size="lg" onClick={handleSave}><FiSave size={20} style={{ color: '#ffffff' }} /></ActionIcon>
-
+                <Tooltip label='Reset'>
+                    <ActionIcon onClick={applyBrightness} variant="transparent" size="lg">
+                        <RxReset size={20} style={{ color: '#ffffff' }} />
+                    </ActionIcon>
+                </Tooltip>
             </div>
         </div>
     );
