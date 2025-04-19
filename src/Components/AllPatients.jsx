@@ -25,6 +25,7 @@ import { MdModeEdit, MdOutlineEmail } from "react-icons/md";
 const AllPatients = () => {
   const [deleteModal, setdeleteModal] = useState(false)
   const [data, setData] = useState([]);
+
   // const data = [
   //   {
   //     "id": 9,
@@ -62,7 +63,7 @@ const AllPatients = () => {
 
   // ]
 
-  // const data = []
+
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState({});

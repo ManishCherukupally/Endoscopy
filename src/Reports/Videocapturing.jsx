@@ -39,6 +39,9 @@ import { IconBrush, IconCrop, IconPalette, IconShape, IconSun } from "@tabler/ic
 import { FiSave } from "react-icons/fi";
 
 const ImageEditor = ({ imageSrc, onSave }) => {
+    const [penPaths, setPenPaths] = useState([]);
+    const currentPath = useRef([]);
+
     const canvasRef = useRef(null);
     const ctxRef = useRef(null);
     const imageRef = useRef(null);
@@ -89,11 +92,13 @@ const ImageEditor = ({ imageSrc, onSave }) => {
             ctx.lineWidth = penSize;
             ctx.beginPath();
             ctx.moveTo(x, y);
+            currentPath.current = [{ x, y }]; // Start recording path
             setIsDrawing(true);
         } else {
             setShapeStart({ x, y });
         }
     };
+
 
 
     const drawShape = (ctx, type, start, end, color, size) => {
@@ -153,22 +158,28 @@ const ImageEditor = ({ imageSrc, onSave }) => {
 
         const x = e.nativeEvent.offsetX;
         const y = e.nativeEvent.offsetY;
-
         const ctx = ctxRef.current;
+
         if (drawMode === "pen" && isDrawing) {
             ctx.lineTo(x, y);
             ctx.stroke();
-        }
-        else if (shapeStart) {
-            applyBrightness(); // Redraw image and all stored shapes
+            currentPath.current.push({ x, y }); // Keep recording
+        } else if (shapeStart) {
+            applyBrightness();
             const previewEnd = { x, y };
             drawShape(ctx, drawMode, shapeStart, previewEnd, penColor, penSize);
         }
     };
 
     const stopDrawing = (e) => {
-        if (drawMode === "pen") {
+        if (drawMode === "pen" && isDrawing) {
             ctxRef.current.closePath();
+            setPenPaths((prev) => [...prev, {
+                points: currentPath.current,
+                color: penColor,
+                size: penSize
+            }]);
+            currentPath.current = [];
             setIsDrawing(false);
         } else if (shapeStart) {
             const x = e.nativeEvent.offsetX;
@@ -183,6 +194,20 @@ const ImageEditor = ({ imageSrc, onSave }) => {
             setShapeStart(null);
         }
     };
+
+
+    const drawPenPath = (ctx, path, color, size) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = size;
+        ctx.beginPath();
+        for (let i = 0; i < path.length; i++) {
+            const { x, y } = path[i];
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+    };
+
 
 
     const applyBrightness = () => {
@@ -202,10 +227,16 @@ const ImageEditor = ({ imageSrc, onSave }) => {
 
         ctx.putImageData(imageData, 0, 0);
 
-        // After applying brightness, re-draw all saved shapes
+        // Draw all saved shapes
         shapes.forEach(({ type, start, end, color, size }) => {
             drawShape(ctx, type, start, end, color, size);
         });
+
+        // Draw all saved pen paths
+        penPaths.forEach(({ points, color, size }) => {
+            drawPenPath(ctx, points, color, size);
+        });
+
     };
 
 
@@ -292,6 +323,33 @@ const ImageEditor = ({ imageSrc, onSave }) => {
     const swatches = Object.keys(theme.colors).map((color) => (
         <ColorSwatch key={color} color={theme.colors[color][6]} />
     ));
+    const handleReset = () => {
+        // Clear drawings and shapes
+        setPenPaths([]);
+        setShapes([]);
+        setIsDrawing(false);
+        setShapeStart(null);
+
+        // Reset brightness
+        setBrightness(100);
+
+        // Reset crop
+        setCropStart(null);
+        setCropEnd(null);
+        setIsCropping(false);
+
+        // Re-draw original image at full size
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+        const image = imageRef.current;
+
+        if (image) {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(image, 0, 0);
+        }
+    };
 
 
     return (
@@ -450,7 +508,7 @@ const ImageEditor = ({ imageSrc, onSave }) => {
 
                 <ActionIcon variant="transparent" size="lg" onClick={handleSave}><FiSave size={20} style={{ color: '#ffffff' }} /></ActionIcon>
                 <Tooltip label='Reset'>
-                    <ActionIcon onClick={applyBrightness} variant="transparent" size="lg">
+                    <ActionIcon onClick={handleReset} variant="transparent" size="lg">
                         <RxReset size={20} style={{ color: '#ffffff' }} />
                     </ActionIcon>
                 </Tooltip>

@@ -55,6 +55,16 @@ const EditUser = () => {
             Speciality: userData.Speciality,
             template: '',
         },
+        validate: {
+            first_name: (value) => (value.trim().length === 0 ? 'Your full name is required' : null),
+            username: (value) => (value.trim().length === 0 ? 'Username is required' : null),
+            email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email format'),
+            // password: '',
+            // cnfpassword: '',
+            mobile_no: (value) =>
+                value && /^[6-9]\d{9}$/.test(value) ? null : 'Phone number must be a valid 10-digit number starting with 6-9',
+            Speciality: (value) => (value.trim().length === 0 ? 'Speciality is required' : null),
+        },
         transformValues: (values) => (
             {
                 user_id: userData.user_id,
