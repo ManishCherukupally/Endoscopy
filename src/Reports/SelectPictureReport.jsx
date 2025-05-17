@@ -539,6 +539,9 @@ const SelectPictureReport = () => {
     const [editImageModal, seteditImageModal] = useState(false)
     const selectedPatient = JSON.parse(localStorage.getItem('selectedpatient'));
 
+    const [deleteModal, setdeleteModal] = useState(false)
+    const [deleteVideoModal, setdeleteVideoModal] = useState(false)
+
     useEffect(() => {
         const savedImages = JSON.parse(localStorage.getItem('capturedImages')) || [];
         setCapturedImages(savedImages);
@@ -592,6 +595,10 @@ const SelectPictureReport = () => {
         if (hoverCard === index) {
             setHoverCard(null);
         }
+
+        setTimeout(() => {
+            setdeleteModal(false)
+        }, 300);
     };
 
     const handleDeleteVideo = (index) => {
@@ -603,7 +610,9 @@ const SelectPictureReport = () => {
 
         setCapturedVideos(updatedVideos);
         setvideoComments(updatedComments);
-
+        setTimeout(() => {
+            setdeleteVideoModal(false)
+        }, 300);
 
     };
 
@@ -640,6 +649,27 @@ const SelectPictureReport = () => {
 
     return (
         <div>
+            <Modal opened={deleteModal} onClose={() => setdeleteModal(false)} centered title={'Are you sure?'}>
+                You want to delete this image
+                <Flex justify={"end"} mt={"1rem"}>
+                    <Group>
+                        <Button variant="outline" color={"violet"} onClick={() => setdeleteModal(false)}>No</Button>
+                        <Button variant="filled" color={"violet"} onClick={() => handleDeleteImage(currentImageIndex)}>Yes</Button>
+                    </Group>
+
+                </Flex>
+            </Modal>
+            <Modal opened={deleteVideoModal} onClose={() => setdeleteVideoModal(false)} centered title={'Are you sure?'}>
+                You want to delete this video
+                <Flex justify={"end"} mt={"1rem"}>
+                    <Group>
+                        <Button variant="outline" color={"violet"} onClick={() => setdeleteVideoModal(false)}>No</Button>
+                        <Button variant="filled" color={"violet"} onClick={() => handleDeleteVideo(currentVideoIndex)}>Yes</Button>
+                    </Group>
+
+                </Flex>
+            </Modal>
+
             <Modal opened={editImageModal} onClose={seteditImageModal} centered withCloseButton={false} size={"auto"}>
                 {editingIndex !== null && (
                     <>
@@ -739,6 +769,8 @@ const SelectPictureReport = () => {
                                         onMouseLeave={() => setHovervideoCard(null)}
                                     >
                                         <video
+                                            // disablePictureInPicture={true}
+                                            controlsList="nodownload"
                                             src={video.videoUrl}
                                             controls
                                             style={{ width: "100%", height: "auto", borderRadius: "12px" }}
@@ -807,7 +839,11 @@ const SelectPictureReport = () => {
                                                 setCurrentVideoIndex(index)
                                                 setvideocommentModal(true)
                                             }}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                            <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteVideo(index)}><RxCross2 color='red' size={23} /></ActionIcon>
+                                            <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"}
+                                                onClick={() => {
+                                                    setCurrentVideoIndex(index)
+                                                    setdeleteVideoModal(true)
+                                                }}><RxCross2 color='red' size={23} /></ActionIcon>
                                         </div>
 
                                         {/* <div style={{
@@ -861,7 +897,11 @@ const SelectPictureReport = () => {
                                                     setEditingIndex(index)
                                                     seteditImageModal(true)
                                                 }}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                                <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
+                                                <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"}
+                                                    onClick={() => {
+                                                        setCurrentImageIndex(index)
+                                                        setdeleteModal(true)
+                                                    }}><RxCross2 color='red' size={23} /></ActionIcon>
                                             </div>
 
                                             <Center h={'auto'} mx="auto">

@@ -533,6 +533,10 @@ const ExportReport = () => {
     const [exportbutton, setExportbutton] = useState(true)
     const [editingIndex, setEditingIndex] = useState(null);
     const [editImageModal, seteditImageModal] = useState(false)
+    const [deleteModal, setdeleteModal] = useState(false)
+    const [deleteIndex, setdeleteIndex] = useState(null)
+    const [preview, setpreview] = useState(false)
+    const [deleteVideoModal, setdeleteVideoModal] = useState(false)
     // console.log(value);
 
     // const [fileModal, setfileModal] = useState(false)
@@ -571,6 +575,21 @@ const ExportReport = () => {
 
     }, [])
 
+    useEffect(() => {
+        if (capturedImages.length > 0) {
+            const defaultSelected = capturedImages.slice(0, 5);
+            setSelectedImages(defaultSelected);
+        }
+    }, [capturedImages]);
+
+
+    useEffect(() => {
+        const hasRemarks = remarksText.trim().length > 0;
+        const hasMedication = medicationText.trim().length > 0;
+
+        setpreview(hasRemarks && hasMedication);
+    }, [remarksText, medicationText]);
+
     const handleSaveImage = (editedImage) => {
         const updatedImages = [...capturedImages];
         updatedImages[editingIndex] = editedImage;
@@ -592,14 +611,18 @@ const ExportReport = () => {
     };
 
     const toggleSelectMode = () => {
-        // When entering select mode, ensure the previously selected images remain checked
         if (selectImage) {
-            // Clear the selected images from the local storage and state
-            setSelectedImages([]);
-            localStorage.setItem('selectedImages', JSON.stringify([]));
+            // Exiting select mode: reset to first 5 images only
+            const defaultSelected = capturedImages.slice(0, 5);
+            setSelectedImages(defaultSelected);
+            localStorage.setItem('selectedImages', JSON.stringify(defaultSelected));
+        } else {
+            // Entering select mode: don't change selection
+            localStorage.setItem('selectedImages', JSON.stringify(selectedImages));
         }
         setselectImage(!selectImage);
     };
+
 
     const toggleVideoSelectMode = () => {
         // When entering select mode, ensure the previously selected images remain checked
@@ -625,6 +648,9 @@ const ExportReport = () => {
         // Update state
         setCapturedImages(updatedImages);
         setComments(updatedComments);
+        setTimeout(() => {
+            setdeleteModal(false)
+        }, 300);
 
     };
 
@@ -632,6 +658,9 @@ const ExportReport = () => {
         const updatedVideos = capturedVideos.filter((_, i) => i !== index);
         localStorage.setItem('capturedVideos', JSON.stringify(updatedVideos));
         setCapturedVideos(updatedVideos);
+        setTimeout(() => {
+            setdeleteVideoModal(false)
+        }, 300);
     };
 
     const handleDownloadPDF = async (dateTime) => {
@@ -754,6 +783,18 @@ const ExportReport = () => {
 
     return (
         <div>
+
+            <Modal opened={deleteModal} onClose={() => setdeleteModal(false)} centered title={'Are you sure?'}>
+                You want to delete this image
+                <Flex justify={"end"} mt={"1rem"}>
+                    <Group>
+                        <Button variant="outline" color={"violet"} onClick={() => setdeleteModal(false)}>No</Button>
+                        <Button variant="filled" color={"violet"} onClick={() => handleDeleteImage(deleteIndex)}>Yes</Button>
+                    </Group>
+
+                </Flex>
+            </Modal>
+
             <Modal opened={editImageModal} onClose={seteditImageModal} centered withCloseButton={false} size={"auto"}>
                 {editingIndex !== null && (
                     <>
@@ -797,7 +838,7 @@ const ExportReport = () => {
                             {/* <div style={{ border: "1px solid black", borderRadius: 8, padding: "1rem" }}>
 
                         </div> */}
-                            <Button leftIcon={<IoPlayCircleOutline size={"1.2rem"} />} variant='light' color="violet" radius={8} h={44}
+                            <Button leftIcon={<IoPlayCircleOutline size={"1.2rem"} />} variant='light' color="violet" radius={8} h={44} disabled={!preview}
                                 onClick={() => setReportModal(true)}
                             >Preview</Button>
                             <ActionIcon variant='outline' disabled={exportbutton} radius={8} h={44} w={50} size={"lg"} c={"black"}
@@ -884,7 +925,7 @@ const ExportReport = () => {
                     <Space h={"1rem"} />
 
                     <Textarea placeholder='Write your remarks'
-                        label="Diagnostic Details (Optional)"
+                        label="Diagnostic Details "
                         minRows={3}
                         radius={8}
                         value={remarksText}
@@ -893,7 +934,7 @@ const ExportReport = () => {
                     <Space h={"1rem"} />
 
                     <Textarea placeholder='Write medication'
-                        label="Medication (Optional)"
+                        label="Medication "
                         minRows={3}
                         radius={8}
                         value={medicationText}
@@ -1005,7 +1046,12 @@ const ExportReport = () => {
                                                 setEditingIndex(index)
                                                 seteditImageModal(true)
                                             }}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                            <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteImage(index)}><RxCross2 color='red' size={23} /></ActionIcon>
+
+                                            <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} right={"1rem"}
+                                                onClick={() => {
+                                                    setdeleteIndex(index)
+                                                    setdeleteModal(true)
+                                                }}><RxCross2 color='red' size={23} /></ActionIcon>
                                         </div>
                                     </Overlay>
                                 )}

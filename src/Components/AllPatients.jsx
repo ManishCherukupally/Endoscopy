@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Table, Image, Text, Group, TextInput, Button, Menu, ActionIcon, Avatar, Modal, Select, Flex, Space } from "@mantine/core";
+import { Card, Table, Image, Text, Group, TextInput, Button, Menu, ActionIcon, Avatar, Modal, Select, Flex, Space, Tooltip } from "@mantine/core";
 import Vector from "../assets/Vector.jpg";
 import Img2 from "../assets/Img2.jpg";
 import Img3 from "../assets/Component 13.jpg";
@@ -25,6 +25,8 @@ import { MdModeEdit, MdOutlineEmail } from "react-icons/md";
 const AllPatients = () => {
   const [deleteModal, setdeleteModal] = useState(false)
   const [data, setData] = useState([]);
+  const [loaderVisible, setLoaderVisible] = useState(false);
+  const navigate = useNavigate()
 
   // const data = [
   //   {
@@ -85,7 +87,7 @@ const AllPatients = () => {
 
 
   useEffect(() => {
-    fetchPatients();
+    fetchPatients()
     // localStorage.clear()
     localStorage.removeItem('capturedImages');
     localStorage.removeItem('capturedVideos');
@@ -97,7 +99,7 @@ const AllPatients = () => {
     const imageFromStorage = localStorage.getItem("userdp");
     setUploadedImage(imageFromStorage);
 
-  }, [data]);
+  }, [loaderVisible]);
 
 
   const fetchPatients = async () => {
@@ -134,6 +136,7 @@ const AllPatients = () => {
   };
 
   const handleDelete = async () => {
+    setLoaderVisible(true)
     const selectedIds = Object.keys(selectedRows).filter((id) => selectedRows[id]);
 
     if (selectedIds.length === 0) {
@@ -159,12 +162,21 @@ const AllPatients = () => {
       const updatedData = data.filter((item) => !selectedIds.includes(String(item.id)));
       setSelectedRows({});
       setData(updatedData);
-      setdeleteModal(false)
+
+      setTimeout(() => {
+        setdeleteModal(false)
+        setLoaderVisible(false)
+      }, 1000);
+
     } catch (error) {
       console.error("Error deleting patients:", error);
+      setTimeout(() => {
+        setdeleteModal(false)
+        setLoaderVisible(false)
+      }, 1000);
     }
   };
-  const navigate = useNavigate()
+
 
   const Logout = async () => {
     try {
@@ -219,7 +231,7 @@ const AllPatients = () => {
               <Flex justify={"end"} mt={"1rem"}>
                 <Group>
                   <Button variant="outline" color={"violet"} onClick={() => setdeleteModal(false)}>No</Button>
-                  <Button variant="filled" color={"violet"} onClick={handleDelete}>Yes</Button>
+                  <Button loading={loaderVisible} variant="filled" color={"violet"} onClick={handleDelete}>Yes</Button>
                 </Group>
 
               </Flex>
@@ -308,7 +320,7 @@ const AllPatients = () => {
 
                             <Menu.Item icon={< FaRegFileAlt size={20} style={{ backgroundColor: '#EBEDF4', borderRadius: '50%', padding: '5px' }} />}
                               onClick={() => navigate("/headersetting")}
-                            >Header Setting</Menu.Item>
+                            >Report Setting</Menu.Item>
                             <Menu.Divider />
                             <Button variant="light" color="red" fullWidth mt={'1rem'} mb={'1rem'}
                               type="submit"
@@ -506,10 +518,19 @@ const AllPatients = () => {
                                 }
                               }}>{formatDateTime(item.updated_at)}</span>
 
-                              <Menu shadow="md" width={"auto"} offset={8} withArrow arrowPosition="center"
-                                radius={10} position="bottom-end">
-                                <Menu.Target>
-                                  {/* <span
+
+                              <Tooltip label={'Edit'}>
+                                <ActionIcon variant="light" onClick={() => {
+                                  const patientData = JSON.stringify(item)
+                                  window.localStorage.setItem('selectedpatient', patientData)
+                                  navigate("/editpatient")
+                                }}><MdModeEdit /></ActionIcon>
+                              </Tooltip>
+
+                              {/* <Menu shadow="md" width={"auto"} offset={8} withArrow arrowPosition="center"
+                            radius={10} position="bottom-end">
+                            <Menu.Target>
+                              <span
                             style={{
                               cursor: "pointer",
                               fontSize: "18px",
@@ -518,19 +539,22 @@ const AllPatients = () => {
                             }}
                           >
                             ⋮
-                          </span> */}
-                                  <ActionIcon variant="light"><MdModeEdit /></ActionIcon>
-                                </Menu.Target>
-                                <Menu.Dropdown bg={"#EBEDF4"}>
-                                  <Menu.Item onClick={() => {
-                                    const patientData = JSON.stringify(item)
-                                    window.localStorage.setItem('selectedpatient', patientData)
-                                    navigate("/editpatient")
-                                  }}>
-                                    Edit
-                                  </Menu.Item>
-                                </Menu.Dropdown>
-                              </Menu>
+                          </span>
+                              <ActionIcon variant="light" onClick={() => {
+                                const patientData = JSON.stringify(item)
+                                window.localStorage.setItem('selectedpatient', patientData)
+                                navigate("/editpatient")  }}><MdModeEdit /></ActionIcon>
+                            </Menu.Target>
+                            <Menu.Dropdown bg={"#EBEDF4"}>
+                              <Menu.Item onClick={() => {
+                                const patientData = JSON.stringify(item)
+                                window.localStorage.setItem('selectedpatient', patientData)
+                                navigate("/editpatient")
+                              }}>
+                                Edit
+                              </Menu.Item>
+                            </Menu.Dropdown>
+                          </Menu> */}
 
 
                               <input

@@ -338,8 +338,8 @@ const Login = () => {
           <form onSubmit={submithandler}>
             <div className="userpass">
               <TextInput required
-                label="Email"
-                placeholder="Email"
+                label="Email / Username"
+                placeholder="Email / Username"
                 {...form.getInputProps('username')}
                 size="md"
                 radius="md"

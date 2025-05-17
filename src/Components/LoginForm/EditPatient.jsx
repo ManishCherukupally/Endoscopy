@@ -1,4 +1,4 @@
-import { Button, Card, NumberInput, Select, TextInput } from '@mantine/core'
+import { Button, Card, NumberInput, Select, Textarea, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import React, { useEffect, useState } from 'react'
 import { FaChevronLeft } from 'react-icons/fa'
@@ -40,8 +40,21 @@ const EditPatient = () => {
             procedure: '',
             mobile: '',
             patient_email: '',
-            referred: ''
+            referred: '',
+            address: ''
         },
+        validate: {
+            patient_name: (value) => (value.length < 3 ? 'First name must be at least 3 characters' : null),
+            age: (value) => (value && value > 0 ? null : 'Enter a valid age'),
+            patient_email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid Email'),
+            mobile: (value) => (value && value.length === 10 ? null : 'Phone number must be a valid 10-digit number'),
+            referred: (value) => (value.trim().length === 0 ? 'Enter referred name' : null),
+            gender: (value) => (value.trim().length === 0 ? 'Select gender' : null),
+            procedure: (value) => (value.trim().length === 0 ? 'Select procedure' : null),
+            address: (value) => (value.length === 0 ? "Please enter patients's address" : null)
+
+        },
+
         transformValues: (values) => ({
             patient_id: editPatient.id,
             patient_name: `${values.patient_name}`,
@@ -50,7 +63,8 @@ const EditPatient = () => {
             procedure: `${values.procedure}`,
             mobile: `${values.mobile}`,
             patient_email: `${values.patient_email}`,
-            referred: `${values.referred}`
+            referred: `${values.referred}`,
+            address: `${values.address}`,
         })
     })
 
@@ -60,10 +74,11 @@ const EditPatient = () => {
             patient_name: editPatient.patient_name,
             age: editPatient.age,
             gender: editPatient.gender,
-            procedure: editPatient.procedure,
+            // procedure: editPatient.procedure,
             mobile: editPatient.mobile,
             patient_email: editPatient.patient_email,
-            referred: editPatient.referred
+            referred: editPatient.referred,
+            address: editPatient.address
         })
     }, [])
 
@@ -137,7 +152,14 @@ const EditPatient = () => {
                                     {...form.getInputProps('gender')}
                                 />
 
-                                <Select
+
+                                <Textarea label='Address'
+                                    radius='md'
+                                    mt='md'
+                                    placeholder='Enter Address'
+                                    {...form.getInputProps('address')}
+                                />
+                                {/* <Select
                                     label="Procedure"
                                     placeholder='Select Procedure'
                                     data={[
@@ -149,7 +171,7 @@ const EditPatient = () => {
                                     radius='md'
                                     mt='md'
                                     {...form.getInputProps('procedure')}
-                                />
+                                /> */}
 
                                 <TextInput
                                     placeholder="Patient Mobile Number"

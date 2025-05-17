@@ -558,7 +558,7 @@
 
 import React, { useState } from 'react';
 import { useForm } from '@mantine/form';
-import { TextInput, Button, Card, Select, NumberInput } from '@mantine/core';
+import { TextInput, Button, Card, Select, NumberInput, Textarea } from '@mantine/core';
 import { MdOutlineEmail } from "react-icons/md";
 import { FaChevronLeft } from "react-icons/fa6";
 import { FiVideo } from "react-icons/fi";
@@ -574,7 +574,8 @@ const PatientInfo = () => {
       mobile: "",
       referred: "",
       gender: '',
-      procedure: ''
+      procedure: '',
+      address: ''
     },
     validate: {
       patient_name: (value) => (value.length < 3 ? 'First name must be at least 3 characters' : null),
@@ -583,7 +584,8 @@ const PatientInfo = () => {
       mobile: (value) => (value && value.length === 10 ? null : 'Phone number must be a valid 10-digit number'),
       referred: (value) => (value.trim().length === 0 ? 'Enter referred name' : null),
       gender: (value) => (value.trim().length === 0 ? 'Select gender' : null),
-      procedure: (value) => (value.trim().length === 0 ? 'Select procedure' : null)
+      procedure: (value) => (value.trim().length === 0 ? 'Select procedure' : null),
+      address: (value) => (value.length === 0 ? "Please enter patients's address" : null)
     }
   });
 
@@ -614,7 +616,7 @@ const PatientInfo = () => {
           gender: form.values.gender,
           procedure: form.values.procedure,
           referred: form.values.referred,
-
+          address: form.values.address
         },
         {
           headers: { 'Content-Type': 'application/json' }
@@ -656,7 +658,7 @@ const PatientInfo = () => {
                   size='md'
                   radius='md'
                   {...form.getInputProps('patient_name')}
-                  withAsterisk
+
                 />
                 <NumberInput
                   defaultValue={0}
@@ -667,7 +669,7 @@ const PatientInfo = () => {
                 />
                 <Select
                   label="Sex"
-                  placeholder="Select"
+                  placeholder="Select Gender"
                   data={[
                     { value: 'male', label: 'Male' },
                     { value: 'female', label: 'Female' },
@@ -678,7 +680,14 @@ const PatientInfo = () => {
                   mt='md'
                   {...form.getInputProps('gender')}
                 />
-                <Select
+
+                <Textarea label='Address'
+                  radius='md'
+                  mt='md'
+                  placeholder='Enter Address'
+                  {...form.getInputProps('address')}
+                />
+                {/* <Select
                   label="Procedure"
                   placeholder='Select Procedure'
                   data={[
@@ -690,7 +699,7 @@ const PatientInfo = () => {
                   radius='md'
                   mt='md'
                   {...form.getInputProps('procedure')}
-                />
+                /> */}
                 <TextInput
                   placeholder="Patient Mobile Number"
                   label="Patient Mobile Number"

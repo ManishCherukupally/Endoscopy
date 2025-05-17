@@ -37,6 +37,7 @@ import { FaPause } from "react-icons/fa6";
 import { format } from "date-fns";
 import { IconBrush, IconCrop, IconPalette, IconShape, IconSun } from "@tabler/icons-react";
 import { FiSave } from "react-icons/fi";
+import { FaStop, FaVideo } from "react-icons/fa";
 
 const ImageEditor = ({ imageSrc, onSave }) => {
     const [penPaths, setPenPaths] = useState([]);
@@ -524,6 +525,8 @@ const Videocapturing = () => {
     const navigate = useNavigate();
     const [externalDeviceId, setExternalDeviceId] = useState("");
     const [capturedImages, setCapturedImages] = useState([]);
+    const [recordingState, setRecordingState] = useState("idle"); // "idle", "recording", "paused"
+
     const [recordedChunks, setRecordedChunks] = useState([]);
     const [isRecording, setIsRecording] = useState(false); // New state to track recording
     const [seconds, setSeconds] = useState(0);
@@ -535,6 +538,10 @@ const Videocapturing = () => {
     const [editImageModal, seteditImageModal] = useState(false)
     const [overallseconds, setoverallSeconds] = useState(0);
     const [cancelModal, setcancelModal] = useState(false)
+    const [deleteIndex, setdeleteIndex] = useState(null)
+    const [deleteVideoIndex, setdeleteVideoIndex] = useState(null)
+
+
     const webcamRef = useRef(null);
     const webcamContainerRef = useRef(null);
     const mediaRecorderRef = useRef(null);
@@ -542,6 +549,23 @@ const Videocapturing = () => {
 
     const gridRef = useRef(null);
     const [gridWidth, setGridWidth] = useState(750); // Default width
+    const [deleteModal, setdeleteModal] = useState(false)
+    const [deleteVideoModal, setdeleteVideoModal] = useState(false)
+
+    const startTimer = () => {
+        if (!timerRef.current) {
+            timerRef.current = setInterval(() => {
+                setSeconds((prev) => prev + 1);
+            }, 1000);
+        }
+    };
+
+    const stopTimer = () => {
+        if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+        }
+    };
 
     useEffect(() => {
         if (gridRef.current) {
@@ -559,7 +583,7 @@ const Videocapturing = () => {
     }, []);
     useEffect(() => {
         const interval = setInterval(() => {
-            setSeconds((prevSeconds) => prevSeconds + 1);
+            // setSeconds((prevSeconds) => prevSeconds + 1);
             setoverallSeconds((prevSeconds) => prevSeconds + 1);
 
 
@@ -633,58 +657,87 @@ const Videocapturing = () => {
     };
 
 
-    const handleStartCaptureClick = () => {
-        if (!isRecording) { // Prevent multiple intervals
-            setIsRecording(true);
-            setShowTimer(true); // Show timer
-            setSeconds(0); // Reset timer to 00:00:00
+    const handleStartRecording = () => {
+        if (!mediaRecorderRef.current && webcamRef.current) {
+            setSeconds(0);
+            setShowTimer(true);
+            setRecordingState("recording");
 
-            mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, { mimeType: "video/mp4" });
-            mediaRecorderRef.current.addEventListener("dataavailable", handleDataAvailable);
-            mediaRecorderRef.current.start();
+            const stream = webcamRef.current.stream;
+            const options = { mimeType: "video/webm" }; // Use webm for better pause support
+            const mediaRecorder = new MediaRecorder(stream, options);
+            mediaRecorderRef.current = mediaRecorder;
 
-            // Start the timer only if it isn't already running
-            if (!timerRef.current) {
-                timerRef.current = setInterval(() => {
-                    setSeconds((prevSeconds) => prevSeconds);
-                }, 1000);
-            }
+            mediaRecorder.ondataavailable = handleDataAvailable;
+            mediaRecorder.start();
+
+            startTimer();
+        }
+    };
+
+    const handlePauseRecording = () => {
+        if (mediaRecorderRef.current && recordingState === "recording") {
+            mediaRecorderRef.current.pause();
+            stopTimer();
+            setRecordingState("paused");
+        }
+    };
+
+    const handleResumeRecording = () => {
+        if (mediaRecorderRef.current && recordingState === "paused") {
+            mediaRecorderRef.current.resume();
+            startTimer();
+            setRecordingState("recording");
         }
     };
 
     const handleDataAvailable = ({ data }) => {
         if (data.size > 0) {
-            const blob = new Blob([data], { type: 'video/mp4' });
+            const blob = new Blob([data], { type: 'video/webm' });
             const videoUrl = URL.createObjectURL(blob);
 
-            var date = new Date()
-            var dateArray = date.toISOString().split(".")
-            var dateTime = dateArray[0].split("T")
-            const name = `${selectedPatient.patient_name}_${dateTime[0]}${dateTime[1].replace(/:/g, "_")}`
+            const date = new Date();
+            const dateArray = date.toISOString().split(".");
+            const dateTime = dateArray[0].split("T");
+            const name = `${selectedPatient.patient_name}_${dateTime[0]}${dateTime[1].replace(/:/g, "_")}`;
 
             saveVideosToLocalStorage(name, videoUrl);
-
         }
     };
 
-    const handleStopCaptureClick = () => {
+    const handleStopRecording = () => {
         if (mediaRecorderRef.current) {
             mediaRecorderRef.current.stop();
+            mediaRecorderRef.current = null;
         }
-        setIsRecording(false);
-        setShowTimer(false); // Hide timer
 
-        // Clear the timer and reset the reference
-        if (timerRef.current) {
-            clearInterval(timerRef.current);
-            timerRef.current = null;
-        }
+        setRecordingState("idle");
+        stopTimer();
+        setShowTimer(false);
+        setSeconds(0);
     };
+
+    // const handleStopCaptureClick = () => {
+    //     if (mediaRecorderRef.current) {
+    //         mediaRecorderRef.current.stop();
+    //     }
+    //     setIsRecording(false);
+    //     setShowTimer(false); // Hide timer
+
+    //     // Clear the timer and reset the reference
+    //     if (timerRef.current) {
+    //         clearInterval(timerRef.current);
+    //         timerRef.current = null;
+    //     }
+    // };
 
     const handleDeleteImage = (index) => {
         window.localStorage.setItem('capturedImages', JSON.stringify(capturedImages.filter((_, i) => i !== index)))
 
         setCapturedImages(capturedImages.filter((_, i) => i !== index));
+        setTimeout(() => {
+            setdeleteModal(false)
+        }, 300);
     };
 
 
@@ -692,6 +745,9 @@ const Videocapturing = () => {
         const updatedVideos = recordedChunks.filter((_, i) => i !== index);
         localStorage.setItem('capturedVideos', JSON.stringify(updatedVideos));
         setRecordedChunks(updatedVideos);
+        setTimeout(() => {
+            setdeleteVideoModal(false)
+        }, 300);
     };
 
     const handleFullscreen = () => {
@@ -727,13 +783,13 @@ const Videocapturing = () => {
     const videoformattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
     // localStorage.setItem('time', formattedTime)
 
-    const handleToggleRecording = () => {
-        if (isRecording) {
-            handleStopCaptureClick();
-        } else {
-            handleStartCaptureClick();
-        }
-    }
+    // const handleToggleRecording = () => {
+    //     if (isRecording) {
+    //         handleStopCaptureClick();
+    //     } else {
+    //         handleStartCaptureClick();
+    //     }
+    // }
 
     const handleSaveImage = (editedImage) => {
         const updatedImages = [...capturedImages];
@@ -744,9 +800,29 @@ const Videocapturing = () => {
     };
 
 
-
     return (
         <div>
+            <Modal opened={deleteModal} onClose={() => setdeleteModal(false)} centered title={'Are you sure?'}>
+                You want to delete this image
+                <Flex justify={"end"} mt={"1rem"}>
+                    <Group>
+                        <Button variant="outline" color={"violet"} onClick={() => setdeleteModal(false)}>No</Button>
+                        <Button variant="filled" color={"violet"} onClick={() => handleDeleteImage(deleteIndex)}>Yes</Button>
+                    </Group>
+
+                </Flex>
+            </Modal>
+            <Modal opened={deleteVideoModal} onClose={() => setdeleteVideoModal(false)} centered title={'Are you sure?'}>
+                You want to delete this video
+                <Flex justify={"end"} mt={"1rem"}>
+                    <Group>
+                        <Button variant="outline" color={"violet"} onClick={() => setdeleteVideoModal(false)}>No</Button>
+                        <Button variant="filled" color={"violet"} onClick={() => handleDeleteVideo(deleteVideoIndex)}>Yes</Button>
+                    </Group>
+
+                </Flex>
+            </Modal>
+
             <Modal opened={editImageModal} onClose={seteditImageModal} centered withCloseButton={false} size={"auto"}>
                 {editingIndex !== null && (
                     <>
@@ -880,6 +956,7 @@ const Videocapturing = () => {
                                             }}
                                         >
                                             <Webcam
+                                                controlsList="nodownload"
                                                 ref={webcamRef}
                                                 audio={false}
                                                 videoConstraints={videoConstraints}
@@ -919,39 +996,90 @@ const Videocapturing = () => {
                                                     zIndex: 2,
                                                 }}
                                             >
-                                                <Flex direction={"column"} align={"center"}>
+                                                <Flex direction="column" align="center">
                                                     {showTimer && (
-                                                        <Text c={"#ffffff"} fz={18} fw={500}>
-                                                            {videoformattedTime}
-                                                        </Text>
+                                                        <Flex align="center" gap="sm">
+                                                            <Text c="#ffffff" fz={18} fw={500}>
+                                                                {videoformattedTime}
+                                                            </Text>
+
+                                                        </Flex>
                                                     )}
-                                                    <Flex gap={"md"}>
+
+                                                    <Flex gap="md" mt={10}>
                                                         <ActionIcon
                                                             onClick={handleCapture}
                                                             style={{
                                                                 backgroundColor: "#8158F5",
                                                                 color: "#fff",
                                                             }}
-                                                            radius={"50%"}
-                                                            size={"4rem"}
+                                                            radius="50%"
+                                                            size="4rem"
                                                         >
                                                             <BsCameraFill size={"2.2rem"} />
                                                         </ActionIcon>
+                                                        {recordingState === "idle" && (
+                                                            <ActionIcon
+                                                                style={{ backgroundColor: "#8158F5", color: "#fff" }}
+                                                                radius="50%"
+                                                                size="4rem"
+                                                                onClick={handleStartRecording}
+                                                            >
+                                                                <FaVideo size={"2.2rem"} />
+                                                            </ActionIcon>
 
-                                                        <ActionIcon
-                                                            onClick={handleToggleRecording}
-                                                            style={{
-                                                                backgroundColor: "#8158F5",
-                                                                color: "#fff",
-                                                            }}
-                                                            radius={"50%"}
-                                                            size={"4rem"}
-                                                        >
-                                                            {isRecording ? <FaPause size={"2.2rem"} /> : <IoPlay size={"2.2rem"} />}
-                                                        </ActionIcon>
+
+                                                        )}
+
+                                                        {recordingState === "recording" && (
+                                                            <Group>
+                                                                <ActionIcon
+                                                                    style={{ backgroundColor: "#8158F5", color: "#fff" }}
+                                                                    radius="50%"
+                                                                    size="4rem"
+                                                                    onClick={handlePauseRecording}
+                                                                >
+                                                                    <FaPause size={"2.2rem"} />
+                                                                </ActionIcon>
+                                                                <ActionIcon
+                                                                    style={{ backgroundColor: "#8158F5", color: "#fff" }}
+                                                                    size="4rem"
+                                                                    radius="50%"
+                                                                    variant="filled"
+                                                                    onClick={handleStopRecording}
+                                                                >
+                                                                    <FaStop size={"2rem"} />
+                                                                </ActionIcon>
+                                                            </Group>
+
+                                                        )}
+
+                                                        {recordingState === "paused" && (
+                                                            <Group>
+                                                                <ActionIcon
+                                                                    style={{ backgroundColor: "#8158F5", color: "#fff" }}
+                                                                    radius="50%"
+                                                                    size="4rem"
+                                                                    onClick={handleResumeRecording}
+                                                                >
+                                                                    <IoPlay size={"2.2rem"} />
+                                                                </ActionIcon>
+                                                                <ActionIcon
+                                                                    style={{ backgroundColor: "#8158F5", color: "#fff" }}
+                                                                    size="4rem"
+                                                                    radius="50%"
+                                                                    variant="filled"
+                                                                    onClick={handleStopRecording}
+                                                                >
+                                                                    <FaStop size={"2rem"} />
+                                                                </ActionIcon>
+                                                            </Group>
+
+                                                        )}
                                                     </Flex>
                                                 </Flex>
                                             </div>
+
                                         </Flex>
 
 
@@ -997,7 +1125,10 @@ const Videocapturing = () => {
                                                         variant="transparent"
                                                         bg={"white"}
                                                         radius={"50%"}
-                                                        onClick={() => handleDeleteVideo(index)}
+                                                        onClick={() => {
+                                                            setdeleteVideoIndex(index)
+                                                            setdeleteVideoModal(true)
+                                                        }}
                                                     >
                                                         <RxCross2 color="red" />
                                                     </ActionIcon>
@@ -1036,7 +1167,10 @@ const Videocapturing = () => {
                                                             variant="transparent"
                                                             bg={"white"}
                                                             radius={"50%"}
-                                                            onClick={() => handleDeleteImage(index)}
+                                                            onClick={() => {
+                                                                setdeleteIndex(index)
+                                                                setdeleteModal(true)
+                                                            }}
                                                         >
                                                             <RxCross2 color="red" />
                                                         </ActionIcon>
