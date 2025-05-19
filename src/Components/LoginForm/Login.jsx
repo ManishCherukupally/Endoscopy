@@ -287,28 +287,12 @@ const Login = () => {
       } else if (response.data.status === 'unauthorized_user') {
         setLoader(false)
         // navigate("/")
-
-        const errorMessage = response.data.status === "unauthorized_user" || "Invalid credentials"
-          ? 'Invalid email or password'
-          : response.data.error; // Use a more specific error message if available
+        const errorMessage = "'Invalid email or password'"
         form.setErrors({
           username: errorMessage,
           password: errorMessage,
         });
 
-        // form.setFieldError('username', 'Invalid email or password');
-        // form.setFieldError('password', 'Invalid email or password');
-      } else {
-        setLoader(false)
-        // navigate("/")
-        console.error('Unexpected response:', response);
-        if (response.data.status === "unauthorized_user") {
-          const errorMessage = "'Invalid email or password'"
-          form.setErrors({
-            username: errorMessage,
-            password: errorMessage,
-          });
-        }
         if (response.data.status === "Invalid credentials") {
           const errorMessage = "Invalid credentials"
           form.setErrors({
@@ -316,12 +300,20 @@ const Login = () => {
             password: errorMessage,
           });
         }
+        // form.setFieldError('username', 'Invalid email or password');
+        // form.setFieldError('password', 'Invalid email or password');
+      } else {
+        setLoader(false)
+        // navigate("/")
+        console.error('Unexpected response:', response);
 
+        const errorMessage = response.data.status === "unauthorized_user" || "Invalid credentials"
+          ? 'Invalid email or password' : response.data.error;
 
-        // form.setErrors({
-        //   username: errorMessage,
-        //   password: errorMessage,
-        // });
+        form.setErrors({
+          username: errorMessage,
+          password: errorMessage,
+        });
         // form.setFieldError('username', 'Invalid credentials');
         // form.setFieldError('password', 'Invalid credentials');
 

@@ -410,7 +410,7 @@ const AllPatients = () => {
                         <th>Patient ID</th>
                         <th>Age</th>
                         <th>Gender</th>
-                        <th>Procedure</th>
+                        <th>Address</th>
                         <th>Phone</th>
                         <th>Email</th>
                         <th>Referred By</th>
