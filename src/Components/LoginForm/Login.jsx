@@ -254,71 +254,70 @@ const Login = () => {
       password: '',
     },
     validate: {
-      username: (value) =>
-        value.length < 3 ? 'Enter valid email' : null,
-      password: (value) =>
-        value.length < 8 ? 'Password must be at least 8 characters' : null,
+      username: (value) => (value.length < 3 ? 'Enter valid email' : null),
+      password: (value) => (value.length < 8 ? 'Password must be at least 8 characters' : null)
     },
   });
 
-  const submithandler = async (e) => {
+  const submithandler = async (values) => {
     setLoader(true)
 
-    e.preventDefault();
-    const isValid = !form.validate().hasErrors;
-    if (!isValid) {
-      setLoader(false)
-      return
-    }
+    // e.preventDefault();
+    // const isValid = !form.validate().hasErrors;
+    // if (!isValid) {
+    //   setLoader(false)
+    //   return
+    // }
+
     try {
-      const response = await client.post('/login/', {
-        username: form.values.username,
-        password: form.values.password,
-      });
+      await client.post('/login/', {
+        username: values.username,
+        password: values.password,
+      }).then((response) => {
+        if (response.data && response.data.status === 'user_validated') {
+          setLoader(false)
+          navigate('/allpatients');
+          window.localStorage.setItem("loginStatus", response.data.status)
+          window.localStorage.setItem("userData", JSON.stringify(response.data.user_details_data))
+          // console.log(response.data.accessToken);
 
-      console.log(response);
-      if (response.data && response.data.status === 'user_validated') {
-        setLoader(false)
-        navigate('/allpatients');
-        window.localStorage.setItem("loginStatus", response.data.status)
-        window.localStorage.setItem("userData", JSON.stringify(response.data.user_details_data))
-        console.log(response.data.accessToken);
+        } else if (response.data.status === 'unauthorized_user') {
+          setLoader(false)
+          // navigate("/")
+          // const errorMessage = "Invalid email or password"
+          form.setErrors({
+            username: "Invalid email or password",
+            password: "Invalid email or password",
+          });
 
-      } else if (response.data.status === 'unauthorized_user') {
-        setLoader(false)
-        // navigate("/")
-        const errorMessage = "'Invalid email or password'"
-        form.setErrors({
-          username: errorMessage,
-          password: errorMessage,
-        });
+          if (response.data.status === "Invalid credentials") {
+            // const errorMessage = "Invalid credentials"
+            form.setErrors({
+              username: "Invalid credentials",
+              password: "Invalid credentials",
+            });
+          }
+          // form.setFieldError('username', 'Invalid email or password');
+          // form.setFieldError('password', 'Invalid email or password');
+        } else {
+          setLoader(false)
+          // navigate("/")
+          console.error('Unexpected response:', response);
 
-        if (response.data.status === "Invalid credentials") {
-          const errorMessage = "Invalid credentials"
+          const errorMessage = response.data.status === "unauthorized_user" || "Invalid credentials"
+            ? 'Invalid email or password' : response.data.error;
+
           form.setErrors({
             username: errorMessage,
             password: errorMessage,
           });
+          // form.setFieldError('username', 'Invalid credentials');
+          // form.setFieldError('password', 'Invalid credentials');
+
+
         }
-        // form.setFieldError('username', 'Invalid email or password');
-        // form.setFieldError('password', 'Invalid email or password');
-      } else {
-        setLoader(false)
-        // navigate("/")
-        console.error('Unexpected response:', response);
 
-        const errorMessage = response.data.status === "unauthorized_user" || "Invalid credentials"
-          ? 'Invalid email or password' : response.data.error;
-
-        form.setErrors({
-          username: errorMessage,
-          password: errorMessage,
-        });
-        // form.setFieldError('username', 'Invalid credentials');
-        // form.setFieldError('password', 'Invalid credentials');
-
-
-      }
+      })
 
     } catch (error) {
       setLoader(false)
@@ -339,7 +338,7 @@ const Login = () => {
           </div>
           <h3>Login into your Account</h3>
           <div className="h">Only authorized accounts can login.</div>
-          <form onSubmit={submithandler}>
+          <form onSubmit={form.onSubmit(submithandler)}>
             <div className="userpass">
               <TextInput required
                 label="Email / Username"
