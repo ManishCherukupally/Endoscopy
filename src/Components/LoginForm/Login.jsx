@@ -281,25 +281,8 @@ const Login = () => {
           window.localStorage.setItem("userData", JSON.stringify(response.data.user_details_data))
           // console.log(response.data.accessToken);
 
-        } else if (response.data.status === 'unauthorized_user') {
-          setLoader(false)
-          // navigate("/")
-          // const errorMessage = "Invalid email or password"
-          form.setErrors({
-            username: "Invalid email or password",
-            password: "Invalid email or password",
-          });
-
-          if (response.data.status === "Invalid credentials") {
-            // const errorMessage = "Invalid credentials"
-            form.setErrors({
-              username: "Invalid credentials",
-              password: "Invalid credentials",
-            });
-          }
-          // form.setFieldError('username', 'Invalid email or password');
-          // form.setFieldError('password', 'Invalid email or password');
-        } else {
+        }
+        else {
           setLoader(false)
           // navigate("/")
           console.error('Unexpected response:', response);
@@ -318,10 +301,39 @@ const Login = () => {
         }
 
       })
+        .catch((error) => {
+          if (error.response && error.response.status === 'unauthorized_user' || 401) {
+            setLoader(false)
+            // navigate("/")
+            // const errorMessage = "Invalid email or password"
+            form.setErrors({
+              username: "Invalid email or password",
+              password: "Invalid email or password",
+            });
+          }
+
+          if (error.response.status === "Invalid credentials") {
+            // const errorMessage = "Invalid credentials"
+            form.setErrors({
+              username: "Invalid credentials",
+              password: "Invalid credentials",
+            });
+          }
+          else {
+            // Handle other potential errors (e.g., network errors)
+            setLoader(false);
+            console.error('Error:', error);
+          }
+
+
+          // form.setFieldError('username', 'Invalid email or password');
+          // form.setFieldError('password', 'Invalid email or password');
+
+        })
 
     } catch (error) {
       setLoader(false)
-      console.error('Login failed:', error.response?.data || error.message);
+      console.error(error);
       // form.setFieldError('username', error.response?.data?.detail || 'Invalid credentials');
       // form.setFieldError('password', error.response?.data?.detail || 'Invalid credentials');
 
