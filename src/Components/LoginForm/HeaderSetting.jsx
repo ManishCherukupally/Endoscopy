@@ -89,7 +89,7 @@ const HeaderSetting = () => {
                   >
                     <FaChevronLeft className="left" />
                   </Button>
-                  <div className="ADDNEW">Header Setting</div>
+                  <div className="ADDNEW">Report Setting</div>
                 </div>
                 <Button color="violet" mt="md" onClick={handleSave} loading={loader}>
                   Save
