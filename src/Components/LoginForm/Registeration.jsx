@@ -57,8 +57,7 @@ const Registration = () => {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email format'),
       password: (value) => (value.length < 8 ? 'Password must be at least 8 characters' : null),
       cnfpassword: (value, values) => (value !== values.password ? 'Passwords do not match' : null),
-      mobile_no: (value) =>
-        value && /^[6-9]\d{9}$/.test(value) ? null : 'Phone number must be a valid 10-digit number starting with 6-9',
+      mobile_no: (value) => (value && /^[6-9]\d{9}$/.test(value) ? null : 'Phone number must be a valid 10-digit number starting with 6-9'),
       speciality: (value) => (value.trim().length === 0 ? 'Speciality is required' : null),
     },
   });

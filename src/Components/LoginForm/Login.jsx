@@ -302,14 +302,26 @@ const Login = () => {
         setLoader(false)
         // navigate("/")
         console.error('Unexpected response:', response);
+        if (response.data.status === "unauthorized_user") {
+          const errorMessage = "'Invalid email or password'"
+          form.setErrors({
+            username: errorMessage,
+            password: errorMessage,
+          });
+        }
+        if (response.data.status === "Invalid credentials") {
+          const errorMessage = "Invalid credentials"
+          form.setErrors({
+            username: errorMessage,
+            password: errorMessage,
+          });
+        }
 
-        const errorMessage = response.data.status === "unauthorized_user" || "Invalid credentials"
-          ? 'Invalid email or password' : response.data.error;
 
-        form.setErrors({
-          username: errorMessage,
-          password: errorMessage,
-        });
+        // form.setErrors({
+        //   username: errorMessage,
+        //   password: errorMessage,
+        // });
         // form.setFieldError('username', 'Invalid credentials');
         // form.setFieldError('password', 'Invalid credentials');
 

@@ -41,7 +41,7 @@ const EditPatient = () => {
             mobile: '',
             patient_email: '',
             referred: '',
-            address: ''
+            // address: ''
         },
         validate: {
             patient_name: (value) => (value.length < 3 ? 'First name must be at least 3 characters' : null),
@@ -51,7 +51,7 @@ const EditPatient = () => {
             referred: (value) => (value.trim().length === 0 ? 'Enter referred name' : null),
             gender: (value) => (value.trim().length === 0 ? 'Select gender' : null),
             procedure: (value) => (value.trim().length === 0 ? 'Select procedure' : null),
-            address: (value) => (value.length === 0 ? "Please enter patients's address" : null)
+            // address: (value) => (value.length === 0 ? "Please enter patients's address" : null)
 
         },
 
@@ -64,7 +64,7 @@ const EditPatient = () => {
             mobile: `${values.mobile}`,
             patient_email: `${values.patient_email}`,
             referred: `${values.referred}`,
-            address: `${values.address}`,
+            // address: `${values.address}`,
         })
     })
 
@@ -74,11 +74,11 @@ const EditPatient = () => {
             patient_name: editPatient.patient_name,
             age: editPatient.age,
             gender: editPatient.gender,
-            // procedure: editPatient.procedure,
+            procedure: editPatient.procedure,
             mobile: editPatient.mobile,
             patient_email: editPatient.patient_email,
             referred: editPatient.referred,
-            address: editPatient.address
+            // address: editPatient.address
         })
     }, [])
 
@@ -157,7 +157,7 @@ const EditPatient = () => {
                                     radius='md'
                                     mt='md'
                                     placeholder='Enter Address'
-                                    {...form.getInputProps('address')}
+                                    {...form.getInputProps('procedure')}
                                 />
                                 {/* <Select
                                     label="Procedure"

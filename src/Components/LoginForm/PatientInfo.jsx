@@ -575,7 +575,7 @@ const PatientInfo = () => {
       referred: "",
       gender: '',
       procedure: '',
-      address: ''
+      // address: ''
     },
     validate: {
       patient_name: (value) => (value.length < 3 ? 'First name must be at least 3 characters' : null),
@@ -584,8 +584,8 @@ const PatientInfo = () => {
       mobile: (value) => (value && value.length === 10 ? null : 'Phone number must be a valid 10-digit number'),
       referred: (value) => (value.trim().length === 0 ? 'Enter referred name' : null),
       gender: (value) => (value.trim().length === 0 ? 'Select gender' : null),
-      procedure: (value) => (value.trim().length === 0 ? 'Select procedure' : null),
-      address: (value) => (value.length === 0 ? "Please enter patients's address" : null)
+      procedure: (value) => (value.trim().length === 0 ? "Please enter patients's address" : null),
+      // address: (value) => (value.length === 0 ? "Please enter patients's address" : null)
     }
   });
 
@@ -616,7 +616,7 @@ const PatientInfo = () => {
           gender: form.values.gender,
           procedure: form.values.procedure,
           referred: form.values.referred,
-          address: form.values.address
+          // address: form.values.address
         },
         {
           headers: { 'Content-Type': 'application/json' }
@@ -685,7 +685,7 @@ const PatientInfo = () => {
                   radius='md'
                   mt='md'
                   placeholder='Enter Address'
-                  {...form.getInputProps('address')}
+                  {...form.getInputProps('procedure')}
                 />
                 {/* <Select
                   label="Procedure"

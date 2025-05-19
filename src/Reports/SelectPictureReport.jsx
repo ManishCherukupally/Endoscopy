@@ -153,22 +153,49 @@ const ImageEditor = ({ imageSrc, onSave }) => {
 
 
     const draw = (e) => {
-        if (isCropping || (drawMode !== "pen" && !shapeStart)) return;
-
         const x = e.nativeEvent.offsetX;
         const y = e.nativeEvent.offsetY;
         const ctx = ctxRef.current;
+
+        if (isCropping || (drawMode !== "pen" && !shapeStart)) return;
 
         if (drawMode === "pen" && isDrawing) {
             ctx.lineTo(x, y);
             ctx.stroke();
             currentPath.current.push({ x, y }); // Keep recording
         } else if (shapeStart) {
-            applyBrightness();
             const previewEnd = { x, y };
+
+            // Clear canvas and redraw everything (image + previous shapes/paths)
+            const canvas = canvasRef.current;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(imageRef.current, 0, 0);
+
+            // Apply brightness again
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = data[i] * (brightness / 100);
+                data[i + 1] = data[i + 1] * (brightness / 100);
+                data[i + 2] = data[i + 2] * (brightness / 100);
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
+            // Redraw existing shapes and pen paths
+            shapes.forEach(({ type, start, end, color, size }) => {
+                drawShape(ctx, type, start, end, color, size);
+            });
+            penPaths.forEach(({ points, color, size }) => {
+                drawPenPath(ctx, points, color, size);
+            });
+
+            // Draw current shape preview
             drawShape(ctx, drawMode, shapeStart, previewEnd, penColor, penSize);
         }
     };
+
 
     const stopDrawing = (e) => {
         if (drawMode === "pen" && isDrawing) {
