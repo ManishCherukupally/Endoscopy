@@ -46,8 +46,8 @@ const EditPatient = () => {
         validate: {
             patient_name: (value) => (value.length < 3 ? 'First name must be at least 3 characters' : null),
             age: (value) => (value && value > 0 ? null : 'Enter a valid age'),
-            patient_email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Invalid Email'),
-            mobile: (value) => (value && value.length === 10 ? null : 'Phone number must be a valid 10-digit number'),
+            patient_email: (value) => (value && /^\S+@\S+\.\S+$/.test(value) ? null : 'Invalid Email'),
+            mobile: (value) => (value && /^[6-9]\d{9}$/.test(value) ? null : 'Phone number must be a valid 10-digit number'),
             referred: (value) => (value.trim().length === 0 ? 'Enter referred name' : null),
             gender: (value) => (value.trim().length === 0 ? 'Select gender' : null),
             procedure: (value) => (value.trim().length === 0 ? 'Select procedure' : null),
@@ -85,6 +85,11 @@ const EditPatient = () => {
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         setLoader(true);
+        const validationErrors = form.validate();
+        if (validationErrors.hasErrors) {
+            setLoader(false)
+            return
+        };
 
         await client.put('/patient_details_update/', form.getTransformedValues(), {
             withCredentials: true
@@ -124,7 +129,7 @@ const EditPatient = () => {
                                 <div className='ADDNEW'>Edit Patient</div>
                             </div>
 
-                            <form>
+                            <form onSubmit={handleFormSubmit}>
                                 <TextInput
                                     placeholder="Patient Name"
                                     label="Enter Patient Name"
@@ -179,7 +184,7 @@ const EditPatient = () => {
                                 <TextInput
                                     placeholder="Patient Mobile Number"
                                     label="Patient Mobile Number"
-                                    type='number'
+                                    type='text'
                                     size="md"
                                     radius="md"
                                     mt="md"
@@ -207,7 +212,7 @@ const EditPatient = () => {
                                     {...form.getInputProps('referred')}
                                 />
 
-                                <Button loading={loader} onClick={handleFormSubmit} variant="filled" color="violet" mt='md' radius='md' fullWidth type='submit'>
+                                <Button loading={loader} variant="filled" color="violet" mt='md' radius='md' fullWidth type='submit'>
                                     Edit Patient
                                 </Button>
                             </form>

@@ -106,6 +106,11 @@ const EditUser = () => {
         e.preventDefault();
 
         setLoader(true);
+        const isValid = !form.validate().hasErrors;
+        if (!isValid) {
+            setLoader(false);
+            return;
+        }
 
         await client.put("/user_details_update/", form.getTransformedValues(), {
             withCredentials: true
@@ -216,7 +221,7 @@ const EditUser = () => {
                                         )}
                                     </div>
 
-                                    <form onSubmit={handleFormSubmit} autoComplete="off">
+                                    <form onSubmit={handleFormSubmit} >
                                         <TextInput required
                                             label="Your Full Name"
                                             placeholder="Enter your name"
@@ -286,6 +291,8 @@ const EditUser = () => {
                                             {...form.getInputProps('mobile_no')}
                                             onChange={handleMobileChange}
                                         />
+
+
                                         <TextInput required
                                             label="Email ID"
                                             placeholder="Enter your email"
@@ -375,8 +382,8 @@ const EditUser = () => {
                                         <Space h={15} />
                                         <Button
                                             loading={loader}
-                                            // type="submit"
-                                            onClick={handleFormSubmit}
+                                            type="submit"
+                                            // onClick={handleFormSubmit}
                                             variant="filled"
                                             color="violet"
                                             radius="md"
