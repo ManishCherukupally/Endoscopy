@@ -23,6 +23,7 @@ import {
     ColorSwatch,
     useMantineTheme,
     Tooltip,
+    Divider,
 } from "@mantine/core";
 import Vector from "../assets/Vector.png";
 import Pic from "../assets/intestine.png";
@@ -1123,9 +1124,9 @@ const Videocapturing = () => {
 
                         <Grid.Col span={3}>
 
-                            <Card bg={"#EBEDF4"} radius={12} h={676}>
+                            <Card bg={"#EBEDF4"} radius={12} h={"100%"}>
                                 <ScrollArea h={650}>
-                                    {recordedChunks && <Flex justify={"center"} pb={10}><Text fz={18}> Captured Videos</Text></Flex>}
+                                    {recordedChunks.length > 0 && <Flex justify={"center"} pb={10}><Text fz={18}> Captured Videos</Text></Flex>}
                                     <SimpleGrid cols={2}>
 
                                         {recordedChunks.map((video, index) => (
@@ -1163,7 +1164,14 @@ const Videocapturing = () => {
                                             </div>
                                         ))}
                                     </SimpleGrid>
-                                    {capturedImages && <Flex justify={"center"} py={10}><Text fz={18}> Captured Images</Text></Flex>}
+
+                                    {recordedChunks.length > 0 && capturedImages.length > 0 ? (
+                                        <><Space h={10} />
+                                            < Divider />
+                                            <Space h={10} />
+                                        </>) : (null)}
+
+                                    {capturedImages.length > 0 && <Flex justify={"center"} pb={10}><Text fz={18}> Captured Images</Text></Flex>}
                                     <SimpleGrid cols={2}>
                                         {capturedImages.map((image, index) => (
                                             <div key={index} style={{ position: "relative" }}>

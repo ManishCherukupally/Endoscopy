@@ -46,7 +46,7 @@ const EditPatient = () => {
         validate: {
             patient_name: (value) => (value.length < 3 ? 'First name must be at least 3 characters' : null),
             age: (value) => (value && value > 0 ? null : 'Enter a valid age'),
-            patient_email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid Email'),
+            patient_email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Invalid Email'),
             mobile: (value) => (value && value.length === 10 ? null : 'Phone number must be a valid 10-digit number'),
             referred: (value) => (value.trim().length === 0 ? 'Enter referred name' : null),
             gender: (value) => (value.trim().length === 0 ? 'Select gender' : null),
@@ -103,6 +103,9 @@ const EditPatient = () => {
 
     const handleMobileChange = (e) => {
         const value = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+        if (value.length === 1 && !/^[6-9]$/.test(value)) {
+            return; // Do not update state
+        }
         if (value.length <= 10) {
             form.setFieldValue('mobile', value);
         }

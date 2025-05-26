@@ -237,7 +237,7 @@
 
 
 import React, { useState } from 'react';
-import { useForm } from '@mantine/form';
+import { isEmail, useForm } from '@mantine/form';
 import { PasswordInput, TextInput, Button, Box, Card, Checkbox, Text, Image, Divider } from '@mantine/core';
 import { MdOutlineEmail, MdLockOutline } from "react-icons/md";
 import logo from '../../assets/Vector.jpg';
@@ -254,7 +254,7 @@ const Login = () => {
       password: '',
     },
     validate: {
-      username: (value) => (value.length < 3 ? 'Enter valid email' : null),
+      username: (value) => (value.length < 3 || /^\S+@\S+\.\S+$/.test(value) ? 'Enter valid email / username' : null),
       password: (value) => (value.length < 8 ? 'Password must be at least 8 characters' : null)
     },
   });
@@ -315,8 +315,8 @@ const Login = () => {
           if (error.response.status === "Invalid credentials") {
             // const errorMessage = "Invalid credentials"
             form.setErrors({
-              username: "Invalid credentials",
-              password: "Invalid credentials",
+              username: "Invalid email or password",
+              password: "Invalid email or password",
             });
           }
           else {

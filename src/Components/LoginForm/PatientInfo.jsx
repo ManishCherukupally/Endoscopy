@@ -580,7 +580,7 @@ const PatientInfo = () => {
     validate: {
       patient_name: (value) => (value.length < 3 ? 'First name must be at least 3 characters' : null),
       age: (value) => (value && value > 0 ? null : 'Enter a valid age'),
-      patient_email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid Email'),
+      patient_email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Invalid Email'),
       mobile: (value) => (value && value.length === 10 ? null : 'Phone number must be a valid 10-digit number'),
       referred: (value) => (value.trim().length === 0 ? 'Enter referred name' : null),
       gender: (value) => (value.trim().length === 0 ? 'Select gender' : null),

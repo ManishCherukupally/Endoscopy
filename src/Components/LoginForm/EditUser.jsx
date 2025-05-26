@@ -58,7 +58,7 @@ const EditUser = () => {
         validate: {
             first_name: (value) => (value.trim().length === 0 ? 'Your full name is required' : null),
             username: (value) => (value.trim().length === 0 ? 'Username is required' : null),
-            email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email format'),
+            email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Invalid email format'),
             // password: '',
             // cnfpassword: '',
             mobile_no: (value) => (value && /^[6-9]\d{9}$/.test(value) ? null : 'Phone number must be a valid 10-digit number starting with 6-9'),
@@ -94,6 +94,9 @@ const EditUser = () => {
 
     const handleMobileChange = (e) => {
         const value = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+        if (value.length === 1 && !/^[6-9]$/.test(value)) {
+            return; // Do not update state
+        }
         if (value.length <= 10) {
             form.setFieldValue('mobile_no', value);
         }

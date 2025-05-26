@@ -786,26 +786,29 @@ const SelectPictureReport = () => {
                     </Card>
                     {/* Other UI Elements */}
                     <Space h={"1rem"} />
-                    <SimpleGrid cols={3}>
+                    <>
                         {
-                            capturedVideos.map((video, index) => (
-                                <Flex direction={"column"} key={index}>
-                                    <div
-                                        style={{ position: 'relative' }}
-                                        onMouseEnter={() => setHovervideoCard(index)}
-                                        onMouseLeave={() => setHovervideoCard(null)}
-                                    >
-                                        <video
-                                            // disablePictureInPicture={true}
-                                            controlsList="nodownload"
-                                            src={video.videoUrl}
-                                            controls
-                                            style={{ width: "100%", height: "auto", borderRadius: "12px" }}
-                                        />
-                                        {/* <Overlay position="absolute" top={0} left={0} opacity={0} zIndex={1}> */}
-                                        {videocommentModal && (
-                                            <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0.5}>
-                                                {/* <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
+                            capturedVideos.length >= 1 || capturedImages.length >= 1 ? (
+                                <SimpleGrid cols={3}>
+                                    {
+                                        capturedVideos.map((video, index) => (
+                                            <Flex direction={"column"} key={index}>
+                                                <div
+                                                    style={{ position: 'relative' }}
+                                                    onMouseEnter={() => setHovervideoCard(index)}
+                                                    onMouseLeave={() => setHovervideoCard(null)}
+                                                >
+                                                    <video
+                                                        // disablePictureInPicture={true}
+                                                        controlsList="nodownload"
+                                                        src={video.videoUrl}
+                                                        controls
+                                                        style={{ width: "100%", height: "auto", borderRadius: "12px" }}
+                                                    />
+                                                    {/* <Overlay position="absolute" top={0} left={0} opacity={0} zIndex={1}> */}
+                                                    {videocommentModal && (
+                                                        <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0.5}>
+                                                            {/* <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
                                                 <ActionIcon
                                                     size={30}
                                                     variant="transparent"
@@ -817,63 +820,63 @@ const SelectPictureReport = () => {
                                                 </ActionIcon>
                                             </div> */}
 
-                                                <Center h={300} mx={"auto"}>
-                                                    {videocommentModal && currentVideoIndex === index ? (
-                                                        <Card w={"80%"}>
-                                                            <Stack>
-                                                                <Group align='center'>
-                                                                    <ActionIcon variant='light' onClick={() => setvideocommentModal(false)}><RxCross2 /></ActionIcon>
-                                                                    <Text>Video: {index + 1}</Text>
-                                                                </Group>
-                                                                <Textarea
-                                                                    label="Add Name"
-                                                                    placeholder='Enter name for the video'
-                                                                    value={currentvideoComment}
-                                                                    onChange={(e) => setCurrentvideoComment(e.target.value)}
-                                                                />
-                                                                <Button fz={"sm"} bg='#8158F5' onClick={handleAddVideoComment}>
-                                                                    Add Name To Video
-                                                                </Button>
-                                                            </Stack>
-                                                        </Card>
-                                                    ) : (
-                                                        <>
-                                                            <Button color='violet' onClick={() => {
-                                                                setvideocommentModal(true)
-                                                                setCurrentVideoIndex(index)
-                                                                setCurrentvideoComment(videocomments[index] || "")
-                                                            }}>Add Name</Button>
-                                                        </>
+                                                            <Center h={300} mx={"auto"}>
+                                                                {videocommentModal && currentVideoIndex === index ? (
+                                                                    <Card w={"80%"}>
+                                                                        <Stack>
+                                                                            <Group align='center'>
+                                                                                <ActionIcon variant='light' onClick={() => setvideocommentModal(false)}><RxCross2 /></ActionIcon>
+                                                                                <Text>Video: {index + 1}</Text>
+                                                                            </Group>
+                                                                            <Textarea
+                                                                                label="Add Name"
+                                                                                placeholder='Enter name for the video'
+                                                                                value={currentvideoComment}
+                                                                                onChange={(e) => setCurrentvideoComment(e.target.value)}
+                                                                            />
+                                                                            <Button fz={"sm"} bg='#8158F5' onClick={handleAddVideoComment}>
+                                                                                Add Name To Video
+                                                                            </Button>
+                                                                        </Stack>
+                                                                    </Card>
+                                                                ) : (
+                                                                    <>
+                                                                        <Button color='violet' onClick={() => {
+                                                                            setvideocommentModal(true)
+                                                                            setCurrentVideoIndex(index)
+                                                                            setCurrentvideoComment(videocomments[index] || "")
+                                                                        }}>Add Name</Button>
+                                                                    </>
+                                                                )}
+                                                            </Center>
+
+                                                        </Overlay>
                                                     )}
-                                                </Center>
+                                                    <div
+                                                        style={{
+                                                            position: "absolute",
+                                                            width: "100%",
+                                                            top: 0,
+                                                            zIndex: 1,
+                                                            display: "flex",
+                                                            justifyContent: "space-between",
+                                                            alignItems: "center",
+                                                            padding: "5px",
+                                                        }}
+                                                    >
 
-                                            </Overlay>
-                                        )}
-                                        <div
-                                            style={{
-                                                position: "absolute",
-                                                width: "100%",
-                                                top: 0,
-                                                zIndex: 1,
-                                                display: "flex",
-                                                justifyContent: "space-between",
-                                                alignItems: "center",
-                                                padding: "5px",
-                                            }}
-                                        >
+                                                        <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} onClick={() => {
+                                                            setCurrentVideoIndex(index)
+                                                            setvideocommentModal(true)
+                                                        }}><MdOutlineEdit color='black' size={23} /></ActionIcon>
+                                                        <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"}
+                                                            onClick={() => {
+                                                                setCurrentVideoIndex(index)
+                                                                setdeleteVideoModal(true)
+                                                            }}><RxCross2 color='red' size={23} /></ActionIcon>
+                                                    </div>
 
-                                            <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} onClick={() => {
-                                                setCurrentVideoIndex(index)
-                                                setvideocommentModal(true)
-                                            }}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                            <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"}
-                                                onClick={() => {
-                                                    setCurrentVideoIndex(index)
-                                                    setdeleteVideoModal(true)
-                                                }}><RxCross2 color='red' size={23} /></ActionIcon>
-                                        </div>
-
-                                        {/* <div style={{
+                                                    {/* <div style={{
                                         position: "absolute",
                                         width: "100%",
                                         zIndex: 1,
@@ -889,102 +892,113 @@ const SelectPictureReport = () => {
                                         <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"} onClick={() => handleDeleteVideo(index)}><RxCross2 color='red' size={23} /></ActionIcon>
                                     </div> */}
 
-                                        {/* </Overlay> */}
+                                                    {/* </Overlay> */}
 
-                                    </div>
-                                    <Flex>
+                                                </div>
+                                                <Flex>
 
-                                        {videocomments[index] ? <Text ml={"sm"} fw={600}>{videocomments[index]}</Text> : <Text ml={"lg"} fw={600}>Video: {index + 1}</Text>}
-                                    </Flex>
-                                </Flex>
+                                                    {videocomments[index] ? <Text ml={"sm"} fw={600}>{videocomments[index]}</Text> : <Text ml={"lg"} fw={600}>Video: {index + 1}</Text>}
+                                                </Flex>
+                                            </Flex>
 
-                            ))
-                        }
-                        {capturedImages.map((image, index) => (
-                            <Flex direction={"column"} key={index}>
-                                <div
-                                    style={{ position: 'relative' }}
-                                    onMouseEnter={() => setHoverCard(index)}
-                                    onMouseLeave={() => setHoverCard(null)}
-                                >
-                                    <MantineImage
-                                        className="fullscreen-image"
-                                        ref={(el) => (imageRefs.current[index] = el)}
-                                        src={image}
-                                        alt={`Image ${index + 1}`}
-                                        width={'100%'}
-                                        height={"100%"}
-                                        radius={12}
-                                    />
+                                        ))
+                                    }
+                                    {capturedImages.map((image, index) => (
+                                        <Flex direction={"column"} key={index}>
+                                            <div
+                                                style={{ position: 'relative' }}
+                                                onMouseEnter={() => setHoverCard(index)}
+                                                onMouseLeave={() => setHoverCard(null)}
+                                            >
+                                                <MantineImage
+                                                    className="fullscreen-image"
+                                                    ref={(el) => (imageRefs.current[index] = el)}
+                                                    src={image}
+                                                    alt={`Image ${index + 1}`}
+                                                    width={'100%'}
+                                                    height={"100%"}
+                                                    radius={12}
+                                                />
 
-                                    {hoverCard === index && (
-                                        <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0.5}>
-                                            <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-                                                <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} onClick={() => {
-                                                    setEditingIndex(index)
-                                                    seteditImageModal(true)
-                                                }}><MdOutlineEdit color='black' size={23} /></ActionIcon>
-                                                <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"}
-                                                    onClick={() => {
-                                                        setCurrentImageIndex(index)
-                                                        setdeleteModal(true)
-                                                    }}><RxCross2 color='red' size={23} /></ActionIcon>
-                                            </div>
+                                                {hoverCard === index && (
+                                                    <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0.5}>
+                                                        <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
+                                                            <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} onClick={() => {
+                                                                setEditingIndex(index)
+                                                                seteditImageModal(true)
+                                                            }}><MdOutlineEdit color='black' size={23} /></ActionIcon>
+                                                            <ActionIcon size={46} variant='tranperant' bg={"white"} radius={"50%"} right={"1rem"}
+                                                                onClick={() => {
+                                                                    setCurrentImageIndex(index)
+                                                                    setdeleteModal(true)
+                                                                }}><RxCross2 color='red' size={23} /></ActionIcon>
+                                                        </div>
 
-                                            <Center h={'auto'} mx="auto">
-                                                {commentModal && currentImageIndex === index ? (
-                                                    <Card w={"80%"}>
-                                                        <Stack>
-                                                            <Group align='center'>
-                                                                <ActionIcon variant='light' onClick={() => setcommentModal(false)}><RxCross2 /></ActionIcon>
-                                                                <Text>Image: {index + 1}</Text>
-                                                            </Group>
-                                                            <Textarea
-                                                                label="Comment"
-                                                                placeholder='Write a comment'
-                                                                value={currentComment}
-                                                                onChange={(e) => setCurrentComment(e.target.value)}
-                                                            />
-                                                            <Button fz={"sm"} bg='#8158F5' onClick={handleAddComment}>
-                                                                Add Comment To Image
-                                                            </Button>
-                                                        </Stack>
-                                                    </Card>
-                                                ) : (
-                                                    <Flex direction={"column"} align={"center"} gap={"xl"}>
-                                                        <ActionIcon
-                                                            variant='transperant'
-                                                            size={100}
-                                                            c='white'
-                                                            onClick={() => {
-                                                                setcommentModal(true);
-                                                                setCurrentImageIndex(index);
-                                                                setCurrentComment(comments[index] || ""); // Load existing comment if available
-                                                            }}
-                                                        >
-                                                            <TbCircleDashedPlus size={120} />
-                                                        </ActionIcon>
-                                                        <Button
-                                                            variant='transperant'
-                                                            bg={"white"}
-                                                            c={"black"}
-                                                            onClick={() => handleFullscreen(index)}
-                                                        >
-                                                            See Image
-                                                        </Button>
-                                                    </Flex>
+                                                        <Center h={'auto'} mx="auto">
+                                                            {commentModal && currentImageIndex === index ? (
+                                                                <Card w={"80%"}>
+                                                                    <Stack>
+                                                                        <Group align='center'>
+                                                                            <ActionIcon variant='light' onClick={() => setcommentModal(false)}><RxCross2 /></ActionIcon>
+                                                                            <Text>Image: {index + 1}</Text>
+                                                                        </Group>
+                                                                        <Textarea
+                                                                            label="Comment"
+                                                                            placeholder='Write a comment'
+                                                                            value={currentComment}
+                                                                            onChange={(e) => setCurrentComment(e.target.value)}
+                                                                        />
+                                                                        <Button fz={"sm"} bg='#8158F5' onClick={handleAddComment}>
+                                                                            Add Comment To Image
+                                                                        </Button>
+                                                                    </Stack>
+                                                                </Card>
+                                                            ) : (
+                                                                <Flex direction={"column"} align={"center"} gap={"xl"}>
+                                                                    <ActionIcon
+                                                                        variant='transperant'
+                                                                        size={100}
+                                                                        c='white'
+                                                                        onClick={() => {
+                                                                            setcommentModal(true);
+                                                                            setCurrentImageIndex(index);
+                                                                            setCurrentComment(comments[index] || ""); // Load existing comment if available
+                                                                        }}
+                                                                    >
+                                                                        <TbCircleDashedPlus size={120} />
+                                                                    </ActionIcon>
+                                                                    <Button
+                                                                        variant='transperant'
+                                                                        bg={"white"}
+                                                                        c={"black"}
+                                                                        onClick={() => handleFullscreen(index)}
+                                                                    >
+                                                                        See Image
+                                                                    </Button>
+                                                                </Flex>
+                                                            )}
+                                                        </Center>
+                                                    </Overlay>
                                                 )}
-                                            </Center>
-                                        </Overlay>
-                                    )}
-                                </div>
-                                <Flex>
+                                            </div>
+                                            <Flex>
 
-                                    {comments[index] ? <Text ml={"sm"} fw={600}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
+                                                {comments[index] ? <Text ml={"sm"} fw={600}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
+                                            </Flex>
+                                        </Flex>
+                                    ))}
+                                </SimpleGrid>
+                            ) : (
+                                <Flex justify={"center"} m={"2rem"}>
+                                    <Text fz={18} fw={600}>
+                                        No captured images / videos!
+                                    </Text>
                                 </Flex>
-                            </Flex>
-                        ))}
-                    </SimpleGrid>
+                            )
+
+                        }
+                    </>
+
                 </Container>
             </Card>
         </div>

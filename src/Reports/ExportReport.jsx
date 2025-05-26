@@ -614,8 +614,8 @@ const ExportReport = () => {
         const hasRemarks = remarksText.trim().length > 0;
         const hasMedication = medicationText.trim().length > 0;
 
-        setpreview(hasRemarks && hasMedication);
-    }, [remarksText, medicationText]);
+        setpreview(selectedImages.length >= 1 && hasRemarks && hasMedication && capturedImages.length >= 1);
+    }, [remarksText, medicationText, selectedImages, capturedImages]);
 
     const handleSaveImage = (editedImage) => {
         const updatedImages = [...capturedImages];
@@ -671,7 +671,6 @@ const ExportReport = () => {
         // Update localStorage
         localStorage.setItem('capturedImages', JSON.stringify(updatedImages));
         localStorage.setItem('imageComments', JSON.stringify(updatedComments));
-
         // Update state
         setCapturedImages(updatedImages);
         setComments(updatedComments);
@@ -872,7 +871,7 @@ const ExportReport = () => {
                                 onClick={handlePrint}
                             ><TbPrinter /></ActionIcon>
 
-                            <Button disabled={selectedImages.length > 0 ? false : true} color='violet' radius={8} h={44} onClick={handleSave}>Save</Button>
+                            <Button disabled={!preview} color='violet' radius={8} h={44} onClick={handleSave}>Save</Button>
 
                             <Card withBorder p={'0.3rem'} radius={8} pl={"1rem"} style={{ overflow: "visible", position: "relative" }}>
                                 <Flex gap={15} align={"center"}>
@@ -951,7 +950,7 @@ const ExportReport = () => {
                     </Card>
                     <Space h={"1rem"} />
 
-                    <Textarea placeholder='Write your remarks'
+                    <Textarea placeholder='Write diagnostic details'
                         label="Diagnostic Details "
                         minRows={3}
                         radius={8}
@@ -974,16 +973,20 @@ const ExportReport = () => {
                     <Flex align={"center"} justify={selectImage ? "space-between" : "flex-end"}>
                         {selectImage && <Text fz={20} fw={600}>Selected images : {selectedImages.length} </Text>}
                         <Group>
-                            <Button color='gray' variant='light' radius={"lg"} onClick={() => {
+                            {capturedImages.length >= 1 && <Button color='gray' variant='light' radius={"lg"} onClick={() => {
                                 toggleVideoSelectMode()
                                 toggleSelectMode()
-                            }}>{selectImage ? 'Cancel' : 'Select images to export'}</Button>
+                            }}>{selectImage ? 'Cancel' : 'Select images to export'}</Button>}
                             {/* <ActionIcon variant='light' size={"lg"} radius={12}><MdAdd size={25} /></ActionIcon> */}
                         </Group>
                     </Flex>
                     <Space h={"1rem"} />
-                    <SimpleGrid cols={3}>
-                        {/* {
+
+                    <>
+                        {
+                            capturedImages.length >= 1 ? (
+                                <SimpleGrid cols={3}>
+                                    {/* {
                             capturedVideos.map((video, index) => (
                                 <div
                                     key={index}
@@ -1036,55 +1039,66 @@ const ExportReport = () => {
                             ))
                         } */}
 
-                        {capturedImages.map((image, index) => (
-                            <div
-                                key={index}
-                                style={{ position: 'relative' }}
-                            >
-                                <MantineImage
-                                    ref={(el) => (imageRefs.current[index] = el)}
-                                    src={image}
-                                    width={'100%'} height={"100%"}
-                                    radius={12}
-                                />
-
-                                <Flex>
-                                    {comments[index] ? <Text ml={"sm"} fw={600}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
-                                </Flex>
-
-                                {selectImage && (
-                                    <Overlay radius={12} top={0} left={0} opacity={0}>
-                                        <Flex justify="flex-end" p={10}>
-                                            <Checkbox
-                                                size="lg"
-                                                color="violet"
-                                                checked={selectedImages.includes(image)} // Check if the image is already selected
-                                                onChange={(e) =>
-                                                    handleCheckboxChange(image, e.target.checked)
-                                                }
+                                    {capturedImages.map((image, index) => (
+                                        <div
+                                            key={index}
+                                            style={{ position: 'relative' }}
+                                        >
+                                            <MantineImage
+                                                ref={(el) => (imageRefs.current[index] = el)}
+                                                src={image}
+                                                width={'100%'} height={"100%"}
+                                                radius={12}
                                             />
-                                        </Flex>
-                                    </Overlay>
-                                )}
-                                {!selectImage && (
-                                    <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0}>
-                                        <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
-                                            <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} onClick={() => {
-                                                setEditingIndex(index)
-                                                seteditImageModal(true)
-                                            }}><MdOutlineEdit color='black' size={23} /></ActionIcon>
 
-                                            <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} right={"1rem"}
-                                                onClick={() => {
-                                                    setdeleteIndex(index)
-                                                    setdeleteModal(true)
-                                                }}><RxCross2 color='red' size={23} /></ActionIcon>
+                                            <Flex>
+                                                {comments[index] ? <Text ml={"sm"} fw={600}>{comments[index]}</Text> : <Text ml={"lg"} fw={600}>Image: {index + 1}</Text>}
+                                            </Flex>
+
+                                            {selectImage && (
+                                                <Overlay radius={12} top={0} left={0} opacity={0}>
+                                                    <Flex justify="flex-end" p={10}>
+                                                        <Checkbox
+                                                            size="lg"
+                                                            color="violet"
+                                                            checked={selectedImages.includes(image)} // Check if the image is already selected
+                                                            onChange={(e) =>
+                                                                handleCheckboxChange(image, e.target.checked)
+                                                            }
+                                                        />
+                                                    </Flex>
+                                                </Overlay>
+                                            )}
+                                            {!selectImage && (
+                                                <Overlay pos="absolute" radius={12} top={0} left={0} opacity={0}>
+                                                    <div style={{ width: "100%", display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
+                                                        <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} onClick={() => {
+                                                            setEditingIndex(index)
+                                                            seteditImageModal(true)
+                                                        }}><MdOutlineEdit color='black' size={23} /></ActionIcon>
+
+                                                        <ActionIcon size={46} variant='transparent' bg={"white"} radius={"50%"} right={"1rem"}
+                                                            onClick={() => {
+                                                                setdeleteIndex(index)
+                                                                setdeleteModal(true)
+                                                            }}><RxCross2 color='red' size={23} /></ActionIcon>
+                                                    </div>
+                                                </Overlay>
+                                            )}
                                         </div>
-                                    </Overlay>
-                                )}
-                            </div>
-                        ))}
-                    </SimpleGrid>
+                                    ))}
+                                </SimpleGrid>
+                            ) : (
+                                <Flex justify={"center"}>
+                                    <Text fz={18} fw={600} m={"2rem"}>
+                                        No captured images!
+                                    </Text>
+                                </Flex>
+                            )
+
+                        }
+                    </>
+
                 </Container>
             </Card>
         </div >
