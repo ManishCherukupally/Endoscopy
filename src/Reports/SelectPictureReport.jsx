@@ -265,10 +265,10 @@ const ImageEditor = ({ imageSrc, onSave }) => {
 
     };
 
-
     const handleSave = () => {
-        const editedImage = canvasRef.current.toDataURL("image/png");
-        onSave(editedImage);
+        const canvas = canvasRef.current;
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.6); // Reduce size & quality
+        onSave(compressedDataUrl);
     };
 
     // ----------- CROP FUNCTIONALITY ------------

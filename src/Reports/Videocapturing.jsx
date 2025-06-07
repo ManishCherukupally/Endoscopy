@@ -268,10 +268,10 @@ const ImageEditor = ({ imageSrc, onSave }) => {
 
     };
 
-
     const handleSave = () => {
-        const editedImage = canvasRef.current.toDataURL("image/png");
-        onSave(editedImage);
+        const canvas = canvasRef.current;
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.6); // Reduce size & quality
+        onSave(compressedDataUrl);
     };
 
     // ----------- CROP FUNCTIONALITY ------------
@@ -675,14 +675,45 @@ const Videocapturing = () => {
     };
 
 
-    const handleCapture = () => {
+    const handleCapture = async () => {
         if (webcamRef.current) {
             const imageSrc = webcamRef.current.getScreenshot();
-            const updatedImages = [...capturedImages, imageSrc];
+
+            // Compress the base64 image
+            const compressedImage = await compressBase64Image(imageSrc, 800, 800, 0.6);
+
+            const updatedImages = [...capturedImages, compressedImage];
             setCapturedImages(updatedImages);
-            localStorage.setItem('capturedImages', JSON.stringify(updatedImages));
+
+            try {
+                localStorage.setItem('capturedImages', JSON.stringify(updatedImages));
+            } catch (e) {
+                console.error("Storage quota exceeded:", e);
+                alert("Too many images! Please delete some to continue.");
+            }
         }
     };
+
+    // Helper to compress base64 image using canvas
+    const compressBase64Image = (base64Str, maxWidth = 800, maxHeight = 800, quality = 0.6) => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.src = base64Str;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+
+                const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+                canvas.width = img.width * ratio;
+                canvas.height = img.height * ratio;
+
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+                resolve(compressedBase64);
+            };
+        });
+    };
+
 
 
     const handleStartRecording = () => {
