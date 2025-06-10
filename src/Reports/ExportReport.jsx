@@ -23,7 +23,6 @@ import { IconBrush, IconCrop, IconPalette, IconShape, IconSun } from '@tabler/ic
 const ImageEditor = ({ imageSrc, onSave }) => {
     const [penPaths, setPenPaths] = useState([]);
     const currentPath = useRef([]);
-
     const canvasRef = useRef(null);
     const ctxRef = useRef(null);
     const imageRef = useRef(null);
@@ -31,7 +30,6 @@ const ImageEditor = ({ imageSrc, onSave }) => {
     const [toolmenu, setToolmenu] = useState(true)
     const [shapeStart, setShapeStart] = useState(null);
     const [shapes, setShapes] = useState([]);
-
     const [isDrawing, setIsDrawing] = useState(false);
     const [penColor, setPenColor] = useState("black");
     const [penSize, setPenSize] = useState(3);
@@ -143,67 +141,54 @@ const ImageEditor = ({ imageSrc, onSave }) => {
 
         if (isCropping || (drawMode !== "pen" && !shapeStart)) return;
 
+        const canvas = canvasRef.current;
+
         if (drawMode === "pen" && isDrawing) {
             ctx.lineTo(x, y);
             ctx.stroke();
-            currentPath.current.push({ x, y }); // Keep recording
+            currentPath.current.push({ x, y }); // ✅ in-progress
         } else if (shapeStart) {
             const previewEnd = { x, y };
 
-            // Clear canvas and redraw everything (image + previous shapes/paths)
-            const canvas = canvasRef.current;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(imageRef.current, 0, 0);
+            applyBrightness(); // ✅ always redraw full image + saved items
 
-            // Apply brightness again
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-                data[i] = data[i] * (brightness / 100);
-                data[i + 1] = data[i + 1] * (brightness / 100);
-                data[i + 2] = data[i + 2] * (brightness / 100);
-            }
-
-            ctx.putImageData(imageData, 0, 0);
-
-            // Redraw existing shapes and pen paths
-            shapes.forEach(({ type, start, end, color, size }) => {
-                drawShape(ctx, type, start, end, color, size);
-            });
-            penPaths.forEach(({ points, color, size }) => {
-                drawPenPath(ctx, points, color, size);
-            });
-
-            // Draw current shape preview
+            // Only draw shape preview on top
             drawShape(ctx, drawMode, shapeStart, previewEnd, penColor, penSize);
         }
+
+
     };
+
+    useEffect(() => {
+        console.log("penPaths updated:", penPaths);
+    }, [penPaths]);
 
 
     const stopDrawing = (e) => {
         if (drawMode === "pen" && isDrawing) {
             ctxRef.current.closePath();
-            setPenPaths((prev) => [...prev, {
-                points: currentPath.current,
+            const newPath = {
+                points: [...currentPath.current], // avoid mutation
                 color: penColor,
                 size: penSize
-            }]);
+            };
+            setPenPaths(prev => [...prev, newPath]); // ✅ functional update!
             currentPath.current = [];
             setIsDrawing(false);
         } else if (shapeStart) {
             const x = e.nativeEvent.offsetX;
             const y = e.nativeEvent.offsetY;
-            setShapes((prev) => [...prev, {
+            setShapes(prev => [...prev, {
                 type: drawMode,
                 start: shapeStart,
                 end: { x, y },
                 color: penColor,
-                size: penSize,
+                size: penSize
             }]);
             setShapeStart(null);
         }
     };
+
 
 
     const drawPenPath = (ctx, path, color, size) => {
@@ -223,6 +208,7 @@ const ImageEditor = ({ imageSrc, onSave }) => {
     const applyBrightness = () => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(imageRef.current, 0, 0);
 
@@ -230,24 +216,24 @@ const ImageEditor = ({ imageSrc, onSave }) => {
         const data = imageData.data;
 
         for (let i = 0; i < data.length; i += 4) {
-            data[i] = data[i] * (brightness / 100);
-            data[i + 1] = data[i + 1] * (brightness / 100);
-            data[i + 2] = data[i + 2] * (brightness / 100);
+            data[i] = data[i] * (brightness / 100);     // R
+            data[i + 1] = data[i + 1] * (brightness / 100); // G
+            data[i + 2] = data[i + 2] * (brightness / 100); // B
         }
 
         ctx.putImageData(imageData, 0, 0);
 
-        // Draw all saved shapes
-        shapes.forEach(({ type, start, end, color, size }) => {
-            drawShape(ctx, type, start, end, color, size);
-        });
-
-        // Draw all saved pen paths
-        penPaths.forEach(({ points, color, size }) => {
+        // ✅ Confirm rendering all pen paths
+        penPaths.forEach(({ points, color, size }, index) => {
+            console.log(`Rendering pen path ${index}`, points);
             drawPenPath(ctx, points, color, size);
         });
 
+        shapes.forEach(({ type, start, end, color, size }) => {
+            drawShape(ctx, type, start, end, color, size);
+        });
     };
+
 
     const handleSave = () => {
         const canvas = canvasRef.current;
