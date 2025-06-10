@@ -44,7 +44,8 @@ const ImageEditor = ({ imageSrc, onSave }) => {
     const canvasRef = useRef(null);
     const ctxRef = useRef(null);
     const imageRef = useRef(null);
-    const [drawMode, setDrawMode] = useState("pen"); // "pen", "circle", "rectangle", "square", "triangle", "arrow"
+    const [drawMode, setDrawMode] = useState(""); // "pen", "circle", "rectangle", "square", "triangle", "arrow"
+    const [toolmenu, setToolmenu] = useState(true)
     const [shapeStart, setShapeStart] = useState(null);
     const [shapes, setShapes] = useState([]);
 
@@ -402,9 +403,9 @@ const ImageEditor = ({ imageSrc, onSave }) => {
                 zIndex: 10
             }}>
 
-                <Menu shadow="md" width={160} position="left-start" transitionProps={{ transition: 'rotate-right', duration: 150 }}>
+                <Menu shadow="md" width={160} position="left-start" transitionProps={{ transition: 'rotate-right', duration: 150 }} opened={toolmenu}>
                     <Menu.Target>
-                        <ActionIcon variant="transparent" size="lg">
+                        <ActionIcon variant="transparent" size="lg" onClick={() => setToolmenu(true)}>
                             <IconShape size={20} style={{ color: '#ffffff' }} />
                         </ActionIcon>
                     </Menu.Target>
@@ -412,7 +413,12 @@ const ImageEditor = ({ imageSrc, onSave }) => {
                         <Menu.Label>Shapes</Menu.Label>
                         <Stack p="xs" gap="xs">
                             {["pen", "circle", "rectangle", "triangle", "arrow"].map((mode) => (
-                                <Button color="violet" key={mode} size="xs" variant={drawMode === mode ? "filled" : "light"} onClick={() => setDrawMode(mode)}>
+                                <Button color="violet" key={mode} size="xs" variant={drawMode === mode ? "filled" : "light"} onClick={() => {
+                                    setDrawMode(mode)
+                                    setTimeout(() => {
+                                        setToolmenu(false)
+                                    }, 300);
+                                }}>
                                     {mode.charAt(0).toUpperCase() + mode.slice(1)}
                                 </Button>
                             ))}
